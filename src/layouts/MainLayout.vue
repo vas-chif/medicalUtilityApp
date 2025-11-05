@@ -30,6 +30,7 @@ interface MedicalTool {
   description: string;
   categories: string[];
   keywords: string[];
+  disabled?: boolean; // Tool temporaneamente disabilitato
 }
 
 const medicalTools: MedicalTool[] = [
@@ -90,6 +91,7 @@ const medicalTools: MedicalTool[] = [
       'endovenosa',
       'Y-site',
     ],
+    disabled: true, // Disabilitato temporaneamente - PDF data extraction in progress
   },
 ];
 
@@ -127,6 +129,12 @@ function toggleLeftDrawer() {
 }
 
 const navigateTo = async (path: string) => {
+  // Controlla se il tool è disabilitato
+  const tool = medicalTools.find((t) => path.includes(t.id));
+  if (tool?.disabled) {
+    return; // Non navigare se disabilitato
+  }
+
   await router.push(path);
   // Chiudi drawer su mobile dopo navigazione
   if (window.innerWidth < 1024) {
@@ -318,18 +326,16 @@ const navigateTo = async (path: string) => {
         </q-item>
 
         <!-- Drug Compatibility -->
-        <q-item
-          clickable
-          :active="$route.path === '/drug-compatibility'"
-          @click="navigateTo('/drug-compatibility')"
-          class="medical-menu-item"
-        >
+        <q-item disable class="medical-menu-item menu-item-disabled">
           <q-item-section avatar>
-            <q-icon name="science" color="purple-6" />
+            <q-icon name="science" color="grey-5" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Compatibilità Farmaci</q-item-label>
-            <q-item-label caption>Interazioni farmacologiche IV</q-item-label>
+            <q-item-label class="text-grey-6">Compatibilità Farmaci</q-item-label>
+            <q-item-label caption class="text-grey-5"> In sviluppo - PDF extraction </q-item-label>
+          </q-item-section>
+          <q-item-section side>
+            <q-badge color="orange" label="Soon" />
           </q-item-section>
         </q-item>
 
@@ -523,8 +529,8 @@ const navigateTo = async (path: string) => {
             <!-- Drug Compatibility -->
             <q-card
               v-show="isToolVisible('drug-compatibility')"
-              class="medical-tool-card cursor-pointer"
-              @click="navigateTo('/drug-compatibility')"
+              class="medical-tool-card"
+              :class="{ 'tool-disabled': true }"
             >
               <q-card-section class="tool-card-content">
                 <div class="tool-icon-container q-mb-md">
@@ -539,6 +545,12 @@ const navigateTo = async (path: string) => {
                   <q-chip size="sm" color="purple-1" text-color="purple-8"
                     >Terapia Intensiva</q-chip
                   >
+                </div>
+                <!-- Badge Coming Soon -->
+                <div class="coming-soon-badge">
+                  <q-chip color="orange" text-color="white" icon="schedule" size="sm">
+                    In Sviluppo - PDF Extraction in corso
+                  </q-chip>
                 </div>
               </q-card-section>
             </q-card>
@@ -638,6 +650,16 @@ const navigateTo = async (path: string) => {
   background: rgba(46, 125, 138, 0.15);
   border-left: 4px solid #2e7d8a;
   font-weight: 600;
+}
+
+.menu-item-disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+}
+
+.menu-item-disabled:hover {
+  background: transparent !important;
+  transform: none !important;
 }
 
 /* Page Container */
@@ -796,6 +818,31 @@ const navigateTo = async (path: string) => {
   justify-content: center;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+/* Disabled Tool Card */
+.tool-disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
+  filter: grayscale(40%);
+}
+
+.tool-disabled:hover {
+  transform: none !important;
+  box-shadow: 0 4px 16px rgba(46, 125, 138, 0.1) !important;
+}
+
+.tool-disabled .tool-icon {
+  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%) !important;
+}
+
+.tool-disabled:hover .tool-icon {
+  transform: none !important;
+}
+
+.coming-soon-badge {
+  margin-top: 12px;
+  text-align: center;
 }
 
 /* No Results */
