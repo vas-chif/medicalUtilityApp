@@ -1,0 +1,43 @@
+// Medical Utility App - Custom Theme Variables
+// --------------------------------------------------
+// Professional medical color scheme with accessibility focus
+
+// Primary Medical Colors
+$primary: #2e7d8a; // Medical Teal/Cyan (professional, trustworthy)
+$secondary: #5a9b6b; // Medical Green (health, vitality)
+$accent: #e67e22; // Medical Orange (attention, warnings)
+
+// Medical Semantic Colors
+$positive: #27ae60; // Success Green (normal results)
+$negative: #e74c3c; // Alert Red (critical values)
+$warning: #f39c12; // Warning Orange (attention needed)
+$info: #3498db; // Info Blue (informational)
+
+// Medical Grays (for text hierarchy)
+$dark: #2c3e50; // Dark Navy (headers, important text)
+$dark-page: #f8f9fa; // Light Gray Page Background
+
+// Additional Medical Colors
+$medical-blue: #4a90e2; // Diagnostic Blue
+$medical-purple: #8e44ad; // Specialist Purple
+$medical-mint: #1abc9c; // Fresh Mint (vitals)
+$medical-rose: #e91e63; // Medical Rose (pediatrics)
+
+// Text Colors for Medical Context
+$text-primary: #2c3e50; // Dark for main text
+$text-secondary: #7f8c8d; // Gray for secondary text
+$text-light: #bdc3c7; // Light gray for hints
+
+// Background Medical Colors
+$bg-success: #d5f4e6; // Light green background
+$bg-warning: #fdf2e9; // Light orange background
+$bg-error: #fadbd8; // Light red background
+$bg-info: #ebf5ff; // Light blue background
+
+// Medical Card Colors
+$card-shadow: rgba(46, 125, 138, 0.1); // Primary teal with transparency
+$card-border: #e8f4f8; // Very light teal border
+
+// Interactive Elements
+$hover-primary: #236b77; // Darker teal on hover
+$hover-secondary: #4a8a5a; // Darker green on hover

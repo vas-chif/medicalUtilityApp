@@ -1,0 +1,884 @@
+<!-- MainLayout.vue -->
+<script setup lang="ts">
+/**
+ * @file MainLayout.vue
+ * Layout principale dell'applicazione con header, drawer e pagina contenitore
+ * @author Vasile Chifeac
+ */
+
+import { ref, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+
+// Router
+const router = useRouter();
+const route = useRoute();
+
+// State
+const leftDrawerOpen = ref(false);
+const appVersion = ref('1.0.0');
+
+// Stato della ricerca
+const searchQuery = ref('');
+
+// Computed per mostrare ricerca solo in homepage
+const showSearch = computed(() => route.path === '/');
+
+// Definizione degli strumenti
+interface MedicalTool {
+  id: string;
+  title: string;
+  description: string;
+  categories: string[];
+  keywords: string[];
+}
+
+const medicalTools: MedicalTool[] = [
+  {
+    id: 'mechanical-power',
+    title: 'Mechanical Power',
+    description: 'Calcolo della potenza meccanica ventilatoria per pazienti in terapia intensiva',
+    categories: ['ventilazione', 'terapia-intensiva'],
+    keywords: ['ventilazione', 'potenza', 'meccanica', 'critico', 'respiratore', 'ARDS'],
+  },
+  {
+    id: 'quoziente-respiratorio',
+    title: 'Quoziente Respiratorio',
+    description: 'Valutazione degli scambi gassosi polmonari e funzione respiratoria',
+    categories: ['pneumologia', 'ematogasanalisi'],
+    keywords: ['respiratorio', 'scambi', 'gassosi', 'polmonari', 'emogas', 'CO2', 'O2'],
+  },
+  {
+    id: 'bmi-calculator',
+    title: 'BMI Calculator',
+    description: "Calcolo dell'Indice di Massa Corporea con classificazione WHO",
+    categories: ['nutrizione', 'medicina-generale'],
+    keywords: ['BMI', 'massa', 'corporea', 'peso', 'altezza', 'obesità', 'sottopeso'],
+  },
+  {
+    id: 'gfr-calculator',
+    title: 'GFR Calculator',
+    description: 'Calcolo del Filtrato Glomerulare Renale con formule MDRD e CKD-EPI',
+    categories: ['nefrologia', 'funzione-renale'],
+    keywords: ['GFR', 'filtrato', 'glomerulare', 'renale', 'creatinina', 'MDRD', 'CKD-EPI'],
+  },
+  {
+    id: 'dosage-calculator',
+    title: 'Dosage Calculator',
+    description: 'Calcolo preciso delle dosi farmacologiche per peso, età e funzione renale',
+    categories: ['farmacologia', 'posologia'],
+    keywords: ['dosaggio', 'farmaci', 'dose', 'peso', 'età', 'posologia', 'medicazione'],
+  },
+  {
+    id: 'apgar-score',
+    title: 'APGAR Score',
+    description: 'Valutazione clinica completa del neonato nei primi minuti di vita',
+    categories: ['neonatologia', 'pediatria'],
+    keywords: ['APGAR', 'neonato', 'nascita', 'valutazione', 'pediatrico', 'score'],
+  },
+  {
+    id: 'drug-compatibility',
+    title: 'Compatibilità Farmaci',
+    description:
+      'Controllo interazioni e incompatibilità farmacologiche per somministrazione endovenosa',
+    categories: ['farmacologia', 'terapia-intensiva'],
+    keywords: [
+      'compatibilità',
+      'farmaci',
+      'interazioni',
+      'incompatibilità',
+      'IV',
+      'endovenosa',
+      'Y-site',
+    ],
+  },
+];
+
+// Computed per gli strumenti filtrati
+const filteredTools = computed(() => {
+  let filtered = medicalTools;
+
+  // Filtro per ricerca testuale
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (tool) =>
+        tool.title.toLowerCase().includes(query) ||
+        tool.description.toLowerCase().includes(query) ||
+        tool.keywords.some((keyword) => keyword.toLowerCase().includes(query)),
+    );
+  }
+
+  return filtered;
+});
+
+// Funzione per verificare se uno strumento è visibile
+const isToolVisible = (toolId: string): boolean => {
+  return filteredTools.value.some((tool) => tool.id === toolId);
+};
+
+// Funzioni per la ricerca
+const filterTools = () => {
+  // La ricerca è reattiva tramite computed
+};
+
+// Functions
+function toggleLeftDrawer() {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+}
+
+const navigateTo = async (path: string) => {
+  await router.push(path);
+  // Chiudi drawer su mobile dopo navigazione
+  if (window.innerWidth < 1024) {
+    leftDrawerOpen.value = false;
+  }
+  // Pulisci ricerca quando si naviga
+  if (path !== '/') {
+    searchQuery.value = '';
+  }
+};
+</script>
+
+<template>
+  <q-layout view="lHh Lpr lFf">
+    <!-- Header Medical con Ricerca -->
+    <q-header elevated class="medical-header">
+      <q-toolbar>
+        <q-btn
+          flat
+          dense
+          round
+          icon="menu"
+          aria-label="Menu"
+          @click="toggleLeftDrawer"
+          class="text-white"
+        />
+
+        <q-toolbar-title class="medical-title">
+          <q-icon name="local_hospital" size="md" class="q-mr-sm" />
+          Medical Utility Pro
+        </q-toolbar-title>
+
+        <!-- Barra di Ricerca Compatta -->
+        <div class="search-toolbar q-ml-md" v-if="showSearch">
+          <q-input
+            v-model="searchQuery"
+            placeholder="🔍 Cerca strumento..."
+            outlined
+            dense
+            clearable
+            class="compact-search"
+            style="width: 250px"
+            @input="filterTools"
+          >
+            <template v-slot:prepend>
+              <q-icon name="search" color="white" />
+            </template>
+          </q-input>
+        </div>
+
+        <q-space />
+
+        <div class="text-subtitle2 text-white-7">v{{ appVersion }}</div>
+      </q-toolbar>
+    </q-header>
+
+    <!-- Drawer Medical -->
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="medical-drawer" :width="280">
+      <!-- Header Drawer -->
+      <div class="drawer-header q-pa-md text-center">
+        <q-avatar size="60px" class="medical-avatar q-mb-sm">
+          <q-icon name="medical_services" size="30px" color="white" />
+        </q-avatar>
+        <div class="text-h6 text-primary">Medical Utility</div>
+        <div class="text-caption text-grey-6">Strumenti Medici Professionali</div>
+      </div>
+
+      <q-separator />
+
+      <!-- Menu Navigation -->
+      <q-list>
+        <!-- Homepage -->
+        <q-item
+          clickable
+          :active="$route.path === '/'"
+          @click="navigateTo('/')"
+          class="medical-menu-item"
+        >
+          <q-item-section avatar>
+            <q-icon name="home" color="primary" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Homepage</q-item-label>
+            <q-item-label caption>Panoramica strumenti</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-separator class="q-my-sm" />
+
+        <!-- Sezione Calcolatrici -->
+        <q-item-label header class="text-primary text-weight-bold">
+          🧮 Calcolatrici Mediche
+        </q-item-label>
+
+        <!-- Mechanical Power -->
+        <q-item
+          clickable
+          :active="$route.path === '/mechanical-power'"
+          @click="navigateTo('/mechanical-power')"
+          class="medical-menu-item"
+        >
+          <q-item-section avatar>
+            <q-icon name="settings" color="blue-6" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Mechanical Power</q-item-label>
+            <q-item-label caption>Potenza meccanica ventilatoria</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <!-- Quoziente Respiratorio -->
+        <q-item
+          clickable
+          :active="$route.path === '/quoziente-respiratorio'"
+          @click="navigateTo('/quoziente-respiratorio')"
+          class="medical-menu-item"
+        >
+          <q-item-section avatar>
+            <q-icon name="air" color="green-6" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Quoziente Respiratorio</q-item-label>
+            <q-item-label caption>Scambi gassosi polmonari</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <!-- BMI Calculator -->
+        <q-item
+          clickable
+          :active="$route.path === '/bmi-calculator'"
+          @click="navigateTo('/bmi-calculator')"
+          class="medical-menu-item"
+        >
+          <q-item-section avatar>
+            <q-icon name="fitness_center" color="orange-6" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>BMI Calculator</q-item-label>
+            <q-item-label caption>Indice massa corporea</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <!-- GFR Calculator -->
+        <q-item
+          clickable
+          :active="$route.path === '/gfr-calculator'"
+          @click="navigateTo('/gfr-calculator')"
+          class="medical-menu-item"
+        >
+          <q-item-section avatar>
+            <q-icon name="water_drop" color="cyan-6" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>GFR Calculator</q-item-label>
+            <q-item-label caption>Filtrato glomerulare renale</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <!-- Dosage Calculator -->
+        <q-item
+          clickable
+          :active="$route.path === '/dosage-calculator'"
+          @click="navigateTo('/dosage-calculator')"
+          class="medical-menu-item"
+        >
+          <q-item-section avatar>
+            <q-icon name="medication" color="red-6" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Dosage Calculator</q-item-label>
+            <q-item-label caption>Calcolo dosi farmacologiche</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <!-- APGAR Score -->
+        <q-item
+          clickable
+          :active="$route.path === '/apgar-score'"
+          @click="navigateTo('/apgar-score')"
+          class="medical-menu-item"
+        >
+          <q-item-section avatar>
+            <q-icon name="child_care" color="pink-6" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>APGAR Score</q-item-label>
+            <q-item-label caption>Valutazione neonatale</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <!-- Drug Compatibility -->
+        <q-item
+          clickable
+          :active="$route.path === '/drug-compatibility'"
+          @click="navigateTo('/drug-compatibility')"
+          class="medical-menu-item"
+        >
+          <q-item-section avatar>
+            <q-icon name="science" color="purple-6" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Compatibilità Farmaci</q-item-label>
+            <q-item-label caption>Interazioni farmacologiche IV</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-separator class="q-my-md" />
+
+        <!-- Sezione Info -->
+        <q-item-label header class="text-grey-7"> ℹ️ Informazioni </q-item-label>
+
+        <q-item clickable class="medical-menu-item">
+          <q-item-section avatar>
+            <q-icon name="info" color="info" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>About</q-item-label>
+            <q-item-label caption>Informazioni app</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item clickable class="medical-menu-item">
+          <q-item-section avatar>
+            <q-icon name="help" color="warning" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Aiuto</q-item-label>
+            <q-item-label caption>Documentazione</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+
+      <!-- Footer Drawer -->
+      <div class="absolute-bottom q-pa-sm text-center">
+        <div class="text-caption text-grey-6">© 2025 Medical Utility Pro</div>
+        <div class="text-caption text-grey-5">NYK-AI Development</div>
+      </div>
+    </q-drawer>
+
+    <!-- Page Container -->
+    <q-page-container class="medical-page-container">
+      <!-- Contenuto Homepage quando route è / -->
+      <div v-if="$route.path === '/'" class="homepage-content">
+        <!-- Hero Section -->
+        <div class="hero-section q-pa-xl text-center">
+          <div class="hero-content">
+            <q-icon name="local_hospital" size="4rem" class="hero-icon q-mb-md" />
+            <h1 class="hero-title text-h3 q-mb-sm">Medical Utility Pro</h1>
+            <p class="hero-subtitle text-h6 q-mb-lg">
+              Strumenti medici professionali per calcoli clinici precisi e affidabili
+            </p>
+          </div>
+        </div>
+
+        <!-- Tools Grid Section -->
+        <div class="tools-section q-pa-lg">
+          <div class="text-center q-mb-lg">
+            <h2 class="section-title text-h4 q-mb-sm">🧮 Calcolatrici Mediche</h2>
+            <p class="section-subtitle text-subtitle1">
+              Seleziona lo strumento di calcolo necessario
+            </p>
+          </div>
+
+          <!-- Griglia delle cards -->
+          <div class="tools-grid">
+            <!-- Mechanical Power Calculator -->
+            <q-card
+              v-show="isToolVisible('mechanical-power')"
+              class="medical-tool-card cursor-pointer"
+              @click="navigateTo('/mechanical-power')"
+            >
+              <q-card-section class="tool-card-content">
+                <div class="tool-icon-container q-mb-md">
+                  <q-icon name="settings" size="3rem" class="tool-icon" />
+                </div>
+                <h5 class="tool-title text-h6 q-mb-sm">Mechanical Power</h5>
+                <p class="tool-description text-body2 q-mb-md">
+                  Calcolo della potenza meccanica ventilatoria per terapia intensiva
+                </p>
+                <div class="tool-tags">
+                  <q-chip size="sm" color="blue-1" text-color="blue-8">Ventilazione</q-chip>
+                  <q-chip size="sm" color="blue-1" text-color="blue-8">Terapia Intensiva</q-chip>
+                </div>
+              </q-card-section>
+            </q-card>
+
+            <!-- Quoziente Respiratorio Calculator -->
+            <q-card
+              v-show="isToolVisible('quoziente-respiratorio')"
+              class="medical-tool-card cursor-pointer"
+              @click="navigateTo('/quoziente-respiratorio')"
+            >
+              <q-card-section class="tool-card-content">
+                <div class="tool-icon-container q-mb-md">
+                  <q-icon name="air" size="3rem" class="tool-icon" />
+                </div>
+                <h5 class="tool-title text-h6 q-mb-sm">Quoziente Respiratorio</h5>
+                <p class="tool-description text-body2 q-mb-md">
+                  Valutazione degli scambi gassosi polmonari
+                </p>
+                <div class="tool-tags">
+                  <q-chip size="sm" color="green-1" text-color="green-8">Pneumologia</q-chip>
+                  <q-chip size="sm" color="green-1" text-color="green-8">Ematogasanalisi</q-chip>
+                </div>
+              </q-card-section>
+            </q-card>
+
+            <!-- BMI Calculator -->
+            <q-card
+              v-show="isToolVisible('bmi-calculator')"
+              class="medical-tool-card cursor-pointer"
+              @click="navigateTo('/bmi-calculator')"
+            >
+              <q-card-section class="tool-card-content">
+                <div class="tool-icon-container q-mb-md">
+                  <q-icon name="fitness_center" size="3rem" class="tool-icon" />
+                </div>
+                <h5 class="tool-title text-h6 q-mb-sm">BMI Calculator</h5>
+                <p class="tool-description text-body2 q-mb-md">
+                  Calcolo dell'Indice di Massa Corporea con classificazione WHO
+                </p>
+                <div class="tool-tags">
+                  <q-chip size="sm" color="orange-1" text-color="orange-8">Nutrizione</q-chip>
+                  <q-chip size="sm" color="orange-1" text-color="orange-8"
+                    >Medicina Generale</q-chip
+                  >
+                </div>
+              </q-card-section>
+            </q-card>
+
+            <!-- GFR Calculator -->
+            <q-card
+              v-show="isToolVisible('gfr-calculator')"
+              class="medical-tool-card cursor-pointer"
+              @click="navigateTo('/gfr-calculator')"
+            >
+              <q-card-section class="tool-card-content">
+                <div class="tool-icon-container q-mb-md">
+                  <q-icon name="water_drop" size="3rem" class="tool-icon" />
+                </div>
+                <h5 class="tool-title text-h6 q-mb-sm">GFR Calculator</h5>
+                <p class="tool-description text-body2 q-mb-md">
+                  Calcolo del Filtrato Glomerulare Renale con formule MDRD e CKD-EPI
+                </p>
+                <div class="tool-tags">
+                  <q-chip size="sm" color="cyan-1" text-color="cyan-8">Nefrologia</q-chip>
+                  <q-chip size="sm" color="cyan-1" text-color="cyan-8">Funzione Renale</q-chip>
+                </div>
+              </q-card-section>
+            </q-card>
+
+            <!-- Dosage Calculator -->
+            <q-card
+              v-show="isToolVisible('dosage-calculator')"
+              class="medical-tool-card cursor-pointer"
+              @click="navigateTo('/dosage-calculator')"
+            >
+              <q-card-section class="tool-card-content">
+                <div class="tool-icon-container q-mb-md">
+                  <q-icon name="medication" size="3rem" class="tool-icon" />
+                </div>
+                <h5 class="tool-title text-h6 q-mb-sm">Dosage Calculator</h5>
+                <p class="tool-description text-body2 q-mb-md">
+                  Calcolo preciso delle dosi farmacologiche per peso, età e funzione renale
+                </p>
+                <div class="tool-tags">
+                  <q-chip size="sm" color="red-1" text-color="red-8">Farmacologia</q-chip>
+                  <q-chip size="sm" color="red-1" text-color="red-8">Posologia</q-chip>
+                </div>
+              </q-card-section>
+            </q-card>
+
+            <!-- APGAR Score -->
+            <q-card
+              v-show="isToolVisible('apgar-score')"
+              class="medical-tool-card cursor-pointer"
+              @click="navigateTo('/apgar-score')"
+            >
+              <q-card-section class="tool-card-content">
+                <div class="tool-icon-container q-mb-md">
+                  <q-icon name="child_care" size="3rem" class="tool-icon" />
+                </div>
+                <h5 class="tool-title text-h6 q-mb-sm">APGAR Score</h5>
+                <p class="tool-description text-body2 q-mb-md">
+                  Valutazione clinica completa del neonato nei primi minuti di vita
+                </p>
+                <div class="tool-tags">
+                  <q-chip size="sm" color="pink-1" text-color="pink-8">Neonatologia</q-chip>
+                  <q-chip size="sm" color="pink-1" text-color="pink-8">Pediatria</q-chip>
+                </div>
+              </q-card-section>
+            </q-card>
+
+            <!-- Drug Compatibility -->
+            <q-card
+              v-show="isToolVisible('drug-compatibility')"
+              class="medical-tool-card cursor-pointer"
+              @click="navigateTo('/drug-compatibility')"
+            >
+              <q-card-section class="tool-card-content">
+                <div class="tool-icon-container q-mb-md">
+                  <q-icon name="science" size="3rem" class="tool-icon" />
+                </div>
+                <h5 class="tool-title text-h6 q-mb-sm">Compatibilità Farmaci</h5>
+                <p class="tool-description text-body2 q-mb-md">
+                  Controllo interazioni e incompatibilità farmacologiche IV
+                </p>
+                <div class="tool-tags">
+                  <q-chip size="sm" color="purple-1" text-color="purple-8">Farmacologia</q-chip>
+                  <q-chip size="sm" color="purple-1" text-color="purple-8"
+                    >Terapia Intensiva</q-chip
+                  >
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+
+          <!-- Nessun risultato -->
+          <div v-if="searchQuery && filteredTools.length === 0" class="no-results q-mt-lg">
+            <div class="text-center">
+              <q-icon name="search_off" size="3rem" color="grey-5" class="q-mb-md" />
+              <h6 class="text-h6 text-grey-7">Nessun risultato trovato</h6>
+              <p class="text-body2 text-grey-6">Prova a cercare con termini diversi</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Router View per altre pagine -->
+      <router-view v-else />
+    </q-page-container>
+  </q-layout>
+</template>
+
+<style scoped>
+/* Medical Header */
+.medical-header {
+  background: linear-gradient(135deg, #2e7d8a 0%, #5a9b6b 100%);
+  box-shadow: 0 2px 8px rgba(46, 125, 138, 0.3);
+}
+
+.medical-title {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Compact Search in Header */
+.search-toolbar {
+  flex-shrink: 0;
+}
+
+.compact-search {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+}
+
+.compact-search :deep(.q-field__control) {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+}
+
+.compact-search :deep(.q-field__outlined) {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.compact-search :deep(.q-field--focused .q-field__outlined) {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.compact-search :deep(.q-field__native) {
+  color: white;
+}
+
+.compact-search :deep(.q-field__native::placeholder) {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Medical Drawer */
+.medical-drawer {
+  background: #fafbfc;
+  border-right: 2px solid #e8f4f8;
+}
+
+.drawer-header {
+  background: linear-gradient(135deg, #ebf5ff 0%, #e8f4f8 100%);
+  border-bottom: 1px solid #e0e7ea;
+}
+
+.medical-avatar {
+  background: linear-gradient(135deg, #2e7d8a 0%, #5a9b6b 100%);
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(46, 125, 138, 0.2);
+}
+
+/* Menu Items */
+.medical-menu-item {
+  border-radius: 8px;
+  margin: 4px 8px;
+  transition: all 0.3s ease;
+}
+
+.medical-menu-item:hover {
+  background: rgba(46, 125, 138, 0.1);
+  transform: translateX(4px);
+}
+
+.medical-menu-item.q-item--active {
+  background: rgba(46, 125, 138, 0.15);
+  border-left: 4px solid #2e7d8a;
+  font-weight: 600;
+}
+
+/* Page Container */
+.medical-page-container {
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Homepage Content */
+.homepage-content {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);
+  min-height: calc(100vh - 50px);
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, #2e7d8a 0%, #5a9b6b 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.3;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-icon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.hero-title {
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: 16px;
+}
+
+.hero-subtitle {
+  font-weight: 300;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Sections */
+.section-title {
+  font-weight: 700;
+  color: #2e7d8a;
+  margin-bottom: 16px;
+}
+
+.section-subtitle {
+  color: #7f8c8d;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Tools Grid */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.medical-tool-card {
+  border-radius: 20px;
+  border: 1px solid #e8f4f8;
+  box-shadow: 0 4px 16px rgba(46, 125, 138, 0.1);
+  transition: all 0.4s ease;
+  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+  overflow: hidden;
+  position: relative;
+}
+
+.medical-tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2e7d8a 0%, #5a9b6b 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.medical-tool-card:hover::before {
+  transform: scaleX(1);
+}
+
+.medical-tool-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(46, 125, 138, 0.2);
+  border-color: #2e7d8a;
+}
+
+.tool-card-content {
+  padding: 32px 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tool-icon-container {
+  text-align: center;
+}
+
+.tool-icon {
+  background: linear-gradient(135deg, #2e7d8a 0%, #5a9b6b 100%);
+  color: white;
+  border-radius: 50%;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(46, 125, 138, 0.3);
+  transition: all 0.3s ease;
+}
+
+.medical-tool-card:hover .tool-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.tool-title {
+  font-weight: 600;
+  color: #2e7d8a;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.tool-description {
+  color: #5d6d7e;
+  line-height: 1.6;
+  text-align: center;
+  flex-grow: 1;
+  margin-bottom: 16px;
+}
+
+.tool-tags {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* No Results */
+.no-results {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 40px 20px;
+  border: 2px dashed #e8f4f8;
+  margin: 0 auto;
+  max-width: 400px;
+}
+
+/* Responsive */
+@media (max-width: 1023px) {
+  .medical-drawer {
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .search-toolbar {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 40px 20px;
+  }
+
+  .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .tools-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .tool-card-content {
+    padding: 24px 20px;
+  }
+}
+
+/* Animation per drawer toggle */
+.q-drawer--standard .q-drawer__content {
+  transition: transform 0.3s ease;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.medical-tool-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.medical-tool-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.medical-tool-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.medical-tool-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.medical-tool-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.medical-tool-card:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.medical-tool-card:nth-child(6) {
+  animation-delay: 0.6s;
+}
+</style>
