@@ -4,7 +4,7 @@
  * @file BaseCalculator.vue
  * @description Componente base per pagine di calcolatori medici
  * @author Vasile Chifeac
- * @created 2025-11-05
+ * @created 2025-03-08
  * @modified 2025-11-05
  *
  * @notes

@@ -4,7 +4,7 @@
  * @file MedicalInput.vue
  * @description Componente di input medico riutilizzabile con funzionalità avanzate
  * @author Vasile Chifeac
- * @created 2025-11-05
+ * @created 2025-10-05
  * @modified 2025-11-05
  *
  * @notes

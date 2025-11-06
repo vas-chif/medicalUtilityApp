@@ -4,7 +4,7 @@
  * @file APGARScoreCalculator.vue
  * @description Componente calcolatore APGAR Score (estratto da APGARScorePage)
  * @author Vasile Chifeac
- * @created 2025-11-06
+ * @created 2025-19-01
  * @modified 2025-11-06
  * @description APGAR Score Calculator - Valutazione clinica del neonato alla nascita
  */

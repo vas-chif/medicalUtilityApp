@@ -4,7 +4,7 @@
  * * @file GCSCalculator.vue
  * @description Glasgow Coma Scale Calculator component
  * @author Vasile Chifeac
- * @created 2025-11-06
+ * @created 2025-01-06
  * @modified 2025-11-06
  * Glasgow Coma Scale - Valutazione livello di coscienza (Teasdale & Jennett 1974)
  */
