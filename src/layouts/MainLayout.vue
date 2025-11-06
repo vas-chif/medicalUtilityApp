@@ -6,22 +6,66 @@
  * @author Vasile Chifeac
  */
 
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 // Router
 const router = useRouter();
 const route = useRoute();
 
+// i18n
+const { locale } = useI18n();
+
 // State
 const leftDrawerOpen = ref(false);
 const appVersion = ref('1.0.0');
+const currentLanguage = ref<'it-IT' | 'en-US'>('it-IT');
 
 // Stato della ricerca
 const searchQuery = ref('');
 
 // Computed per mostrare ricerca solo in homepage
 const showSearch = computed(() => route.path === '/');
+
+// ============================================================
+// LANGUAGE MANAGEMENT
+// ============================================================
+
+/**
+ * Load saved language from localStorage
+ */
+onMounted(() => {
+  const savedLanguage = localStorage.getItem('user-language') as 'it-IT' | 'en-US' | null;
+  if (savedLanguage && (savedLanguage === 'it-IT' || savedLanguage === 'en-US')) {
+    currentLanguage.value = savedLanguage;
+    locale.value = savedLanguage;
+  }
+});
+
+/**
+ * Switch application language
+ * @param lang - Language code ('it-IT' or 'en-US')
+ */
+const switchLanguage = (lang: 'it-IT' | 'en-US'): void => {
+  currentLanguage.value = lang;
+  locale.value = lang;
+  localStorage.setItem('user-language', lang);
+};
+
+/**
+ * Get flag icon for current language
+ */
+const getLanguageFlag = computed(() => {
+  return currentLanguage.value === 'it-IT' ? '🇮🇹' : '🇺🇸';
+});
+
+/**
+ * Get language label
+ */
+const getLanguageLabel = computed(() => {
+  return currentLanguage.value === 'it-IT' ? 'Italiano' : 'English';
+});
 
 // Definizione degli strumenti
 interface MedicalTool {
@@ -35,18 +79,40 @@ interface MedicalTool {
 
 const medicalTools: MedicalTool[] = [
   {
-    id: 'mechanical-power',
-    title: 'Mechanical Power',
-    description: 'Calcolo della potenza meccanica ventilatoria per pazienti in terapia intensiva',
-    categories: ['ventilazione', 'terapia-intensiva'],
-    keywords: ['ventilazione', 'potenza', 'meccanica', 'critico', 'respiratore', 'ARDS'],
+    id: 'intensiveCare',
+    title: 'Intensive Care Utility',
+    description: 'Mechanical Power e Quoziente Respiratorio per monitoraggio ventilatorio completo',
+    categories: ['ventilazione', 'terapia-intensiva', 'pneumologia'],
+    keywords: [
+      'ventilazione',
+      'potenza',
+      'meccanica',
+      'respiratorio',
+      'scambi',
+      'gassosi',
+      'ARDS',
+      'CO2',
+      'O2',
+    ],
   },
   {
-    id: 'quoziente-respiratorio',
-    title: 'Quoziente Respiratorio',
-    description: 'Valutazione degli scambi gassosi polmonari e funzione respiratoria',
-    categories: ['pneumologia', 'ematogasanalisi'],
-    keywords: ['respiratorio', 'scambi', 'gassosi', 'polmonari', 'emogas', 'CO2', 'O2'],
+    id: 'clinicalAssessment',
+    title: 'Clinical Assessment & Scoring',
+    description: 'Sistemi di valutazione clinica: APGAR Score, Glasgow Coma Scale, NEWS, SOFA',
+    categories: ['neonatologia', 'emergenza', 'terapia-intensiva', 'pediatria'],
+    keywords: [
+      'APGAR',
+      'GCS',
+      'Glasgow',
+      'NEWS',
+      'SOFA',
+      'score',
+      'valutazione',
+      'neonato',
+      'coma',
+      'coscienza',
+      'sepsi',
+    ],
   },
   {
     id: 'bmi-calculator',
@@ -68,13 +134,6 @@ const medicalTools: MedicalTool[] = [
     description: 'Calcolo preciso delle dosi farmacologiche per peso, età e funzione renale',
     categories: ['farmacologia', 'posologia'],
     keywords: ['dosaggio', 'farmaci', 'dose', 'peso', 'età', 'posologia', 'medicazione'],
-  },
-  {
-    id: 'apgar-score',
-    title: 'APGAR Score',
-    description: 'Valutazione clinica completa del neonato nei primi minuti di vita',
-    categories: ['neonatologia', 'pediatria'],
-    keywords: ['APGAR', 'neonato', 'nascita', 'valutazione', 'pediatrico', 'score'],
   },
   {
     id: 'drug-compatibility',
@@ -187,6 +246,45 @@ const navigateTo = async (path: string) => {
 
         <q-space />
 
+        <!-- Language Selector -->
+        <q-btn-dropdown
+          flat
+          dense
+          :label="getLanguageFlag"
+          :title="`Language: ${getLanguageLabel}`"
+          class="q-mr-md"
+          dropdown-icon="arrow_drop_down"
+        >
+          <q-list dense>
+            <q-item
+              clickable
+              v-close-popup
+              @click="switchLanguage('it-IT')"
+              :active="currentLanguage === 'it-IT'"
+            >
+              <q-item-section avatar>
+                <div class="text-h6">🇮🇹</div>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Italiano</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              v-close-popup
+              @click="switchLanguage('en-US')"
+              :active="currentLanguage === 'en-US'"
+            >
+              <q-item-section avatar>
+                <div class="text-h6">🇺🇸</div>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>English</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+
         <div class="text-subtitle2 text-white-7">v{{ appVersion }}</div>
       </q-toolbar>
     </q-header>
@@ -229,35 +327,35 @@ const navigateTo = async (path: string) => {
           🧮 Calcolatrici Mediche
         </q-item-label>
 
-        <!-- Mechanical Power -->
+        <!-- Intensive Care Utility (unificato) -->
         <q-item
           clickable
-          :active="$route.path === '/mechanical-power'"
-          @click="navigateTo('/mechanical-power')"
+          :active="$route.path === '/intensive-care'"
+          @click="navigateTo('/intensive-care')"
           class="medical-menu-item"
         >
           <q-item-section avatar>
-            <q-icon name="settings" color="blue-6" />
+            <q-icon name="local_hospital" color="red-6" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Mechanical Power</q-item-label>
-            <q-item-label caption>Potenza meccanica ventilatoria</q-item-label>
+            <q-item-label>Intensive Care Utility</q-item-label>
+            <q-item-label caption>Mechanical Power & Quoziente Respiratorio</q-item-label>
           </q-item-section>
         </q-item>
 
-        <!-- Quoziente Respiratorio -->
+        <!-- Clinical Assessment & Scoring -->
         <q-item
           clickable
-          :active="$route.path === '/quoziente-respiratorio'"
-          @click="navigateTo('/quoziente-respiratorio')"
+          :active="$route.path === '/clinical-assessment'"
+          @click="navigateTo('/clinical-assessment')"
           class="medical-menu-item"
         >
           <q-item-section avatar>
-            <q-icon name="air" color="green-6" />
+            <q-icon name="assignment" color="green-6" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Quoziente Respiratorio</q-item-label>
-            <q-item-label caption>Scambi gassosi polmonari</q-item-label>
+            <q-item-label>Clinical Assessment</q-item-label>
+            <q-item-label caption>APGAR, GCS, NEWS, SOFA</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -398,44 +496,46 @@ const navigateTo = async (path: string) => {
 
           <!-- Griglia delle cards -->
           <div class="tools-grid">
-            <!-- Mechanical Power Calculator -->
+            <!-- Intensive Care Utility (Unified) -->
             <q-card
-              v-show="isToolVisible('mechanical-power')"
+              v-show="isToolVisible('intensiveCare')"
               class="medical-tool-card cursor-pointer"
-              @click="navigateTo('/mechanical-power')"
+              @click="navigateTo('/intensive-care')"
             >
               <q-card-section class="tool-card-content">
                 <div class="tool-icon-container q-mb-md">
-                  <q-icon name="settings" size="3rem" class="tool-icon" />
+                  <q-icon name="local_hospital" size="3rem" class="tool-icon" color="red-6" />
                 </div>
-                <h5 class="tool-title text-h6 q-mb-sm">Mechanical Power</h5>
+                <h5 class="tool-title text-h6 q-mb-sm">Intensive Care Utility</h5>
                 <p class="tool-description text-body2 q-mb-md">
-                  Calcolo della potenza meccanica ventilatoria per terapia intensiva
+                  Mechanical Power e Quoziente Respiratorio per monitoraggio metabolico e
+                  ventilatorio
                 </p>
                 <div class="tool-tags">
+                  <q-chip size="sm" color="red-1" text-color="red-8">Terapia Intensiva</q-chip>
                   <q-chip size="sm" color="blue-1" text-color="blue-8">Ventilazione</q-chip>
-                  <q-chip size="sm" color="blue-1" text-color="blue-8">Terapia Intensiva</q-chip>
                 </div>
               </q-card-section>
             </q-card>
 
-            <!-- Quoziente Respiratorio Calculator -->
+            <!-- Clinical Assessment & Scoring -->
             <q-card
-              v-show="isToolVisible('quoziente-respiratorio')"
+              v-show="isToolVisible('clinicalAssessment')"
               class="medical-tool-card cursor-pointer"
-              @click="navigateTo('/quoziente-respiratorio')"
+              @click="navigateTo('/clinical-assessment')"
             >
               <q-card-section class="tool-card-content">
                 <div class="tool-icon-container q-mb-md">
-                  <q-icon name="air" size="3rem" class="tool-icon" />
+                  <q-icon name="assignment" size="3rem" class="tool-icon" color="green-6" />
                 </div>
-                <h5 class="tool-title text-h6 q-mb-sm">Quoziente Respiratorio</h5>
+                <h5 class="tool-title text-h6 q-mb-sm">Clinical Assessment</h5>
                 <p class="tool-description text-body2 q-mb-md">
-                  Valutazione degli scambi gassosi polmonari
+                  Sistemi di valutazione e scoring: APGAR, GCS, NEWS, SOFA
                 </p>
                 <div class="tool-tags">
-                  <q-chip size="sm" color="green-1" text-color="green-8">Pneumologia</q-chip>
-                  <q-chip size="sm" color="green-1" text-color="green-8">Ematogasanalisi</q-chip>
+                  <q-chip size="sm" color="green-1" text-color="green-8">Neonatologia</q-chip>
+                  <q-chip size="sm" color="green-1" text-color="green-8">Emergenza</q-chip>
+                  <q-chip size="sm" color="red-1" text-color="red-8">Terapia Intensiva</q-chip>
                 </div>
               </q-card-section>
             </q-card>

@@ -139,11 +139,23 @@
               @click="calculateDosage"
               color="primary"
               size="lg"
-              class="full-width"
+              class="full-width q-mb-sm"
               icon="calculate"
               :disable="!isFormValid"
             >
               Calcola Dosaggio
+            </q-btn>
+
+            <!-- Bottone Reset -->
+            <q-btn
+              @click="resetForm"
+              color="negative"
+              size="lg"
+              class="full-width"
+              icon="refresh"
+              outline
+            >
+              Reset Dati
             </q-btn>
           </q-card-section>
         </q-card>
@@ -276,6 +288,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useResetForm } from 'src/composables/useResetForm';
 
 // Interfacce
 interface DosageFormData {
@@ -308,8 +321,8 @@ interface DosageResult {
   estimatedGFR: number;
 }
 
-// Dati reattivi
-const formData = ref<DosageFormData>({
+// Dati iniziali
+const initialFormData: DosageFormData = {
   weight: null,
   age: null,
   creatinine: null,
@@ -317,7 +330,26 @@ const formData = ref<DosageFormData>({
   dosePerKg: null,
   fixedDose: null,
   frequency: 'bid',
-});
+};
+
+const initialResult: DosageResult = {
+  totalDose: 0,
+  dailyDose: 0,
+  renalAdjustment: 100,
+  estimatedGFR: 0,
+};
+
+// Dati reattivi
+const formData = ref<DosageFormData>({ ...initialFormData });
+const result = ref<DosageResult>({ ...initialResult });
+
+// Reset form composable
+const { resetForm: resetFormData } = useResetForm(formData, result, initialFormData);
+
+const resetForm = () => {
+  resetFormData();
+  result.value = { ...initialResult };
+};
 
 // Database farmaci comune
 const drugs: Record<string, DrugInfo> = {
@@ -398,14 +430,6 @@ const frequencyOptions = [
   { label: 'Ogni 8 ore', value: 'q8h' },
   { label: 'Ogni 12 ore', value: 'q12h' },
 ];
-
-// Stato
-const result = ref<DosageResult>({
-  totalDose: 0,
-  dailyDose: 0,
-  renalAdjustment: 1,
-  estimatedGFR: 0,
-});
 
 // Computed
 const selectedDrug = computed(() => {
