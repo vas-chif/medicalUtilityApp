@@ -55,3 +55,4 @@ PROMPT_MEDICAL_UTILITY_PROJECT.md
 
 # PDF files (keep in repo but ignore future uploads)
 # src/assets/*.pdf
+package-lock.json
