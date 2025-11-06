@@ -1,9 +1,121 @@
-/** * @file MechanicalPowerCalculator.vue * @description Componente calcolatore Mechanical Power
-(estratto da MechanicalPowerPage) * @author Vasile Chifeac * @created 2025-11-06 * @modified
-2025-01-XX (Expanded medical documentation per CODING_STANDARDS.md) * * Mechanical Power Calculator
-- Energia trasferita dal ventilatore al polmone (predittore VILI) * @reference Gattinoni et al.
-(2016) Intensive Care Medicine 42(10):1567-1575 * @reference Encyclopedia of Respiratory Medicine
-(Second Edition), Volume 5, 2022 */
+<!-- MechanicalPowerCalculator.vue -->
+<script setup lang="ts">
+/**
+ * @file MechanicalPowerCalculator.vue
+ * @description Componente calcolatore Mechanical Power (estratto da MechanicalPowerPage)
+ * @author Vasile Chifeac
+ * @created 2025-01-06
+ * @modified 2025-01-XX (Expanded medical documentation per CODING_STANDARDS.md)
+ *
+ * Mechanical Power Calculator
+ * - Energia trasferita dal ventilatore al polmone (predittore VILI)
+ * @reference Gattinoni et al. (2016) Intensive Care Medicine 42(10):1567-1575
+ * @reference Encyclopedia of Respiratory Medicine (Second Edition), Volume 5, 2022
+ */
+
+import { ref, computed } from 'vue';
+import { useResetForm } from 'src/composables/useResetForm';
+
+// ============================================================
+// TYPES & INTERFACES
+// ============================================================
+/**
+ * @interface MPFormData
+ * @description Dati del form per il calcolo del Mechanical Power
+ */
+interface MPFormData {
+  RR: number | null; // Frequenza Respiratoria (atti/min)
+  VTe: number | null; // Volume Tidal Espiratorio (litri)
+  Picco: number | null; // Pressione di Picco (cmH2O)
+  Plateau: number | null; // Pressione di Plateau (cmH2O)
+  PeeP: number | null; // PEEP (cmH2O)
+}
+
+// ============================================================
+// STATE
+// ============================================================
+const initialFormData: MPFormData = {
+  RR: null,
+  VTe: null,
+  Picco: null,
+  Plateau: null,
+  PeeP: null,
+};
+
+const formData = ref<MPFormData>({ ...initialFormData });
+const result = ref<number>(0);
+
+const { resetForm } = useResetForm(formData, result, initialFormData);
+
+// ============================================================
+// COMPUTED
+// ============================================================
+/**
+ * @computed isFormValid
+ * @description Verifica che tutti i campi siano compilati con valori validi
+ * @returns {boolean} true se form valido
+ */
+const isFormValid = computed(() => {
+  return (
+    formData.value.RR !== null &&
+    formData.value.RR > 0 &&
+    formData.value.VTe !== null &&
+    formData.value.VTe > 0 &&
+    formData.value.Picco !== null &&
+    formData.value.Picco > 0 &&
+    formData.value.Plateau !== null &&
+    formData.value.Plateau > 0 &&
+    formData.value.PeeP !== null &&
+    formData.value.PeeP >= 0
+  );
+});
+
+// ============================================================
+// FUNCTIONS
+// ============================================================
+/**
+ * @function calculateMP
+ * @description Calcola il Mechanical Power secondo formula di Gattinoni et al. (2016)
+ * @formula MP = 0.098 × RR × VTe × (Picco - 0.5 × ΔP)
+ * @returns {void}
+ */
+const calculateMP = (): void => {
+  if (!isFormValid.value) return;
+
+  const { RR, VTe, Picco, Plateau, PeeP } = formData.value;
+
+  // Driving Pressure (ΔP)
+  const drivingPressure = Plateau! - PeeP!;
+
+  // Formula Gattinoni: MP = 0.098 × RR × VTe × (Picco - 0.5 × ΔP)
+  result.value = 0.098 * RR! * VTe! * (Picco! - 0.5 * drivingPressure);
+};
+
+/**
+ * @function getInterpretation
+ * @description Restituisce interpretazione clinica basata su thresholds VILI
+ * @returns {string} Interpretazione testuale
+ */
+const getInterpretation = (): string => {
+  if (result.value === 0) return 'Inserire i parametri';
+  if (result.value < 17) return 'Ventilazione Protettiva';
+  if (result.value <= 22) return 'Zona di Attenzione - Ottimizzare';
+  return 'Alto Rischio VILI - Intervento Urgente';
+};
+
+/**
+ * @function getInterpretationColor
+ * @description Restituisce colore Quasar per interpretazione
+ * @returns {string} Nome colore Quasar
+ */
+const getInterpretationColor = (): string => {
+  if (result.value === 0) return 'grey';
+  if (result.value < 17) return 'green';
+  if (result.value <= 22) return 'orange';
+  return 'red';
+};
+</script>
+
 <template>
   <div class="q-pa-md">
     <!-- Medical Info Banner -->
@@ -1099,107 +1211,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useResetForm } from 'src/composables/useResetForm';
-
-// ============================================================
-// TYPES & INTERFACES
-// ============================================================
-/**
- * @interface MPFormData
- * @description Dati del form per il calcolo del Mechanical Power
- */
-interface MPFormData {
-  RR: number | null; // Frequenza Respiratoria (atti/min)
-  VTe: number | null; // Volume Tidal Espiratorio (litri)
-  Picco: number | null; // Pressione di Picco (cmH2O)
-  Plateau: number | null; // Pressione di Plateau (cmH2O)
-  PeeP: number | null; // PEEP (cmH2O)
-}
-
-// ============================================================
-// STATE
-// ============================================================
-const initialFormData: MPFormData = {
-  RR: null,
-  VTe: null,
-  Picco: null,
-  Plateau: null,
-  PeeP: null,
-};
-
-const formData = ref<MPFormData>({ ...initialFormData });
-const result = ref<number>(0);
-
-const { resetForm } = useResetForm(formData, result, initialFormData);
-
-// ============================================================
-// COMPUTED
-// ============================================================
-/**
- * @computed isFormValid
- * @description Verifica che tutti i campi siano compilati con valori validi
- * @returns {boolean} true se form valido
- */
-const isFormValid = computed(() => {
-  return (
-    formData.value.RR !== null &&
-    formData.value.RR > 0 &&
-    formData.value.VTe !== null &&
-    formData.value.VTe > 0 &&
-    formData.value.Picco !== null &&
-    formData.value.Picco > 0 &&
-    formData.value.Plateau !== null &&
-    formData.value.Plateau > 0 &&
-    formData.value.PeeP !== null &&
-    formData.value.PeeP >= 0
-  );
-});
-
-// ============================================================
-// FUNCTIONS
-// ============================================================
-/**
- * @function calculateMP
- * @description Calcola il Mechanical Power secondo formula di Gattinoni et al. (2016)
- * @formula MP = 0.098 × RR × VTe × (Picco - 0.5 × ΔP)
- * @returns {void}
- */
-const calculateMP = (): void => {
-  if (!isFormValid.value) return;
-
-  const { RR, VTe, Picco, Plateau, PeeP } = formData.value;
-
-  // Driving Pressure (ΔP)
-  const drivingPressure = Plateau! - PeeP!;
-
-  // Formula Gattinoni: MP = 0.098 × RR × VTe × (Picco - 0.5 × ΔP)
-  result.value = 0.098 * RR! * VTe! * (Picco! - 0.5 * drivingPressure);
-};
-
-/**
- * @function getInterpretation
- * @description Restituisce interpretazione clinica basata su thresholds VILI
- * @returns {string} Interpretazione testuale
- */
-const getInterpretation = (): string => {
-  if (result.value === 0) return 'Inserire i parametri';
-  if (result.value < 17) return 'Ventilazione Protettiva';
-  if (result.value <= 22) return 'Zona di Attenzione - Ottimizzare';
-  return 'Alto Rischio VILI - Intervento Urgente';
-};
-
-/**
- * @function getInterpretationColor
- * @description Restituisce colore Quasar per interpretazione
- * @returns {string} Nome colore Quasar
- */
-const getInterpretationColor = (): string => {
-  if (result.value === 0) return 'grey';
-  if (result.value < 17) return 'green';
-  if (result.value <= 22) return 'orange';
-  return 'red';
-};
-</script>

@@ -1,7 +1,178 @@
-/** * @file QuozienteRespiratorioCalculator.vue * @description Componente calcolatore Quoziente
-Respiratorio (RQ = VCO₂/VO₂) * @author Vasile Chifeac * @created 2025-11-06 * @modified 2025-11-06 *
-* Respiratory Quotient Calculator - Indicatore metabolico del tipo di substrato energetico
-utilizzato */
+<!-- QuozienteRespiratorioCalculator.vue -->
+
+<script setup lang="ts">
+/**
+ * @file QuozienteRespiratorioCalculator.vue
+ * @description Componente calcolatore Quoziente Respiratorio (RQ = VCO₂/VO₂)
+ * @author Vasile Chifeac
+ * @created 2025-01-06
+ * @modified 2025-11-06
+ *
+ * @description Respiratory Quotient Calculator - Indicatore metabolico del tipo di substrato energetico utilizzato
+ */
+
+import { ref, computed } from 'vue';
+import { useResetForm } from 'src/composables/useResetForm';
+
+// ============================================================
+// TYPES & INTERFACES
+// ============================================================
+interface QRFormData {
+  PvCO2: number | null;
+  PaCO2: number | null;
+  HB: number | null;
+  SaO2: number | null;
+  SvO2: number | null;
+  PaO2: number | null;
+  PvO2: number | null;
+}
+
+// ============================================================
+// CONSTANTS
+// ============================================================
+const MEDICAL_CONSTANTS = {
+  HB_O2_BINDING: 1.36, // ml O₂/g Hb - Hüfner constant
+  O2_SOLUBILITY: 0.003, // ml O₂/mmHg/dL
+} as const;
+
+const RQ_THRESHOLDS = {
+  FAT_OXIDATION: 0.7,
+  MIXED_DIET_MIN: 0.8,
+  MIXED_DIET_MAX: 0.85,
+  CARB_OXIDATION: 1.0,
+  ANAEROBIC_THRESHOLD: 1.0,
+  SHOCK_THRESHOLD: 1.2,
+} as const;
+
+// ============================================================
+// STATE
+// ============================================================
+const initialFormData: QRFormData = {
+  PvCO2: null,
+  PaCO2: null,
+  HB: null,
+  SaO2: null,
+  SvO2: null,
+  PaO2: null,
+  PvO2: null,
+};
+
+const formData = ref<QRFormData>({ ...initialFormData });
+const result = ref<number>(0);
+
+const { resetForm } = useResetForm(formData, result, initialFormData);
+
+// ============================================================
+// COMPUTED
+// ============================================================
+const isFormValid = computed(() => {
+  return (
+    Object.values(formData.value).every((val) => val !== null && val > 0) &&
+    formData.value.SaO2! <= 100 &&
+    formData.value.SvO2! <= 100
+  );
+});
+
+// ============================================================
+// FUNCTIONS
+// ============================================================
+/**
+ * @function calculateQR
+ * @description Calcola il Quoziente Respiratorio (RQ = VCO₂ / VO₂)
+ * @returns {void}
+ */
+const calculateQR = (): void => {
+  if (!isFormValid.value) return;
+
+  const { PvCO2, PaCO2, HB, SaO2, SvO2, PaO2, PvO2 } = formData.value;
+
+  // CO₂ production
+  const vco2 = PvCO2! - PaCO2!;
+
+  // O₂ consumption via hemoglobin
+  const vo2_hemoglobin = (HB! * MEDICAL_CONSTANTS.HB_O2_BINDING * (SaO2! - SvO2!)) / 100;
+
+  // O₂ consumption via plasma
+  const vo2_plasma = (PaO2! - PvO2!) * MEDICAL_CONSTANTS.O2_SOLUBILITY;
+
+  // Total VO₂
+  const vo2_total = vo2_hemoglobin + vo2_plasma;
+
+  // RQ = VCO₂ / VO₂
+  result.value = vco2 / vo2_total;
+};
+
+/**
+ * @function getO2Transport
+ * @description Calcola il trasporto di O₂ via emoglobina
+ * @returns {number} Trasporto O₂ in ml/dL
+ */
+const getO2Transport = (): number => {
+  if (!formData.value.HB || !formData.value.SaO2 || !formData.value.SvO2) return 0;
+  return (
+    (formData.value.HB *
+      MEDICAL_CONSTANTS.HB_O2_BINDING *
+      (formData.value.SaO2 - formData.value.SvO2)) /
+    100
+  );
+};
+
+/**
+ * @function getPlasmaO2
+ * @description Calcola il trasporto di O₂ via plasma
+ * @returns {number} Trasporto O₂ in ml/dL
+ */
+const getPlasmaO2 = (): number => {
+  if (!formData.value.PaO2 || !formData.value.PvO2) return 0;
+  return (formData.value.PaO2 - formData.value.PvO2) * MEDICAL_CONSTANTS.O2_SOLUBILITY;
+};
+
+/**
+ * @function getInterpretation
+ * @description Restituisce interpretazione clinica del QR
+ * @returns {string} Interpretazione testuale
+ */
+const getInterpretation = (): string => {
+  if (result.value === 0) return 'Inserire i parametri';
+
+  if (result.value > RQ_THRESHOLDS.SHOCK_THRESHOLD) {
+    return 'Metabolismo Anaerobico Severo';
+  }
+  if (result.value > RQ_THRESHOLDS.ANAEROBIC_THRESHOLD) {
+    return 'Metabolismo Anaerobico / Lipogenesi';
+  }
+  if (result.value >= 0.95 && result.value <= RQ_THRESHOLDS.CARB_OXIDATION) {
+    return 'Metabolismo Glucidico Prevalente';
+  }
+  if (result.value >= RQ_THRESHOLDS.MIXED_DIET_MIN && result.value < 0.95) {
+    return 'Range Normale - Dieta Mista';
+  }
+  if (result.value >= RQ_THRESHOLDS.FAT_OXIDATION && result.value < RQ_THRESHOLDS.MIXED_DIET_MIN) {
+    return 'Metabolismo Lipidico Prevalente';
+  }
+  if (result.value < RQ_THRESHOLDS.FAT_OXIDATION) {
+    return 'Chetosi / Digiuno Prolungato';
+  }
+
+  return 'Valore Non Standard';
+};
+
+/**
+ * @function getInterpretationColor
+ * @description Restituisce colore Quasar per interpretazione
+ * @returns {string} Nome colore Quasar
+ */
+const getInterpretationColor = (): string => {
+  if (result.value === 0) return 'grey';
+  if (result.value > RQ_THRESHOLDS.SHOCK_THRESHOLD) return 'red';
+  if (result.value > RQ_THRESHOLDS.ANAEROBIC_THRESHOLD) return 'orange';
+  if (result.value >= RQ_THRESHOLDS.MIXED_DIET_MIN && result.value <= RQ_THRESHOLDS.CARB_OXIDATION)
+    return 'green';
+  if (result.value >= RQ_THRESHOLDS.FAT_OXIDATION) return 'blue';
+  return 'purple';
+};
+</script>
+
 <template>
   <div class="q-pa-md">
     <!-- Medical Info Banner -->
@@ -231,10 +402,14 @@ utilizzato */
                   Cos'è il Quoziente Respiratorio (QR)?
                 </div>
                 <div class="text-caption text-grey-8 q-mb-sm">
-                  Il QR è il <strong>rapporto tra l'anidride carbonica (CO₂) prodotta e l'ossigeno (O₂) consumato</strong>, 
-                  spesso calcolato come <strong>VCO₂/VO₂</strong>. Questo valore indica il 
-                  <strong>tipo di metabolismo energetico</strong> in atto nell'organismo, fornendo informazioni 
-                  <strong>indirette sul tipo di metabolismo</strong> (aerobico o anaerobico).
+                  Il QR è il
+                  <strong
+                    >rapporto tra l'anidride carbonica (CO₂) prodotta e l'ossigeno (O₂)
+                    consumato</strong
+                  >, spesso calcolato come <strong>VCO₂/VO₂</strong>. Questo valore indica il
+                  <strong>tipo di metabolismo energetico</strong> in atto nell'organismo, fornendo
+                  informazioni <strong>indirette sul tipo di metabolismo</strong> (aerobico o
+                  anaerobico).
                 </div>
 
                 <div class="text-body2 text-weight-bold q-mb-xs">
@@ -319,9 +494,9 @@ utilizzato */
                   ✅ Metabolismo Aerobico (QR: 0.7 - 1.0)
                 </div>
                 <div class="text-caption text-grey-8 q-mb-sm">
-                  In condizioni di <strong>metabolismo aerobico</strong>, l'ossidazione dei nutrienti avviene in 
-                  presenza di ossigeno e il QR rimane compreso tra 0.7 e 1.0, in funzione del tipo di 
-                  substrati energetici metabolizzati.
+                  In condizioni di <strong>metabolismo aerobico</strong>, l'ossidazione dei
+                  nutrienti avviene in presenza di ossigeno e il QR rimane compreso tra 0.7 e 1.0,
+                  in funzione del tipo di substrati energetici metabolizzati.
                 </div>
 
                 <q-separator class="q-my-sm" />
@@ -376,10 +551,11 @@ utilizzato */
                 </q-list>
 
                 <div class="text-caption text-grey-8 q-mb-sm">
-                  ...la produzione di energia prosegue attivando la <strong>glicolisi anaerobica</strong>, 
-                  che ha come prodotti finali <strong>lattato</strong> (che ritroviamo in circolo) e <strong>H⁺</strong>. 
-                  Il tamponamento del lattato genera un <strong>eccesso di CO₂</strong>, che può determinare 
-                  un <strong>innalzamento del QR oltre 1.0</strong>.
+                  ...la produzione di energia prosegue attivando la
+                  <strong>glicolisi anaerobica</strong>, che ha come prodotti finali
+                  <strong>lattato</strong> (che ritroviamo in circolo) e <strong>H⁺</strong>. Il
+                  tamponamento del lattato genera un <strong>eccesso di CO₂</strong>, che può
+                  determinare un <strong>innalzamento del QR oltre 1.0</strong>.
                 </div>
 
                 <q-banner class="bg-red-1 text-red-9" dense rounded>
@@ -388,10 +564,10 @@ utilizzato */
                   </template>
                   <div class="text-caption">
                     <strong>SHOCK - Monitoraggio in Tempo Reale:</strong><br />
-                    La <strong>modificazione del VCO₂/VO₂</strong> segue le variazioni di 
-                    <strong>ipoperfusione tissutale</strong> in maniera più tempestiva della variazione del lattato. 
-                    Il QR potrebbe quindi essere l'indicatore che consente di <strong>seguire quasi in tempo reale 
-                    l'evoluzione dello shock</strong>.
+                    La <strong>modificazione del VCO₂/VO₂</strong> segue le variazioni di
+                    <strong>ipoperfusione tissutale</strong> in maniera più tempestiva della
+                    variazione del lattato. Il QR potrebbe quindi essere l'indicatore che consente
+                    di <strong>seguire quasi in tempo reale l'evoluzione dello shock</strong>.
                   </div>
                 </q-banner>
               </div>
@@ -412,10 +588,10 @@ utilizzato */
                     1️⃣ Calorimetria Indiretta (Gold Standard)
                   </div>
                   <div class="text-caption text-grey-8">
-                    VCO₂ e VO₂ possono essere misurati in condizioni ideali dalla 
-                    <strong>calorimetria indiretta</strong>, analizzando i gas respiratori 
-                    (concentrazioni di O₂ e CO₂ nell'aria inspirata ed espirata). Questo metodo fornisce 
-                    misurazioni accurate del dispendio energetico basale e totale.
+                    VCO₂ e VO₂ possono essere misurati in condizioni ideali dalla
+                    <strong>calorimetria indiretta</strong>, analizzando i gas respiratori
+                    (concentrazioni di O₂ e CO₂ nell'aria inspirata ed espirata). Questo metodo
+                    fornisce misurazioni accurate del dispendio energetico basale e totale.
                   </div>
                 </div>
 
@@ -426,8 +602,9 @@ utilizzato */
                     2️⃣ Emogasanalisi Arteriosa e Venosa Mista (Metodo Alternativo)
                   </div>
                   <div class="text-caption text-grey-8 q-mb-xs">
-                    In alternativa, VCO₂ e VO₂ possono essere <strong>calcolati dall'emogasanalisi 
-                    arteriosa e venosa mista</strong>. Questo è il metodo utilizzato da questo calcolatore.
+                    In alternativa, VCO₂ e VO₂ possono essere
+                    <strong>calcolati dall'emogasanalisi arteriosa e venosa mista</strong>. Questo è
+                    il metodo utilizzato da questo calcolatore.
                   </div>
 
                   <div class="bg-blue-1 q-pa-xs q-mb-xs rounded-borders">
@@ -435,9 +612,10 @@ utilizzato */
                       📐 Calcolo del Consumo di Ossigeno (VO₂):
                     </div>
                     <div class="text-caption text-grey-8 q-mb-xs">
-                      Il consumo di ossigeno è ricavato come la <strong>differenza</strong> tra la quantità O₂ 
-                      che il sangue trasporta ai tessuti (sangue <strong>arterioso</strong>) e la quantità di O₂ 
-                      presente nel sangue che ha abbandonato i tessuti (<strong>sangue venoso misto</strong> 
+                      Il consumo di ossigeno è ricavato come la <strong>differenza</strong> tra la
+                      quantità O₂ che il sangue trasporta ai tessuti (sangue
+                      <strong>arterioso</strong>) e la quantità di O₂ presente nel sangue che ha
+                      abbandonato i tessuti (<strong>sangue venoso misto</strong>
                       da atrio destro o arteria polmonare).
                     </div>
                     <div class="text-caption text-grey-7">
@@ -451,8 +629,9 @@ utilizzato */
                       📐 Calcolo della Produzione di CO₂ (VCO₂):
                     </div>
                     <div class="text-caption text-grey-8 q-mb-xs">
-                      Analogamente, la <strong>produzione di CO₂</strong> è calcolata come differenza 
-                      tra CO₂ venoso e arterioso, riflettendo metabolismo e perfusione tissutale.
+                      Analogamente, la <strong>produzione di CO₂</strong> è calcolata come
+                      differenza tra CO₂ venoso e arterioso, riflettendo metabolismo e perfusione
+                      tissutale.
                     </div>
                     <div class="text-caption text-grey-7">
                       <strong>Formula:</strong> VCO₂ = (CO₂ venoso) - (CO₂ arterioso)
@@ -465,27 +644,24 @@ utilizzato */
                     <q-icon name="info" color="amber" size="xs" />
                   </template>
                   <div class="text-caption">
-                    <strong>Nota:</strong> Questo calcolatore utilizza il metodo dell'emogasanalisi artero-venosa. 
-                    Per misurazioni precise del dispendio energetico, si raccomanda la calorimetria indiretta.
+                    <strong>Nota:</strong> Questo calcolatore utilizza il metodo dell'emogasanalisi
+                    artero-venosa. Per misurazioni precise del dispendio energetico, si raccomanda
+                    la calorimetria indiretta.
                   </div>
                 </q-banner>
               </div>
             </q-expansion-item>
 
             <!-- Formula Utilizzata -->
-            <q-expansion-item
-              icon="functions"
-              label="🧮 Formula Utilizzata"
-              dense
-              class="q-mt-xs"
-            >
+            <q-expansion-item icon="functions" label="🧮 Formula Utilizzata" dense class="q-mt-xs">
               <div class="bg-grey-1 q-pa-sm">
                 <div class="bg-primary text-white q-pa-sm q-mb-sm">
                   <div class="text-body2 text-center">
-                    QR = (PvCO2 - PaCO2) / [(HB × 1.36 × (SaO2 - SvO2)) / 100 + (PaO2 - PvO2) × 0.003]
+                    QR = (PvCO2 - PaCO2) / [(HB × 1.36 × (SaO2 - SvO2)) / 100 + (PaO2 - PvO2) ×
+                    0.003]
                   </div>
                 </div>
-                
+
                 <div class="text-caption text-grey-8 q-mb-xs">
                   <strong>Dove:</strong>
                 </div>
@@ -538,7 +714,9 @@ utilizzato */
                   <div class="col-12 bg-green-1 q-pa-xs rounded-borders">
                     <div class="text-caption text-weight-bold">
                       Consumo O₂ - Trasporto via Emoglobina:
-                      <span class="text-primary q-ml-xs">{{ getO2Transport().toFixed(2) }} ml/dL</span>
+                      <span class="text-primary q-ml-xs"
+                        >{{ getO2Transport().toFixed(2) }} ml/dL</span
+                      >
                     </div>
                     <div class="text-caption text-grey-7">
                       Formula: HB × 1.36 × (SaO₂ - SvO₂) / 100
@@ -549,9 +727,7 @@ utilizzato */
                       Consumo O₂ - Trasporto via Plasma:
                       <span class="text-primary q-ml-xs">{{ getPlasmaO2().toFixed(3) }} ml/dL</span>
                     </div>
-                    <div class="text-caption text-grey-7">
-                      Formula: (PaO₂ - PvO₂) × 0.003
-                    </div>
+                    <div class="text-caption text-grey-7">Formula: (PaO₂ - PvO₂) × 0.003</div>
                   </div>
                 </div>
 
@@ -565,7 +741,8 @@ utilizzato */
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Calorimetria Indiretta:</strong> Valutazione del dispendio energetico in pazienti critici
+                        <strong>Calorimetria Indiretta:</strong> Valutazione del dispendio
+                        energetico in pazienti critici
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -575,7 +752,8 @@ utilizzato */
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Nutrizione Artificiale:</strong> Ottimizzazione del rapporto carboidrati/grassi (evitare overfeeding)
+                        <strong>Nutrizione Artificiale:</strong> Ottimizzazione del rapporto
+                        carboidrati/grassi (evitare overfeeding)
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -585,7 +763,8 @@ utilizzato */
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Monitoraggio Shock:</strong> Marker precoce di metabolismo anaerobico e ipoperfusione
+                        <strong>Monitoraggio Shock:</strong> Marker precoce di metabolismo
+                        anaerobico e ipoperfusione
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -595,7 +774,8 @@ utilizzato */
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Weaning Ventilatorio:</strong> QR elevato può indicare eccessiva produzione CO₂ (difficoltà svezzamento)
+                        <strong>Weaning Ventilatorio:</strong> QR elevato può indicare eccessiva
+                        produzione CO₂ (difficoltà svezzamento)
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -605,7 +785,8 @@ utilizzato */
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Valutazione Metabolica:</strong> Identificazione del substrato energetico prevalente
+                        <strong>Valutazione Metabolica:</strong> Identificazione del substrato
+                        energetico prevalente
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -619,7 +800,8 @@ utilizzato */
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        Il QR rappresenta il rapporto VCO₂/VO₂ <strong>sistemico</strong>, non tissutale
+                        Il QR rappresenta il rapporto VCO₂/VO₂ <strong>sistemico</strong>, non
+                        tissutale
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -639,7 +821,8 @@ utilizzato */
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        La misurazione accurata richiede calorimetria indiretta in condizioni stabili
+                        La misurazione accurata richiede calorimetria indiretta in condizioni
+                        stabili
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -649,16 +832,18 @@ utilizzato */
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        Questo calcolo è una <strong>stima approssimativa</strong> basata su emogasanalisi artero-venosa
+                        Questo calcolo è una <strong>stima approssimativa</strong> basata su
+                        emogasanalisi artero-venosa
                       </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
 
                 <div class="text-caption text-grey-7 q-mt-sm">
-                  <strong>Riferimenti:</strong> La formula utilizzata stima VCO₂ e VO₂ dalla differenza artero-venosa. 
-                  Per misurazioni precise, preferire calorimetria indiretta con analisi dei gas respiratori 
-                  (Encyclopedia of Respiratory Medicine, ScienceDirect Medical Literature).
+                  <strong>Riferimenti:</strong> La formula utilizzata stima VCO₂ e VO₂ dalla
+                  differenza artero-venosa. Per misurazioni precise, preferire calorimetria
+                  indiretta con analisi dei gas respiratori (Encyclopedia of Respiratory Medicine,
+                  ScienceDirect Medical Literature).
                 </div>
               </div>
             </q-expansion-item>
@@ -712,161 +897,3 @@ utilizzato */
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useResetForm } from 'src/composables/useResetForm';
-
-// ============================================================
-// TYPES & INTERFACES
-// ============================================================
-interface QRFormData {
-  PvCO2: number | null;
-  PaCO2: number | null;
-  HB: number | null;
-  SaO2: number | null;
-  SvO2: number | null;
-  PaO2: number | null;
-  PvO2: number | null;
-}
-
-// ============================================================
-// CONSTANTS
-// ============================================================
-const MEDICAL_CONSTANTS = {
-  HB_O2_BINDING: 1.36, // ml O₂/g Hb - Hüfner constant
-  O2_SOLUBILITY: 0.003, // ml O₂/mmHg/dL
-} as const;
-
-const RQ_THRESHOLDS = {
-  FAT_OXIDATION: 0.7,
-  MIXED_DIET_MIN: 0.8,
-  MIXED_DIET_MAX: 0.85,
-  CARB_OXIDATION: 1.0,
-  ANAEROBIC_THRESHOLD: 1.0,
-  SHOCK_THRESHOLD: 1.2,
-} as const;
-
-// ============================================================
-// STATE
-// ============================================================
-const initialFormData: QRFormData = {
-  PvCO2: null,
-  PaCO2: null,
-  HB: null,
-  SaO2: null,
-  SvO2: null,
-  PaO2: null,
-  PvO2: null,
-};
-
-const formData = ref<QRFormData>({ ...initialFormData });
-const result = ref<number>(0);
-
-const { resetForm } = useResetForm(formData, result, initialFormData);
-
-// ============================================================
-// COMPUTED
-// ============================================================
-const isFormValid = computed(() => {
-  return (
-    Object.values(formData.value).every((val) => val !== null && val > 0) &&
-    formData.value.SaO2! <= 100 &&
-    formData.value.SvO2! <= 100
-  );
-});
-
-// ============================================================
-// FUNCTIONS
-// ============================================================
-/**
- * @function calculateQR
- * @description Calcola il Quoziente Respiratorio (RQ = VCO₂ / VO₂)
- * @returns {void}
- */
-const calculateQR = (): void => {
-  if (!isFormValid.value) return;
-
-  const { PvCO2, PaCO2, HB, SaO2, SvO2, PaO2, PvO2 } = formData.value;
-
-  // CO₂ production
-  const vco2 = PvCO2! - PaCO2!;
-
-  // O₂ consumption via hemoglobin
-  const vo2_hemoglobin = (HB! * MEDICAL_CONSTANTS.HB_O2_BINDING * (SaO2! - SvO2!)) / 100;
-
-  // O₂ consumption via plasma
-  const vo2_plasma = (PaO2! - PvO2!) * MEDICAL_CONSTANTS.O2_SOLUBILITY;
-
-  // Total VO₂
-  const vo2_total = vo2_hemoglobin + vo2_plasma;
-
-  // RQ = VCO₂ / VO₂
-  result.value = vco2 / vo2_total;
-};
-
-/**
- * @function getO2Transport
- * @description Calcola il trasporto di O₂ via emoglobina
- * @returns {number} Trasporto O₂ in ml/dL
- */
-const getO2Transport = (): number => {
-  if (!formData.value.HB || !formData.value.SaO2 || !formData.value.SvO2) return 0;
-  return (formData.value.HB * MEDICAL_CONSTANTS.HB_O2_BINDING * (formData.value.SaO2 - formData.value.SvO2)) / 100;
-};
-
-/**
- * @function getPlasmaO2
- * @description Calcola il trasporto di O₂ via plasma
- * @returns {number} Trasporto O₂ in ml/dL
- */
-const getPlasmaO2 = (): number => {
-  if (!formData.value.PaO2 || !formData.value.PvO2) return 0;
-  return (formData.value.PaO2 - formData.value.PvO2) * MEDICAL_CONSTANTS.O2_SOLUBILITY;
-};
-
-/**
- * @function getInterpretation
- * @description Restituisce interpretazione clinica del QR
- * @returns {string} Interpretazione testuale
- */
-const getInterpretation = (): string => {
-  if (result.value === 0) return 'Inserire i parametri';
-
-  if (result.value > RQ_THRESHOLDS.SHOCK_THRESHOLD) {
-    return 'Metabolismo Anaerobico Severo';
-  }
-  if (result.value > RQ_THRESHOLDS.ANAEROBIC_THRESHOLD) {
-    return 'Metabolismo Anaerobico / Lipogenesi';
-  }
-  if (result.value >= 0.95 && result.value <= RQ_THRESHOLDS.CARB_OXIDATION) {
-    return 'Metabolismo Glucidico Prevalente';
-  }
-  if (result.value >= RQ_THRESHOLDS.MIXED_DIET_MIN && result.value < 0.95) {
-    return 'Range Normale - Dieta Mista';
-  }
-  if (result.value >= RQ_THRESHOLDS.FAT_OXIDATION && result.value < RQ_THRESHOLDS.MIXED_DIET_MIN) {
-    return 'Metabolismo Lipidico Prevalente';
-  }
-  if (result.value < RQ_THRESHOLDS.FAT_OXIDATION) {
-    return 'Chetosi / Digiuno Prolungato';
-  }
-
-  return 'Valore Non Standard';
-};
-
-/**
- * @function getInterpretationColor
- * @description Restituisce colore Quasar per interpretazione
- * @returns {string} Nome colore Quasar
- */
-const getInterpretationColor = (): string => {
-  if (result.value === 0) return 'grey';
-  if (result.value > RQ_THRESHOLDS.SHOCK_THRESHOLD) return 'red';
-  if (result.value > RQ_THRESHOLDS.ANAEROBIC_THRESHOLD) return 'orange';
-  if (result.value >= RQ_THRESHOLDS.MIXED_DIET_MIN && result.value <= RQ_THRESHOLDS.CARB_OXIDATION)
-    return 'green';
-  if (result.value >= RQ_THRESHOLDS.FAT_OXIDATION) return 'blue';
-  return 'purple';
-};
-</script>

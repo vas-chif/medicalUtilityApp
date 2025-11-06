@@ -1,3 +1,14 @@
+<!-- ErrorNotFound.vue -->
+<script setup lang="ts">
+/**
+ * @file ErrorNotFound.vue
+ * @description Pagina 404 - Risorsa non trovata
+ * @author Vasile Chifeac
+ * @created 2025-11-05
+ * @modified 2025-11-05
+ */
+</script>
+
 <template>
   <div class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center">
     <div>
@@ -17,7 +28,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-//
-</script>

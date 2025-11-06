@@ -1,48 +1,17 @@
-<template>
-  <q-input
-    :model-value="modelValue"
-    @update:model-value="$emit('update:modelValue', $event)"
-    :type="type"
-    :step="step"
-    :label="label"
-    :suffix="unit"
-    outlined
-    :class="inputClass"
-    :rules="validationRules"
-    :hint="hint"
-    :readonly="readonly"
-    :disable="disable"
-  >
-    <template v-slot:prepend>
-      <q-icon :name="icon" :color="iconColor" class="medical-input-icon" />
-    </template>
-
-    <template v-slot:append v-if="hasInfo">
-      <q-btn flat dense round icon="info" color="info" size="sm" @click="showInfo = true" />
-    </template>
-  </q-input>
-
-  <!-- Dialog informativo -->
-  <q-dialog v-model="showInfo" v-if="hasInfo">
-    <q-card class="medical-info-card">
-      <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">{{ label }}</div>
-        <q-space />
-        <q-btn icon="close" flat round dense v-close-popup />
-      </q-card-section>
-
-      <q-card-section>
-        <div class="text-body2 q-mb-sm"><strong>Valori normali:</strong> {{ normalRange }}</div>
-        <div class="text-body2 q-mb-sm"><strong>Descrizione:</strong> {{ description }}</div>
-        <div class="text-body2" v-if="clinicalNote">
-          <strong>Note cliniche:</strong> {{ clinicalNote }}
-        </div>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
-</template>
-
+<!-- MedicalInputComponent.vue -->
 <script setup lang="ts">
+/**
+ * @file MedicalInput.vue
+ * @description Componente di input medico riutilizzabile con funzionalità avanzate
+ * @author Vasile Chifeac
+ * @created 2025-11-05
+ * @modified 2025-11-05
+ *
+ * @notes
+ * - Supporta validazione, unità di misura, icone e informazioni aggiuntive
+ * - Utilizzato in vari calcolatori medici nell'applicazione
+ */
+
 import { ref, computed } from 'vue';
 
 interface Props {
@@ -122,6 +91,50 @@ const validationRules = computed(() => {
   return rules;
 });
 </script>
+
+<template>
+  <q-input
+    :model-value="modelValue"
+    @update:model-value="$emit('update:modelValue', $event)"
+    :type="type"
+    :step="step"
+    :label="label"
+    :suffix="unit"
+    outlined
+    :class="inputClass"
+    :rules="validationRules"
+    :hint="hint"
+    :readonly="readonly"
+    :disable="disable"
+  >
+    <template v-slot:prepend>
+      <q-icon :name="icon" :color="iconColor" class="medical-input-icon" />
+    </template>
+
+    <template v-slot:append v-if="hasInfo">
+      <q-btn flat dense round icon="info" color="info" size="sm" @click="showInfo = true" />
+    </template>
+  </q-input>
+
+  <!-- Dialog informativo -->
+  <q-dialog v-model="showInfo" v-if="hasInfo">
+    <q-card class="medical-info-card">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">{{ label }}</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+
+      <q-card-section>
+        <div class="text-body2 q-mb-sm"><strong>Valori normali:</strong> {{ normalRange }}</div>
+        <div class="text-body2 q-mb-sm"><strong>Descrizione:</strong> {{ description }}</div>
+        <div class="text-body2" v-if="clinicalNote">
+          <strong>Note cliniche:</strong> {{ clinicalNote }}
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+</template>
 
 <style scoped>
 /* Medical Input Styling */

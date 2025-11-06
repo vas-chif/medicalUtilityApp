@@ -1,6 +1,140 @@
-/** * @file APGARScoreCalculator.vue * @description Componente calcolatore APGAR Score (estratto da
-APGARScorePage) * @author Vasile Chifeac * @created 2025-11-06 * @modified 2025-11-06 * * APGAR
-Score Calculator - Valutazione clinica del neonato alla nascita */
+<!-- APGARScoreCalculator.vue -->
+<script setup lang="ts">
+/**
+ * @file APGARScoreCalculator.vue
+ * @description Componente calcolatore APGAR Score (estratto da APGARScorePage)
+ * @author Vasile Chifeac
+ * @created 2025-11-06
+ * @modified 2025-11-06
+ * @description APGAR Score Calculator - Valutazione clinica del neonato alla nascita
+ */
+
+import { ref, computed } from 'vue';
+import { useResetForm } from 'src/composables/useResetForm';
+
+// ============================================================
+// TYPES & INTERFACES
+// ============================================================
+interface APGARScores {
+  appearance: number;
+  pulse: number;
+  grimace: number;
+  activity: number;
+  respiration: number;
+}
+
+interface SavedAPGAR {
+  time: number;
+  scores: APGARScores;
+  total: number;
+  timestamp: Date;
+}
+
+// ============================================================
+// STATE
+// ============================================================
+const initialScores: APGARScores = {
+  appearance: 0,
+  pulse: 0,
+  grimace: 0,
+  activity: 0,
+  respiration: 0,
+};
+
+const scores = ref<APGARScores>({ ...initialScores });
+const currentTime = ref<number>(1);
+const savedScores = ref<SavedAPGAR[]>([]);
+
+const { resetForm: resetScores } = useResetForm(scores, currentTime, initialScores);
+
+const resetForm = () => {
+  resetScores();
+  currentTime.value = 1;
+  savedScores.value = [];
+};
+
+const timeOptions = [
+  { label: '1 minuto', value: 1 },
+  { label: '5 minuti', value: 5 },
+  { label: '10 minuti', value: 10 },
+];
+
+// ============================================================
+// COMPUTED
+// ============================================================
+const totalScore = computed(() => {
+  return (
+    scores.value.appearance +
+    scores.value.pulse +
+    scores.value.grimace +
+    scores.value.activity +
+    scores.value.respiration
+  );
+});
+
+const isFormComplete = computed(() => {
+  return Object.values(scores.value).every((score) => score >= 0 && score <= 2);
+});
+
+// ============================================================
+// FUNCTIONS
+// ============================================================
+const saveScore = (): void => {
+  if (!isFormComplete.value) return;
+
+  const newScore: SavedAPGAR = {
+    time: currentTime.value,
+    scores: { ...scores.value },
+    total: totalScore.value,
+    timestamp: new Date(),
+  };
+
+  // Rimuovi score esistente per questo tempo
+  savedScores.value = savedScores.value.filter((s) => s.time !== currentTime.value);
+
+  // Aggiungi nuovo score
+  savedScores.value.push(newScore);
+
+  // Ordina per tempo
+  savedScores.value.sort((a, b) => a.time - b.time);
+
+  // Avanza al prossimo tempo di valutazione
+  if (currentTime.value === 1) {
+    currentTime.value = 5;
+    resetCurrentScores();
+  } else if (currentTime.value === 5) {
+    currentTime.value = 10;
+    resetCurrentScores();
+  }
+};
+
+const resetCurrentScores = (): void => {
+  scores.value = { ...initialScores };
+};
+
+const getScoreColor = (score: number): string => {
+  if (score >= 7) return 'green';
+  if (score >= 4) return 'orange';
+  return 'red';
+};
+
+const getScoreInterpretation = (score: number): string => {
+  if (score >= 7) return 'Normale';
+  if (score >= 4) return 'Moderatamente Depresso';
+  return 'Severamente Depresso';
+};
+
+const getClinicalActions = (score: number): string => {
+  if (score >= 7) {
+    return 'Neonato in buone condizioni. Cure standard: asciugare, riscaldare, valutazione continua.';
+  } else if (score >= 4) {
+    return 'Neonato moderatamente depresso. Stimolazione tattile, aspirazione vie aeree, ossigenoterapia.';
+  } else {
+    return 'Neonato severamente depresso. RIANIMAZIONE URGENTE: ventilazione, compressioni se FC < 60 bpm.';
+  }
+};
+</script>
+
 <template>
   <div class="q-pa-md">
     <!-- Medical Info Banner -->
@@ -270,130 +404,3 @@ Score Calculator - Valutazione clinica del neonato alla nascita */
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useResetForm } from 'src/composables/useResetForm';
-
-// ============================================================
-// TYPES & INTERFACES
-// ============================================================
-interface APGARScores {
-  appearance: number;
-  pulse: number;
-  grimace: number;
-  activity: number;
-  respiration: number;
-}
-
-interface SavedAPGAR {
-  time: number;
-  scores: APGARScores;
-  total: number;
-  timestamp: Date;
-}
-
-// ============================================================
-// STATE
-// ============================================================
-const initialScores: APGARScores = {
-  appearance: 0,
-  pulse: 0,
-  grimace: 0,
-  activity: 0,
-  respiration: 0,
-};
-
-const scores = ref<APGARScores>({ ...initialScores });
-const currentTime = ref<number>(1);
-const savedScores = ref<SavedAPGAR[]>([]);
-
-const { resetForm: resetScores } = useResetForm(scores, currentTime, initialScores);
-
-const resetForm = () => {
-  resetScores();
-  currentTime.value = 1;
-  savedScores.value = [];
-};
-
-const timeOptions = [
-  { label: '1 minuto', value: 1 },
-  { label: '5 minuti', value: 5 },
-  { label: '10 minuti', value: 10 },
-];
-
-// ============================================================
-// COMPUTED
-// ============================================================
-const totalScore = computed(() => {
-  return (
-    scores.value.appearance +
-    scores.value.pulse +
-    scores.value.grimace +
-    scores.value.activity +
-    scores.value.respiration
-  );
-});
-
-const isFormComplete = computed(() => {
-  return Object.values(scores.value).every((score) => score >= 0 && score <= 2);
-});
-
-// ============================================================
-// FUNCTIONS
-// ============================================================
-const saveScore = (): void => {
-  if (!isFormComplete.value) return;
-
-  const newScore: SavedAPGAR = {
-    time: currentTime.value,
-    scores: { ...scores.value },
-    total: totalScore.value,
-    timestamp: new Date(),
-  };
-
-  // Rimuovi score esistente per questo tempo
-  savedScores.value = savedScores.value.filter((s) => s.time !== currentTime.value);
-
-  // Aggiungi nuovo score
-  savedScores.value.push(newScore);
-
-  // Ordina per tempo
-  savedScores.value.sort((a, b) => a.time - b.time);
-
-  // Avanza al prossimo tempo di valutazione
-  if (currentTime.value === 1) {
-    currentTime.value = 5;
-    resetCurrentScores();
-  } else if (currentTime.value === 5) {
-    currentTime.value = 10;
-    resetCurrentScores();
-  }
-};
-
-const resetCurrentScores = (): void => {
-  scores.value = { ...initialScores };
-};
-
-const getScoreColor = (score: number): string => {
-  if (score >= 7) return 'green';
-  if (score >= 4) return 'orange';
-  return 'red';
-};
-
-const getScoreInterpretation = (score: number): string => {
-  if (score >= 7) return 'Normale';
-  if (score >= 4) return 'Moderatamente Depresso';
-  return 'Severamente Depresso';
-};
-
-const getClinicalActions = (score: number): string => {
-  if (score >= 7) {
-    return 'Neonato in buone condizioni. Cure standard: asciugare, riscaldare, valutazione continua.';
-  } else if (score >= 4) {
-    return 'Neonato moderatamente depresso. Stimolazione tattile, aspirazione vie aeree, ossigenoterapia.';
-  } else {
-    return 'Neonato severamente depresso. RIANIMAZIONE URGENTE: ventilazione, compressioni se FC < 60 bpm.';
-  }
-};
-</script>

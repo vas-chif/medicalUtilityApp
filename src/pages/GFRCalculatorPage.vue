@@ -1,3 +1,531 @@
+<!-- GFRCalculatorPage.vue -->
+<script setup lang="ts">
+/**
+ * @file GFRCalculatorPage.vue
+ * @description Comprehensive renal function assessment page with 3 integrated calculators:
+ *              1. eGFR Calculator - MDRD and CKD-EPI formulas for CKD staging
+ *              2. Creatinine Clearance - Cockcroft-Gault formula for drug dosing
+ *              3. Fluid Balance - 24h intake/output monitoring for volume status
+ *
+ * @author Vasile Chifeac
+ * @created 2025-11-06
+ * @modified 2025-11-06
+ *
+ * @example
+ * Route: /gfr-calculator
+ * <GFRCalculatorPage />
+ *
+ * @notes
+ * - Total 1770 lines of production-ready code
+ * - KDIGO CKD staging guidelines implementation
+ * - Clinical decision support for drug dosing adjustments
+ * - Comprehensive scientific documentation (15+ ScienceDirect references)
+ * - Visual GFR scale with color-coded CKD stages
+ * - Full TypeScript type safety with 0 errors
+ * - Responsive design for mobile/tablet/desktop
+ *
+ * @dependencies
+ * - useResetForm composable for form state management
+ * - Quasar Framework components (q-tabs, q-tab-panels, q-card, etc.)
+ *
+ * @medical-references
+ * - KDIGO Guidelines for CKD Evaluation and Management
+ * - Stevens & Levey (2010) - Assessment of Renal Function
+ * - Inker & Levey (2014, 2019) - CKD-EPI equation validation
+ * - Makanjuola & Lapsley (2014) - CKD pathogenesis and management
+ * - Cockcroft-Gault formula for drug dosing adjustments
+ */
+
+// ============================================================
+// IMPORTS
+// ============================================================
+// Vue core
+import { ref, computed } from 'vue';
+
+// Composables
+import { useResetForm } from 'src/composables/useResetForm';
+
+// ============================================================
+// TYPES & INTERFACES
+// ============================================================
+
+/**
+ * eGFR Calculator - Form data interface
+ * @interface GFRFormData
+ */
+interface GFRFormData {
+  /** Serum creatinine in mg/dL */
+  creatinine: number | null;
+  /** Patient age in years */
+  age: number | null;
+  /** Patient gender: 'male' | 'female' */
+  gender: string | null;
+  /** Race/ethnicity for correction factor: 'african' | 'other' */
+  race: string | null;
+  /** Formula selection: 'mdrd' | 'ckdepi' */
+  formula: string;
+}
+
+/**
+ * eGFR Calculator - Result interface
+ * @interface GFRResult
+ */
+interface GFRResult {
+  /** Calculated eGFR value in mL/min/1.73m² */
+  gfr: number;
+  /** CKD stage classification (1-5) */
+  stage: string;
+  /** Clinical description of CKD stage */
+  description: string;
+  /** Color code for visual representation */
+  color: string;
+}
+
+/**
+ * Creatinine Clearance - Form data interface
+ * @interface CrClFormData
+ */
+interface CrClFormData {
+  /** Serum creatinine in mg/dL */
+  creatinine: number | null;
+  /** Patient age in years */
+  age: number | null;
+  /** Patient body weight in kilograms */
+  weight: number | null;
+  /** Patient gender: 'male' | 'female' */
+  gender: string | null;
+}
+
+/**
+ * Creatinine Clearance - Result interface
+ * @interface CrClResult
+ */
+interface CrClResult {
+  /** Calculated creatinine clearance in mL/min */
+  crcl: number;
+}
+
+/**
+ * Fluid Balance - Form data interface
+ * @interface FluidBalanceData
+ */
+interface FluidBalanceData {
+  /** Fluid intake sources */
+  intake: {
+    /** Oral liquid intake in mL */
+    oral: number;
+    /** Water from food in mL */
+    food: number;
+    /** IV infusions in mL */
+    iv: number;
+  };
+  /** Fluid output sources */
+  output: {
+    /** Urine output in mL */
+    urine: number;
+    /** Stool output in mL */
+    stool: number;
+    /** Insensible losses (perspiration + respiration) in mL */
+    insensible: number;
+  };
+}
+
+// ============================================================
+// STATE - TAB SYSTEM
+// ============================================================
+
+/** Currently active tab */
+const activeTab = ref<string>('egfr');
+
+// ============================================================
+// STATE - eGFR (TAB 1)
+// ============================================================
+const initialFormData: GFRFormData = {
+  creatinine: null,
+  age: null,
+  gender: null,
+  race: 'other',
+  formula: 'ckdepi',
+};
+
+const initialResult: GFRResult = {
+  gfr: 0,
+  stage: '',
+  description: '',
+  color: 'grey',
+};
+
+// Dati reattivi del form eGFR (rinominati per chiarezza con tabs)
+const egfrForm = ref<GFRFormData>({ ...initialFormData });
+const egfrResult = ref<GFRResult>({ ...initialResult });
+
+// Mantieni compatibilità con vecchi nomi per le funzioni esistenti
+const formData = egfrForm;
+const result = egfrResult;
+
+// Reset form composable eGFR
+const { resetForm: resetFormData } = useResetForm(egfrForm, egfrResult, initialFormData);
+
+const resetForm = () => {
+  resetFormData();
+  egfrResult.value = { ...initialResult };
+};
+
+// ============================================================
+// STATE - CREATININE CLEARANCE (TAB 2)
+// ============================================================
+const initialCrClForm: CrClFormData = {
+  creatinine: null,
+  age: null,
+  weight: null,
+  gender: null,
+};
+
+const initialCrClResult: CrClResult = {
+  crcl: 0,
+};
+
+const crclForm = ref<CrClFormData>({ ...initialCrClForm });
+const crclResult = ref<CrClResult>({ ...initialCrClResult });
+
+const { resetForm: resetCrClFormData } = useResetForm(crclForm, crclResult, initialCrClForm);
+
+const resetCrClForm = () => {
+  resetCrClFormData();
+  crclResult.value = { ...initialCrClResult };
+};
+
+// ============================================================
+// STATE - FLUID BALANCE (TAB 3)
+// ============================================================
+const initialFluidForm: FluidBalanceData = {
+  intake: {
+    oral: 0,
+    food: 0,
+    iv: 0,
+  },
+  output: {
+    urine: 0,
+    stool: 0,
+    insensible: 600, // Default stima perspiratio insensibilis
+  },
+};
+
+const fluidForm = ref<FluidBalanceData>({ ...initialFluidForm });
+
+const resetFluidForm = () => {
+  fluidForm.value = { ...initialFluidForm };
+};
+
+// ============================================================
+// SHARED OPTIONS
+// ============================================================
+const genderOptions = [
+  { label: 'Maschio', value: 'male' },
+  { label: 'Femmina', value: 'female' },
+];
+
+const raceOptions = [
+  { label: 'Caucasica/Altra', value: 'other' },
+  { label: 'Afroamericana', value: 'african' },
+];
+
+const formulaOptions = [
+  { label: 'CKD-EPI (Raccomandata)', value: 'ckdepi' },
+  { label: 'MDRD (4-variabili)', value: 'mdrd' },
+];
+
+const showComparison = ref(false);
+
+// ============================================================
+// COMPUTED - eGFR (TAB 1)
+// ============================================================
+const isFormValid = computed(() => {
+  return (
+    egfrForm.value.creatinine !== null &&
+    egfrForm.value.creatinine > 0 &&
+    egfrForm.value.age !== null &&
+    egfrForm.value.age > 0 &&
+    egfrForm.value.gender !== null
+  );
+});
+
+const isEGFRFormValid = isFormValid;
+
+// ============================================================
+// COMPUTED - CREATININE CLEARANCE (TAB 2)
+// ============================================================
+const isCrClFormValid = computed(() => {
+  return (
+    crclForm.value.creatinine !== null &&
+    crclForm.value.creatinine > 0 &&
+    crclForm.value.age !== null &&
+    crclForm.value.age > 0 &&
+    crclForm.value.weight !== null &&
+    crclForm.value.weight > 0 &&
+    crclForm.value.gender !== null
+  );
+});
+
+// ============================================================
+// COMPUTED - FLUID BALANCE (TAB 3)
+// ============================================================
+const totalIntake = computed(() => {
+  return fluidForm.value.intake.oral + fluidForm.value.intake.food + fluidForm.value.intake.iv;
+});
+
+const totalOutput = computed(() => {
+  return (
+    fluidForm.value.output.urine + fluidForm.value.output.stool + fluidForm.value.output.insensible
+  );
+});
+
+const fluidBalance = computed(() => {
+  return totalIntake.value - totalOutput.value;
+});
+
+// ============================================================
+// FUNCTIONS - eGFR (TAB 1) - ESISTENTI
+// ============================================================
+const calculateGFR = () => {
+  if (!isEGFRFormValid.value) return;
+
+  let gfr = 0;
+
+  if (egfrForm.value.formula === 'mdrd') {
+    gfr = calculateMDRD();
+  } else {
+    gfr = calculateCKDEPI();
+  }
+
+  const stage = getCKDStage(gfr);
+  egfrResult.value = {
+    gfr,
+    stage: stage.stage,
+    description: stage.description,
+    color: stage.color,
+  };
+};
+
+// Calcolo MDRD
+const calculateMDRD = (): number => {
+  const { creatinine, age, gender, race } = formData.value;
+  if (!creatinine || !age || !gender) return 0;
+
+  let gfr = 175 * Math.pow(creatinine, -1.154) * Math.pow(age, -0.203);
+
+  // Correzione per sesso femminile
+  if (gender === 'female') {
+    gfr *= 0.742;
+  }
+
+  // Correzione per razza afroamericana
+  if (race === 'african') {
+    gfr *= 1.212;
+  }
+
+  return gfr;
+};
+
+// Calcolo CKD-EPI
+const calculateCKDEPI = (): number => {
+  const { creatinine, age, gender, race } = formData.value;
+  if (!creatinine || !age || !gender) return 0;
+
+  // Costanti CKD-EPI
+  let kappa: number, alpha: number, genderFactor: number;
+
+  if (gender === 'female') {
+    kappa = 0.7;
+    alpha = creatinine <= 0.7 ? -0.329 : -1.209;
+    genderFactor = creatinine <= 0.7 ? 1.018 : 1.018;
+  } else {
+    kappa = 0.9;
+    alpha = creatinine <= 0.9 ? -0.411 : -1.209;
+    genderFactor = 1.0;
+  }
+
+  let gfr =
+    141 *
+    Math.pow(Math.min(creatinine / kappa, 1), alpha) *
+    Math.pow(Math.max(creatinine / kappa, 1), -1.209) *
+    Math.pow(0.993, age) *
+    genderFactor;
+
+  // Correzione per razza afroamericana
+  if (race === 'african') {
+    gfr *= 1.159;
+  }
+
+  return gfr;
+};
+
+// Classificazione stadi CKD
+const getCKDStage = (gfr: number): { stage: string; description: string; color: string } => {
+  if (gfr >= 90)
+    return { stage: 'Stadio 1', description: 'Funzione renale normale', color: 'green' };
+  if (gfr >= 60)
+    return {
+      stage: 'Stadio 2',
+      description: 'Lieve riduzione funzione renale',
+      color: 'light-green',
+    };
+  if (gfr >= 45)
+    return {
+      stage: 'Stadio 3a',
+      description: 'Moderata riduzione funzione renale',
+      color: 'orange',
+    };
+  if (gfr >= 30)
+    return { stage: 'Stadio 3b', description: 'Moderata-severa riduzione', color: 'deep-orange' };
+  if (gfr >= 15)
+    return { stage: 'Stadio 4', description: 'Severa riduzione funzione renale', color: 'red' };
+  return { stage: 'Stadio 5', description: 'Insufficienza renale terminale', color: 'purple' };
+};
+
+// Posizione indicatore nel grafico
+const getGFRPosition = (): number => {
+  const gfr = result.value.gfr;
+  if (gfr <= 0) return 0;
+  if (gfr >= 120) return 100;
+  return (gfr / 120) * 100;
+};
+
+// Nome formula selezionata
+const getFormulaName = (): string => {
+  return formData.value.formula === 'mdrd' ? 'MDRD' : 'CKD-EPI';
+};
+
+// Note cliniche
+const getClinicalNotes = (): string => {
+  const gfr = result.value.gfr;
+  const age = formData.value.age || 0;
+
+  let notes = '';
+
+  if (gfr >= 90) {
+    notes = 'Funzione renale normale. Monitoraggio di routine se presenza di fattori di rischio.';
+  } else if (gfr >= 60) {
+    notes =
+      'Lieve riduzione della funzione renale. Valutare presenza di danno renale e fattori di rischio.';
+  } else if (gfr >= 45) {
+    notes =
+      'Moderata riduzione della funzione renale. Necessaria valutazione nefrologica e gestione complicanze.';
+  } else if (gfr >= 30) {
+    notes =
+      'Moderata-severa riduzione. Prepararsi per terapia sostitutiva renale. Controllo complicanze CKD.';
+  } else if (gfr >= 15) {
+    notes = 'Severa riduzione della funzione renale. Preparazione urgente per dialisi o trapianto.';
+  } else {
+    notes =
+      'Insufficienza renale terminale. Necessaria terapia sostitutiva renale immediata (dialisi/trapianto).';
+  }
+
+  if (age >= 65) {
+    notes += ' Nota: negli anziani considerare il declino fisiologico della funzione renale.';
+  }
+
+  return notes;
+};
+
+// ============================================================
+// FUNCTIONS - CREATININE CLEARANCE (TAB 2) - NUOVE
+// ============================================================
+
+const calculateCrCl = () => {
+  if (!isCrClFormValid.value) return;
+
+  const { creatinine, age, weight, gender } = crclForm.value;
+  if (!creatinine || !age || !weight || !gender) return;
+
+  // Formula Cockcroft-Gault
+  // CrCl (mL/min) = [(140 - Age) × Weight (kg) × (0.85 if female)] / (72 × SCr mg/dL)
+  let crcl = ((140 - age) * weight) / (72 * creatinine);
+
+  // Correzione per sesso femminile
+  if (gender === 'female') {
+    crcl *= 0.85;
+  }
+
+  crclResult.value = {
+    crcl,
+  };
+};
+
+const getCrClColor = (crcl: number): string => {
+  if (crcl >= 90) return 'green';
+  if (crcl >= 60) return 'light-green';
+  if (crcl >= 45) return 'orange';
+  if (crcl >= 30) return 'deep-orange';
+  if (crcl >= 15) return 'red';
+  return 'purple';
+};
+
+const getCrClInterpretation = (crcl: number): string => {
+  if (crcl >= 90) return 'Funzione Normale';
+  if (crcl >= 60) return 'Lieve Riduzione';
+  if (crcl >= 45) return 'Riduzione Moderata';
+  if (crcl >= 30) return 'Riduzione Moderata-Severa';
+  if (crcl >= 15) return 'Riduzione Severa';
+  return 'Insufficienza Renale';
+};
+
+const getCrClClinicalNotes = (crcl: number): string => {
+  if (crcl >= 90) {
+    return 'Clearance normale. Dosaggio farmaci standard (verificare schede tecniche).';
+  } else if (crcl >= 60) {
+    return 'Lieve riduzione clearance. Alcuni farmaci richiedono aggiustamento (aminoglicosidi, vancomicina). Monitorare livelli terapeutici.';
+  } else if (crcl >= 45) {
+    return 'Riduzione moderata. Ridurre dose o prolungare intervalli per farmaci nefrotossici. Valutazione farmacologica necessaria.';
+  } else if (crcl >= 30) {
+    return 'Riduzione moderata-severa. Aggiustamento significativo dosaggi (50-75% dose standard). Evitare FANS e contrasti iodati.';
+  } else if (crcl >= 15) {
+    return 'Riduzione severa. Riduzione drastica dosaggi (25-50%). Molti farmaci controindicati. Consulenza nefrologica obbligatoria.';
+  } else {
+    return 'Insufficienza renale terminale. Dialisi-dipendente. Dosaggi basati su timing dialisi. Farmaci eliminati con dialisi richiedono dose supplementare post-trattamento.';
+  }
+};
+
+// ============================================================
+// FUNCTIONS - FLUID BALANCE (TAB 3) - NUOVE
+// ============================================================
+
+const calculateFluidBalance = () => {
+  // Calcolo automatico con computed properties totalIntake, totalOutput, fluidBalance
+  // Nessuna azione specifica necessaria, i computed si aggiornano automaticamente
+};
+
+const getFluidBalanceColor = (balance: number): string => {
+  if (Math.abs(balance) <= 500) return 'green'; // Euvolemico
+  if (balance > 500 && balance <= 1000) return 'light-blue'; // Lieve sovraccarico
+  if (balance > 1000) return 'red'; // Sovraccarico significativo
+  if (balance < -500 && balance >= -1000) return 'orange'; // Lieve deplezione
+  return 'deep-orange'; // Deplezione significativa
+};
+
+const getFluidBalanceStatus = (balance: number): string => {
+  if (Math.abs(balance) <= 500) return 'Euvolemico (Bilancio Neutro)';
+  if (balance > 500 && balance <= 1000) return 'Lieve Sovraccarico Volemico';
+  if (balance > 1000) return 'Sovraccarico Volemico Significativo';
+  if (balance < -500 && balance >= -1000) return 'Lieve Deplezione Volemico-Idrica';
+  return 'Deplezione Volemico-Idrica Significativa';
+};
+
+const getFluidBalanceClinicalNotes = (balance: number): string => {
+  if (Math.abs(balance) <= 500) {
+    return 'Bilancio idrico ottimale. Stato euvolemico mantenuto. Continuare monitoraggio giornaliero.';
+  } else if (balance > 500 && balance <= 1000) {
+    return 'Lieve bilancio positivo. Monitorare segni di sovraccarico (edema, dispnea). Considerare restrizione fluidi se CKD/scompenso.';
+  } else if (balance > 1000) {
+    return 'Sovraccarico volemico. RISCHIO EDEMA POLMONARE. Restrizione fluidi <1000 mL/die + diuretici (furosemide 40-80 mg IV). Peso giornaliero. Target perdita 0.5-1 kg/die.';
+  } else if (balance < -500 && balance >= -1000) {
+    return 'Lieve deplezione. Valutare cause (diuretici, febbre, vomito, diarrea). Reintegro fluidi orali/IV se persistente.';
+  } else {
+    return 'Deplezione significativa. RISCHIO AKI PRE-RENALE. Reintegro urgente fluidi IV (cristalloidi 500-1000 mL/h fino a euvolemia). Monitorare diuresi, pressione arteriosa, elettroliti.';
+  }
+};
+</script>
+
 <template>
   <!-- ============================================================ -->
   <!-- GFR CALCULATOR PAGE - MAIN CONTAINER                         -->
@@ -1277,533 +1805,6 @@
     </q-card>
   </q-page>
 </template>
-
-<script setup lang="ts">
-/**
- * @file GFRCalculatorPage.vue
- * @description Comprehensive renal function assessment page with 3 integrated calculators:
- *              1. eGFR Calculator - MDRD and CKD-EPI formulas for CKD staging
- *              2. Creatinine Clearance - Cockcroft-Gault formula for drug dosing
- *              3. Fluid Balance - 24h intake/output monitoring for volume status
- *
- * @author Vasile Chifeac
- * @created 2025-11-06
- * @modified 2025-11-06
- *
- * @example
- * Route: /gfr-calculator
- * <GFRCalculatorPage />
- *
- * @notes
- * - Total 1770 lines of production-ready code
- * - KDIGO CKD staging guidelines implementation
- * - Clinical decision support for drug dosing adjustments
- * - Comprehensive scientific documentation (15+ ScienceDirect references)
- * - Visual GFR scale with color-coded CKD stages
- * - Full TypeScript type safety with 0 errors
- * - Responsive design for mobile/tablet/desktop
- *
- * @dependencies
- * - useResetForm composable for form state management
- * - Quasar Framework components (q-tabs, q-tab-panels, q-card, etc.)
- *
- * @medical-references
- * - KDIGO Guidelines for CKD Evaluation and Management
- * - Stevens & Levey (2010) - Assessment of Renal Function
- * - Inker & Levey (2014, 2019) - CKD-EPI equation validation
- * - Makanjuola & Lapsley (2014) - CKD pathogenesis and management
- * - Cockcroft-Gault formula for drug dosing adjustments
- */
-
-// ============================================================
-// IMPORTS
-// ============================================================
-// Vue core
-import { ref, computed } from 'vue';
-
-// Composables
-import { useResetForm } from 'src/composables/useResetForm';
-
-// ============================================================
-// TYPES & INTERFACES
-// ============================================================
-
-/**
- * eGFR Calculator - Form data interface
- * @interface GFRFormData
- */
-interface GFRFormData {
-  /** Serum creatinine in mg/dL */
-  creatinine: number | null;
-  /** Patient age in years */
-  age: number | null;
-  /** Patient gender: 'male' | 'female' */
-  gender: string | null;
-  /** Race/ethnicity for correction factor: 'african' | 'other' */
-  race: string | null;
-  /** Formula selection: 'mdrd' | 'ckdepi' */
-  formula: string;
-}
-
-/**
- * eGFR Calculator - Result interface
- * @interface GFRResult
- */
-interface GFRResult {
-  /** Calculated eGFR value in mL/min/1.73m² */
-  gfr: number;
-  /** CKD stage classification (1-5) */
-  stage: string;
-  /** Clinical description of CKD stage */
-  description: string;
-  /** Color code for visual representation */
-  color: string;
-}
-
-/**
- * Creatinine Clearance - Form data interface
- * @interface CrClFormData
- */
-interface CrClFormData {
-  /** Serum creatinine in mg/dL */
-  creatinine: number | null;
-  /** Patient age in years */
-  age: number | null;
-  /** Patient body weight in kilograms */
-  weight: number | null;
-  /** Patient gender: 'male' | 'female' */
-  gender: string | null;
-}
-
-/**
- * Creatinine Clearance - Result interface
- * @interface CrClResult
- */
-interface CrClResult {
-  /** Calculated creatinine clearance in mL/min */
-  crcl: number;
-}
-
-/**
- * Fluid Balance - Form data interface
- * @interface FluidBalanceData
- */
-interface FluidBalanceData {
-  /** Fluid intake sources */
-  intake: {
-    /** Oral liquid intake in mL */
-    oral: number;
-    /** Water from food in mL */
-    food: number;
-    /** IV infusions in mL */
-    iv: number;
-  };
-  /** Fluid output sources */
-  output: {
-    /** Urine output in mL */
-    urine: number;
-    /** Stool output in mL */
-    stool: number;
-    /** Insensible losses (perspiration + respiration) in mL */
-    insensible: number;
-  };
-}
-
-// ============================================================
-// STATE - TAB SYSTEM
-// ============================================================
-
-/** Currently active tab */
-const activeTab = ref<string>('egfr');
-
-// ============================================================
-// STATE - eGFR (TAB 1)
-// ============================================================
-const initialFormData: GFRFormData = {
-  creatinine: null,
-  age: null,
-  gender: null,
-  race: 'other',
-  formula: 'ckdepi',
-};
-
-const initialResult: GFRResult = {
-  gfr: 0,
-  stage: '',
-  description: '',
-  color: 'grey',
-};
-
-// Dati reattivi del form eGFR (rinominati per chiarezza con tabs)
-const egfrForm = ref<GFRFormData>({ ...initialFormData });
-const egfrResult = ref<GFRResult>({ ...initialResult });
-
-// Mantieni compatibilità con vecchi nomi per le funzioni esistenti
-const formData = egfrForm;
-const result = egfrResult;
-
-// Reset form composable eGFR
-const { resetForm: resetFormData } = useResetForm(egfrForm, egfrResult, initialFormData);
-
-const resetForm = () => {
-  resetFormData();
-  egfrResult.value = { ...initialResult };
-};
-
-// ============================================================
-// STATE - CREATININE CLEARANCE (TAB 2)
-// ============================================================
-const initialCrClForm: CrClFormData = {
-  creatinine: null,
-  age: null,
-  weight: null,
-  gender: null,
-};
-
-const initialCrClResult: CrClResult = {
-  crcl: 0,
-};
-
-const crclForm = ref<CrClFormData>({ ...initialCrClForm });
-const crclResult = ref<CrClResult>({ ...initialCrClResult });
-
-const { resetForm: resetCrClFormData } = useResetForm(crclForm, crclResult, initialCrClForm);
-
-const resetCrClForm = () => {
-  resetCrClFormData();
-  crclResult.value = { ...initialCrClResult };
-};
-
-// ============================================================
-// STATE - FLUID BALANCE (TAB 3)
-// ============================================================
-const initialFluidForm: FluidBalanceData = {
-  intake: {
-    oral: 0,
-    food: 0,
-    iv: 0,
-  },
-  output: {
-    urine: 0,
-    stool: 0,
-    insensible: 600, // Default stima perspiratio insensibilis
-  },
-};
-
-const fluidForm = ref<FluidBalanceData>({ ...initialFluidForm });
-
-const resetFluidForm = () => {
-  fluidForm.value = { ...initialFluidForm };
-};
-
-// ============================================================
-// SHARED OPTIONS
-// ============================================================
-const genderOptions = [
-  { label: 'Maschio', value: 'male' },
-  { label: 'Femmina', value: 'female' },
-];
-
-const raceOptions = [
-  { label: 'Caucasica/Altra', value: 'other' },
-  { label: 'Afroamericana', value: 'african' },
-];
-
-const formulaOptions = [
-  { label: 'CKD-EPI (Raccomandata)', value: 'ckdepi' },
-  { label: 'MDRD (4-variabili)', value: 'mdrd' },
-];
-
-const showComparison = ref(false);
-
-// ============================================================
-// COMPUTED - eGFR (TAB 1)
-// ============================================================
-const isFormValid = computed(() => {
-  return (
-    egfrForm.value.creatinine !== null &&
-    egfrForm.value.creatinine > 0 &&
-    egfrForm.value.age !== null &&
-    egfrForm.value.age > 0 &&
-    egfrForm.value.gender !== null
-  );
-});
-
-const isEGFRFormValid = isFormValid;
-
-// ============================================================
-// COMPUTED - CREATININE CLEARANCE (TAB 2)
-// ============================================================
-const isCrClFormValid = computed(() => {
-  return (
-    crclForm.value.creatinine !== null &&
-    crclForm.value.creatinine > 0 &&
-    crclForm.value.age !== null &&
-    crclForm.value.age > 0 &&
-    crclForm.value.weight !== null &&
-    crclForm.value.weight > 0 &&
-    crclForm.value.gender !== null
-  );
-});
-
-// ============================================================
-// COMPUTED - FLUID BALANCE (TAB 3)
-// ============================================================
-const totalIntake = computed(() => {
-  return fluidForm.value.intake.oral + fluidForm.value.intake.food + fluidForm.value.intake.iv;
-});
-
-const totalOutput = computed(() => {
-  return (
-    fluidForm.value.output.urine + fluidForm.value.output.stool + fluidForm.value.output.insensible
-  );
-});
-
-const fluidBalance = computed(() => {
-  return totalIntake.value - totalOutput.value;
-});
-
-// ============================================================
-// FUNCTIONS - eGFR (TAB 1) - ESISTENTI
-// ============================================================
-const calculateGFR = () => {
-  if (!isEGFRFormValid.value) return;
-
-  let gfr = 0;
-
-  if (egfrForm.value.formula === 'mdrd') {
-    gfr = calculateMDRD();
-  } else {
-    gfr = calculateCKDEPI();
-  }
-
-  const stage = getCKDStage(gfr);
-  egfrResult.value = {
-    gfr,
-    stage: stage.stage,
-    description: stage.description,
-    color: stage.color,
-  };
-};
-
-// Calcolo MDRD
-const calculateMDRD = (): number => {
-  const { creatinine, age, gender, race } = formData.value;
-  if (!creatinine || !age || !gender) return 0;
-
-  let gfr = 175 * Math.pow(creatinine, -1.154) * Math.pow(age, -0.203);
-
-  // Correzione per sesso femminile
-  if (gender === 'female') {
-    gfr *= 0.742;
-  }
-
-  // Correzione per razza afroamericana
-  if (race === 'african') {
-    gfr *= 1.212;
-  }
-
-  return gfr;
-};
-
-// Calcolo CKD-EPI
-const calculateCKDEPI = (): number => {
-  const { creatinine, age, gender, race } = formData.value;
-  if (!creatinine || !age || !gender) return 0;
-
-  // Costanti CKD-EPI
-  let kappa: number, alpha: number, genderFactor: number;
-
-  if (gender === 'female') {
-    kappa = 0.7;
-    alpha = creatinine <= 0.7 ? -0.329 : -1.209;
-    genderFactor = creatinine <= 0.7 ? 1.018 : 1.018;
-  } else {
-    kappa = 0.9;
-    alpha = creatinine <= 0.9 ? -0.411 : -1.209;
-    genderFactor = 1.0;
-  }
-
-  let gfr =
-    141 *
-    Math.pow(Math.min(creatinine / kappa, 1), alpha) *
-    Math.pow(Math.max(creatinine / kappa, 1), -1.209) *
-    Math.pow(0.993, age) *
-    genderFactor;
-
-  // Correzione per razza afroamericana
-  if (race === 'african') {
-    gfr *= 1.159;
-  }
-
-  return gfr;
-};
-
-// Classificazione stadi CKD
-const getCKDStage = (gfr: number): { stage: string; description: string; color: string } => {
-  if (gfr >= 90)
-    return { stage: 'Stadio 1', description: 'Funzione renale normale', color: 'green' };
-  if (gfr >= 60)
-    return {
-      stage: 'Stadio 2',
-      description: 'Lieve riduzione funzione renale',
-      color: 'light-green',
-    };
-  if (gfr >= 45)
-    return {
-      stage: 'Stadio 3a',
-      description: 'Moderata riduzione funzione renale',
-      color: 'orange',
-    };
-  if (gfr >= 30)
-    return { stage: 'Stadio 3b', description: 'Moderata-severa riduzione', color: 'deep-orange' };
-  if (gfr >= 15)
-    return { stage: 'Stadio 4', description: 'Severa riduzione funzione renale', color: 'red' };
-  return { stage: 'Stadio 5', description: 'Insufficienza renale terminale', color: 'purple' };
-};
-
-// Posizione indicatore nel grafico
-const getGFRPosition = (): number => {
-  const gfr = result.value.gfr;
-  if (gfr <= 0) return 0;
-  if (gfr >= 120) return 100;
-  return (gfr / 120) * 100;
-};
-
-// Nome formula selezionata
-const getFormulaName = (): string => {
-  return formData.value.formula === 'mdrd' ? 'MDRD' : 'CKD-EPI';
-};
-
-// Note cliniche
-const getClinicalNotes = (): string => {
-  const gfr = result.value.gfr;
-  const age = formData.value.age || 0;
-
-  let notes = '';
-
-  if (gfr >= 90) {
-    notes = 'Funzione renale normale. Monitoraggio di routine se presenza di fattori di rischio.';
-  } else if (gfr >= 60) {
-    notes =
-      'Lieve riduzione della funzione renale. Valutare presenza di danno renale e fattori di rischio.';
-  } else if (gfr >= 45) {
-    notes =
-      'Moderata riduzione della funzione renale. Necessaria valutazione nefrologica e gestione complicanze.';
-  } else if (gfr >= 30) {
-    notes =
-      'Moderata-severa riduzione. Prepararsi per terapia sostitutiva renale. Controllo complicanze CKD.';
-  } else if (gfr >= 15) {
-    notes = 'Severa riduzione della funzione renale. Preparazione urgente per dialisi o trapianto.';
-  } else {
-    notes =
-      'Insufficienza renale terminale. Necessaria terapia sostitutiva renale immediata (dialisi/trapianto).';
-  }
-
-  if (age >= 65) {
-    notes += ' Nota: negli anziani considerare il declino fisiologico della funzione renale.';
-  }
-
-  return notes;
-};
-
-// ============================================================
-// FUNCTIONS - CREATININE CLEARANCE (TAB 2) - NUOVE
-// ============================================================
-
-const calculateCrCl = () => {
-  if (!isCrClFormValid.value) return;
-
-  const { creatinine, age, weight, gender } = crclForm.value;
-  if (!creatinine || !age || !weight || !gender) return;
-
-  // Formula Cockcroft-Gault
-  // CrCl (mL/min) = [(140 - Age) × Weight (kg) × (0.85 if female)] / (72 × SCr mg/dL)
-  let crcl = ((140 - age) * weight) / (72 * creatinine);
-
-  // Correzione per sesso femminile
-  if (gender === 'female') {
-    crcl *= 0.85;
-  }
-
-  crclResult.value = {
-    crcl,
-  };
-};
-
-const getCrClColor = (crcl: number): string => {
-  if (crcl >= 90) return 'green';
-  if (crcl >= 60) return 'light-green';
-  if (crcl >= 45) return 'orange';
-  if (crcl >= 30) return 'deep-orange';
-  if (crcl >= 15) return 'red';
-  return 'purple';
-};
-
-const getCrClInterpretation = (crcl: number): string => {
-  if (crcl >= 90) return 'Funzione Normale';
-  if (crcl >= 60) return 'Lieve Riduzione';
-  if (crcl >= 45) return 'Riduzione Moderata';
-  if (crcl >= 30) return 'Riduzione Moderata-Severa';
-  if (crcl >= 15) return 'Riduzione Severa';
-  return 'Insufficienza Renale';
-};
-
-const getCrClClinicalNotes = (crcl: number): string => {
-  if (crcl >= 90) {
-    return 'Clearance normale. Dosaggio farmaci standard (verificare schede tecniche).';
-  } else if (crcl >= 60) {
-    return 'Lieve riduzione clearance. Alcuni farmaci richiedono aggiustamento (aminoglicosidi, vancomicina). Monitorare livelli terapeutici.';
-  } else if (crcl >= 45) {
-    return 'Riduzione moderata. Ridurre dose o prolungare intervalli per farmaci nefrotossici. Valutazione farmacologica necessaria.';
-  } else if (crcl >= 30) {
-    return 'Riduzione moderata-severa. Aggiustamento significativo dosaggi (50-75% dose standard). Evitare FANS e contrasti iodati.';
-  } else if (crcl >= 15) {
-    return 'Riduzione severa. Riduzione drastica dosaggi (25-50%). Molti farmaci controindicati. Consulenza nefrologica obbligatoria.';
-  } else {
-    return 'Insufficienza renale terminale. Dialisi-dipendente. Dosaggi basati su timing dialisi. Farmaci eliminati con dialisi richiedono dose supplementare post-trattamento.';
-  }
-};
-
-// ============================================================
-// FUNCTIONS - FLUID BALANCE (TAB 3) - NUOVE
-// ============================================================
-
-const calculateFluidBalance = () => {
-  // Calcolo automatico con computed properties totalIntake, totalOutput, fluidBalance
-  // Nessuna azione specifica necessaria, i computed si aggiornano automaticamente
-};
-
-const getFluidBalanceColor = (balance: number): string => {
-  if (Math.abs(balance) <= 500) return 'green'; // Euvolemico
-  if (balance > 500 && balance <= 1000) return 'light-blue'; // Lieve sovraccarico
-  if (balance > 1000) return 'red'; // Sovraccarico significativo
-  if (balance < -500 && balance >= -1000) return 'orange'; // Lieve deplezione
-  return 'deep-orange'; // Deplezione significativa
-};
-
-const getFluidBalanceStatus = (balance: number): string => {
-  if (Math.abs(balance) <= 500) return 'Euvolemico (Bilancio Neutro)';
-  if (balance > 500 && balance <= 1000) return 'Lieve Sovraccarico Volemico';
-  if (balance > 1000) return 'Sovraccarico Volemico Significativo';
-  if (balance < -500 && balance >= -1000) return 'Lieve Deplezione Volemico-Idrica';
-  return 'Deplezione Volemico-Idrica Significativa';
-};
-
-const getFluidBalanceClinicalNotes = (balance: number): string => {
-  if (Math.abs(balance) <= 500) {
-    return 'Bilancio idrico ottimale. Stato euvolemico mantenuto. Continuare monitoraggio giornaliero.';
-  } else if (balance > 500 && balance <= 1000) {
-    return 'Lieve bilancio positivo. Monitorare segni di sovraccarico (edema, dispnea). Considerare restrizione fluidi se CKD/scompenso.';
-  } else if (balance > 1000) {
-    return 'Sovraccarico volemico. RISCHIO EDEMA POLMONARE. Restrizione fluidi <1000 mL/die + diuretici (furosemide 40-80 mg IV). Peso giornaliero. Target perdita 0.5-1 kg/die.';
-  } else if (balance < -500 && balance >= -1000) {
-    return 'Lieve deplezione. Valutare cause (diuretici, febbre, vomito, diarrea). Reintegro fluidi orali/IV se persistente.';
-  } else {
-    return 'Deplezione significativa. RISCHIO AKI PRE-RENALE. Reintegro urgente fluidi IV (cristalloidi 500-1000 mL/h fino a euvolemia). Monitorare diuresi, pressione arteriosa, elettroliti.';
-  }
-};
-</script>
 
 <style scoped>
 /* ============================================================ */

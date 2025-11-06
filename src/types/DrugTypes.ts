@@ -1,11 +1,61 @@
 /**
- * Tipi TypeScript per il sistema di compatibilità farmaci
- * Convertiti da: https://github.com/vas-chif/drugsCompatibility
+ * @file DrugTypes.ts
+ * @description Comprehensive TypeScript type definitions for the drug compatibility system.
+ *              Converted from Java-based drugCompatibility system (GitHub: vas-chif/drugsCompatibility).
+ *              Provides type safety for drug compatibility checking, analysis, and reporting.
+ *
+ * @author Vasile Chifeac
+ * @created 2025-11-06
+ * @modified 2025-01-20
+ *
+ * @notes
+ * - Total 201 lines of production-ready TypeScript type definitions
+ * - Converted from Java drug compatibility system (ControlDrugs.java, FunctionPostgreSQL.java)
+ * - Full type safety for Vue 3 Composition API implementation
+ * - Supports 5 compatibility levels with enum-based type safety
+ * - Includes drug categorization (11 categories: antibiotic, cardiovascular, etc.)
+ * - Administration route types (IV, IM, SC, PO, SL, Topical)
+ * - Warning system types (Critical, Warning, Info severity levels)
+ * - Matrix-based compatibility lookup structure
+ * - Multi-drug analysis result types
+ *
+ * @dependencies
+ * - None (pure TypeScript type definitions)
+ *
+ * @compatibility-system
+ * DrugCompatibility enum values:
+ * - 'C' (COMPATIBLE): Drugs can be mixed in the same solution
+ * - 'Y' (COMPATIBLE_ON_TAP): Compatible only at Y-site, not mixed in bag
+ * - 'I' (INCOMPATIBLE): NEVER mix together (precipitation/degradation risk)
+ * - '!' (CONFLICTING_DATA): Literature reports conflicting compatibility data
+ * - '' (NO_DATA): No compatibility data available in medical literature
+ *
+ * @usage
+ * ```typescript
+ * import type { Drug, CompatibilityResult, MultiDrugAnalysis } from 'src/types/DrugTypes';
+ * import { DrugCompatibility } from 'src/types/DrugTypes';
+ *
+ * // Type-safe drug object
+ * const drug: Drug = {
+ *   id: 'norepi',
+ *   name: 'Norepinephrine',
+ *   category: DrugCategory.VASOPRESSOR,
+ *   route: AdministrationRoute.IV
+ * };
+ *
+ * // Type-safe compatibility check
+ * const compatibility: DrugCompatibility = DrugCompatibility.COMPATIBLE;
+ * ```
  */
 
+// ============================================================
+// ENUMS - Drug Compatibility Levels & Categories
+// ============================================================
+
 /**
- * Livelli di compatibilità farmacologica
- * Basato sul codice Java ControlDrugs.java
+ * Drug compatibility levels based on Y-site compatibility data
+ * Based on: Java ControlDrugs.java compatibility codes
+ * @enum {string}
  */
 export enum DrugCompatibility {
   /** C - Compatible: Farmaci compatibili */
@@ -51,7 +101,8 @@ export interface Drug {
 }
 
 /**
- * Categorie farmacologiche
+ * Pharmacological drug categories for classification and filtering
+ * @enum {string}
  */
 export enum DrugCategory {
   ANTIBIOTIC = 'antibiotic',
@@ -68,7 +119,8 @@ export enum DrugCategory {
 }
 
 /**
- * Vie di somministrazione
+ * Routes of drug administration
+ * @enum {string}
  */
 export enum AdministrationRoute {
   IV = 'intravenous',
@@ -79,8 +131,13 @@ export enum AdministrationRoute {
   TOPICAL = 'topical',
 }
 
+// ============================================================
+// INTERFACES - Compatibility Results & Analysis
+// ============================================================
+
 /**
- * Risultato del controllo di compatibilità tra farmaci
+ * Result of compatibility check between one drug and a list of other drugs
+ * @interface CompatibilityResult
  */
 export interface CompatibilityResult {
   /** Farmaco principale analizzato */

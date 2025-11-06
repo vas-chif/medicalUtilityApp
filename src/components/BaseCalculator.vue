@@ -1,3 +1,41 @@
+<!-- BaseCalculator.vue -->
+<script setup lang="ts">
+/**
+ * @file BaseCalculator.vue
+ * @description Componente base per pagine di calcolatori medici
+ * @author Vasile Chifeac
+ * @created 2025-11-05
+ * @modified 2025-11-05
+ *
+ * @notes
+ * - Fornisce struttura comune per pagine di calcolatori medici
+ * - Include header, sezioni input/risultati, stili coerenti
+ */
+
+interface Props {
+  title: string;
+  subtitle: string;
+  icon: string;
+  inputSectionTitle?: string;
+  resultSectionTitle?: string;
+  calculateButtonText?: string;
+  isFormValid: boolean;
+  calculating?: boolean;
+}
+
+withDefaults(defineProps<Props>(), {
+  inputSectionTitle: 'Parametri',
+  resultSectionTitle: 'Risultati',
+  calculateButtonText: 'Calcola',
+  calculating: false,
+});
+
+// Emits
+defineEmits<{
+  calculate: [];
+}>();
+</script>
+
 <template>
   <q-page class="q-pa-md medical-calculator-page">
     <!-- Header con breadcrumb -->
@@ -66,31 +104,6 @@
     </div>
   </q-page>
 </template>
-
-<script setup lang="ts">
-interface Props {
-  title: string;
-  subtitle: string;
-  icon: string;
-  inputSectionTitle?: string;
-  resultSectionTitle?: string;
-  calculateButtonText?: string;
-  isFormValid: boolean;
-  calculating?: boolean;
-}
-
-withDefaults(defineProps<Props>(), {
-  inputSectionTitle: 'Parametri',
-  resultSectionTitle: 'Risultati',
-  calculateButtonText: 'Calcola',
-  calculating: false,
-});
-
-// Emits
-defineEmits<{
-  calculate: [];
-}>();
-</script>
 
 <style scoped>
 /* Medical Page Base */

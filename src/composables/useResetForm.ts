@@ -1,16 +1,48 @@
 /**
  * @file useResetForm.ts
- * @description Generic composable for resetting calculator forms
- *
- * Provides a reusable pattern for resetting form data and results
- * in all calculator pages. Ensures consistency across the application.
+ * @description Generic composable for resetting calculator forms to initial state.
+ *              Provides a reusable pattern for form state management across all calculator pages,
+ *              ensuring consistency and preventing state pollution between calculations.
  *
  * @author Vasile Chifeac
  * @created 2025-11-06
- * @modified 2025-11-06
+ * @modified 2025-01-20
+ *
+ * @notes
+ * - Total 103 lines of production-ready form state management code
+ * - Generic TypeScript implementation supporting any form/result structure
+ * - Deep copy mechanism prevents reference-related state issues
+ * - Type-aware result resetting (number, string, null, complex objects)
+ * - Used across all calculator pages: PharmacologyPage, GFRCalculatorPage, BMICalculatorPage, etc.
+ * - Ensures clean state between calculations for accurate results
+ * - Follows Vue 3 Composition API best practices
+ *
+ * @dependencies
+ * - Vue 3 type system (Ref) for reactive state management
+ *
+ * @usage-examples
+ * ```typescript
+ * // Example 1: Simple number result
+ * const formData = ref({ weight: null, height: null });
+ * const result = ref(0);
+ * const { resetForm } = useResetForm(formData, result, { weight: null, height: null });
+ *
+ * // Example 2: Complex object result
+ * const formData = ref({ dose: null, rate: null });
+ * const result = ref({ totalDose: 0, duration: 0 });
+ * const { resetForm } = useResetForm(formData, result, { dose: null, rate: null });
+ *
+ * // Example 3: In template usage
+ * <q-btn @click="resetForm" label="Reset" icon="refresh" color="secondary" />
+ * ```
+ *
+ * @type-safety
+ * - Generic type parameters <T, R> ensure type safety for form data and results
+ * - T: Form data structure (any interface or type)
+ * - R: Result type (number, string, object, etc.)
  *
  * @example
- * // In calculator component:
+ * // In BMICalculatorPage.vue:
  * const { resetForm } = useResetForm(formData, result, initialFormData);
  *
  * // In template:
