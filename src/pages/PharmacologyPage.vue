@@ -1632,8 +1632,8 @@
                           <strong>Monitoraggio Avanzato:</strong> Pressione arteriosa invasiva
                           (arterial line A-line) OBBLIGATORIA per vasopressori. Cardiac output
                           monitoring (PiCCO, Swan-Ganz) se shock misto cardiogeno+distributivo.
-                          ScvO₂ ≥70%, lactate clearance >10%/h, UO >0.5 mL/kg/h, perfusione
-                          periferica (CRT <3 sec, mottling score).
+                          ScvO₂ ≥70%, lactate clearance &gt;10%/h, UO &gt;0.5 mL/kg/h, perfusione
+                          periferica (CRT &lt;3 sec, mottling score).
                         </p>
                       </div>
 
@@ -2084,7 +2084,6 @@ const calculateDilution = () => {
   const dose = dilutionForm.value.dose!;
   const volume = dilutionForm.value.volume!;
   const stockConc = dilutionForm.value.stockConcentration;
-  const targetConc = dilutionForm.value.targetConcentration;
 
   // Concentrazione finale = Dose / Volume
   const finalConcentration = dose / volume;
