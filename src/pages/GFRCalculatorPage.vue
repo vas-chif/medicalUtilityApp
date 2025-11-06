@@ -1,6 +1,12 @@
 <template>
+  <!-- ============================================================ -->
+  <!-- GFR CALCULATOR PAGE - MAIN CONTAINER                         -->
+  <!-- 3 Integrated Renal Function Calculators                      -->
+  <!-- ============================================================ -->
   <q-page class="q-pa-md">
-    <!-- Header con breadcrumb -->
+    <!-- ============================================================ -->
+    <!-- PAGE HEADER - Breadcrumbs & Title                            -->
+    <!-- ============================================================ -->
     <div class="q-mb-lg">
       <q-breadcrumbs>
         <q-breadcrumbs-el icon="home" @click="$router.push('/')" class="cursor-pointer" />
@@ -12,7 +18,9 @@
       </p>
     </div>
 
-    <!-- Medical Info Banner -->
+    <!-- ============================================================ -->
+    <!-- INFORMATION BANNER - Clinical Applications Overview          -->
+    <!-- ============================================================ -->
     <q-banner class="bg-blue-1 text-blue-9 q-mb-md" rounded dense>
       <template v-slot:avatar>
         <q-icon name="info" color="blue" />
@@ -23,7 +31,9 @@
       </div>
     </q-banner>
 
-    <!-- Tab System -->
+    <!-- ============================================================ -->
+    <!-- TAB NAVIGATION SYSTEM - 3 Calculator Tabs                    -->
+    <!-- ============================================================ -->
     <q-card>
       <q-tabs
         v-model="activeTab"
@@ -40,10 +50,14 @@
 
       <q-separator />
 
+      <!-- ============================================================ -->
+      <!-- TAB PANELS CONTAINER - Calculator Content                   -->
+      <!-- ============================================================ -->
       <q-tab-panels v-model="activeTab" animated>
-        <!-- ========================================= -->
-        <!-- TAB 1: eGFR (MDRD/CKD-EPI) - ESISTENTE -->
-        <!-- ========================================= -->
+        <!-- ========================================================== -->
+        <!-- TAB 1: eGFR CALCULATOR (MDRD/CKD-EPI)                      -->
+        <!-- CKD Staging per KDIGO Guidelines                           -->
+        <!-- ========================================================== -->
         <q-tab-panel name="egfr">
           <div class="row q-gutter-lg">
             <!-- Pannello Input -->
@@ -720,9 +734,10 @@
           </div>
         </q-tab-panel>
 
-        <!-- ========================================= -->
-        <!-- TAB 2: CREATININE CLEARANCE (Cockcroft-Gault) - NUOVO -->
-        <!-- ========================================= -->
+        <!-- ========================================================== -->
+        <!-- TAB 2: CREATININE CLEARANCE (Cockcroft-Gault)             -->
+        <!-- Drug Dosing Adjustments in Renal Impairment               -->
+        <!-- ========================================================== -->
         <q-tab-panel name="crcl">
           <div class="row q-gutter-lg">
             <!-- Pannello Input CrCl -->
@@ -948,9 +963,10 @@
           </div>
         </q-tab-panel>
 
-        <!-- ========================================= -->
-        <!-- TAB 3: FLUID BALANCE (Bilancio Idrico) - NUOVO -->
-        <!-- ========================================= -->
+        <!-- ========================================================== -->
+        <!-- TAB 3: FLUID BALANCE (24h Intake/Output)                  -->
+        <!-- Volume Status Assessment for CKD/Dialysis Management       -->
+        <!-- ========================================================== -->
         <q-tab-panel name="fluid">
           <div class="row q-gutter-lg">
             <!-- Pannello Input Fluid Balance -->
@@ -1790,11 +1806,22 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
 </script>
 
 <style scoped>
+/* ============================================================ */
+/* GFR CALCULATOR PAGE - COMPONENT STYLES                       */
+/* Professional styling following CODING_STANDARDS.md           */
+/* ============================================================ */
+
+/* ============================================================ */
+/* CARD STYLES - Base styling for calculator cards             */
+/* ============================================================ */
 .q-card {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* ============================================================ */
+/* NAVIGATION STYLES - Breadcrumbs & page navigation           */
+/* ============================================================ */
 .q-breadcrumbs-el {
   transition: color 0.3s ease;
 }
@@ -1803,27 +1830,33 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
   color: var(--q-primary);
 }
 
-/* Scala GFR Visuale */
+/* ============================================================ */
+/* GFR VISUAL SCALE - Color-coded CKD staging indicator        */
+/* ============================================================ */
+
+/* GFR scale container */
 .gfr-scale {
   position: relative;
   width: 100%;
 }
 
+/* GFR bar with CKD stage color gradient */
 .gfr-bar {
   height: 20px;
   background: linear-gradient(
     to right,
     #9c27b0 0% 12.5%,
-    /* Stadio 5 - Viola */ #f44336 12.5% 25%,
-    /* Stadio 4 - Rosso */ #ff5722 25% 37.5%,
-    /* Stadio 3b - Rosso scuro */ #ff9800 37.5% 50%,
-    /* Stadio 3a - Arancione */ #8bc34a 50% 75%,
-    /* Stadio 2 - Verde chiaro */ #4caf50 75% 100% /* Stadio 1 - Verde */
+    /* Stage 5 - Purple */ #f44336 12.5% 25%,
+    /* Stage 4 - Red */ #ff5722 25% 37.5%,
+    /* Stage 3b - Deep Orange */ #ff9800 37.5% 50%,
+    /* Stage 3a - Orange */ #8bc34a 50% 75%,
+    /* Stage 2 - Light Green */ #4caf50 75% 100% /* Stage 1 - Green */
   );
   border-radius: 10px;
   position: relative;
 }
 
+/* GFR indicator needle */
 .gfr-indicator {
   position: absolute;
   top: -5px;
@@ -1835,6 +1868,7 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
   transition: left 0.3s ease;
 }
 
+/* GFR indicator arrow */
 .gfr-indicator::before {
   content: '';
   position: absolute;
