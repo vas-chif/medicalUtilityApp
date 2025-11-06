@@ -39,7 +39,7 @@
               outlined
               dense
               class="q-mb-sm"
-              :rules="[(val: number) => val >= 0 || $t('fluidBalance.positiveValue')]"
+              :rules="[(val: number) => val >= 0 || $t('validation.positiveValue')]"
             >
               <template v-slot:prepend>
                 <q-icon name="colorize" color="blue" size="sm" />
@@ -56,7 +56,7 @@
               outlined
               dense
               class="q-mb-sm"
-              :rules="[(val: number) => val >= 0 || $t('fluidBalance.positiveValue')]"
+              :rules="[(val: number) => val >= 0 || $t('validation.positiveValue')]"
             >
               <template v-slot:prepend>
                 <q-icon name="local_drink" color="cyan" size="sm" />
@@ -73,7 +73,7 @@
               outlined
               dense
               class="q-mb-sm"
-              :rules="[(val: number) => val >= 0 || $t('fluidBalance.positiveValue')]"
+              :rules="[(val: number) => val >= 0 || $t('validation.positiveValue')]"
             >
               <template v-slot:prepend>
                 <q-icon name="food_bank" color="green" size="sm" />
@@ -90,7 +90,7 @@
               outlined
               dense
               class="q-mb-sm"
-              :rules="[(val: number) => val >= 0 || $t('fluidBalance.positiveValue')]"
+              :rules="[(val: number) => val >= 0 || $t('validation.positiveValue')]"
             >
               <template v-slot:prepend>
                 <q-icon name="medication" color="purple" size="sm" />
@@ -107,7 +107,7 @@
               outlined
               dense
               class="q-mb-md"
-              :rules="[(val: number) => val >= 0 || $t('fluidBalance.positiveValue')]"
+              :rules="[(val: number) => val >= 0 || $t('validation.positiveValue')]"
             >
               <template v-slot:prepend>
                 <q-icon name="bloodtype" color="red" size="sm" />
@@ -146,7 +146,7 @@
               outlined
               dense
               class="q-mb-sm"
-              :rules="[(val: number) => val >= 0 || $t('fluidBalance.positiveValue')]"
+              :rules="[(val: number) => val >= 0 || $t('validation.positiveValue')]"
             >
               <template v-slot:prepend>
                 <q-icon name="opacity" color="amber" size="sm" />
@@ -163,7 +163,7 @@
               outlined
               dense
               class="q-mb-sm"
-              :rules="[(val: number) => val >= 0 || $t('fluidBalance.positiveValue')]"
+              :rules="[(val: number) => val >= 0 || $t('validation.positiveValue')]"
             >
               <template v-slot:prepend>
                 <q-icon name="straighten" color="brown" size="sm" />
@@ -180,7 +180,7 @@
               outlined
               dense
               class="q-mb-sm"
-              :rules="[(val: number) => val >= 0 || $t('fluidBalance.positiveValue')]"
+              :rules="[(val: number) => val >= 0 || $t('validation.positiveValue')]"
             >
               <template v-slot:prepend>
                 <q-icon name="sick" color="green" size="sm" />
@@ -197,7 +197,7 @@
               outlined
               dense
               class="q-mb-sm"
-              :rules="[(val: number) => val >= 0 || $t('fluidBalance.positiveValue')]"
+              :rules="[(val: number) => val >= 0 || $t('validation.positiveValue')]"
             >
               <template v-slot:prepend>
                 <q-icon name="healing" color="brown-5" size="sm" />
@@ -214,7 +214,7 @@
               outlined
               dense
               class="q-mb-md"
-              :rules="[(val: number) => val >= 0 || $t('fluidBalance.positiveValue')]"
+              :rules="[(val: number) => val >= 0 || $t('validation.positiveValue')]"
               :hint="$t('fluidBalance.insensibleHint')"
             >
               <template v-slot:prepend>

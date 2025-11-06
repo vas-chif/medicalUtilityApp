@@ -51,7 +51,7 @@
               v-model.number="formData.age"
               type="number"
               :label="$t('egfr.age')"
-              suffix="anni"
+              :suffix="$t('common.years')"
               outlined
               dense
               class="q-mb-sm"
@@ -435,7 +435,7 @@ const calculateCKDEPI = (): number => {
   if (gender === 'female') {
     kappa = 0.7;
     alpha = creatinine <= 0.7 ? -0.329 : -1.209;
-    genderFactor = creatinine <= 0.7 ? 1.018 : 1.018;
+    genderFactor = 1.018;
   } else {
     kappa = 0.9;
     alpha = creatinine <= 0.9 ? -0.411 : -1.209;

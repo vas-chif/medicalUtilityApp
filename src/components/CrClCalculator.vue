@@ -51,7 +51,7 @@
               v-model.number="formData.age"
               type="number"
               :label="$t('crcl.age')"
-              suffix="anni"
+              :suffix="$t('common.years')"
               outlined
               dense
               class="q-mb-sm"
@@ -68,7 +68,7 @@
               type="number"
               step="0.1"
               :label="$t('crcl.weight')"
-              suffix="kg"
+              :suffix="$t('common.kg')"
               outlined
               dense
               class="q-mb-sm"

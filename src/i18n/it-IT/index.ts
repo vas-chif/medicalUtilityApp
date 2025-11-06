@@ -22,6 +22,8 @@ export default {
     attention: 'Attenzione',
     note: 'Nota',
     warning: 'Avviso',
+    years: 'anni',
+    kg: 'kg',
   },
 
   // Navigation
@@ -171,7 +173,6 @@ export default {
     dosingModerate: 'Moderata compromissione. La maggior parte dei farmaci eliminati per via renale richiede riduzione dosaggio (tipicamente 25-50%).',
     dosingSevere: 'Severa compromissione. Riduzione dosaggio significativa richiesta (50-75%). Considerare farmaci alternativi.',
     dosingEsrd: 'Malattia renale terminale. La maggior parte dei farmaci richiede aggiustamento importante o è controindicata. Consultare nefrologia e farmacista clinico.',
-    positiveValue: 'Inserire valore positivo',
   },
 
   // Fluid Balance Calculator
@@ -213,7 +214,6 @@ export default {
     notesMinus1000: 'Bilancio negativo severo (<-1L/24h). Rischio ipovolemia, shock, danno renale acuto. Espansione volemica urgente richiesta.',
     oliguriaNote: 'Oliguria rilevata (<400 mL/24h). Valutare funzione renale, perfusione, ostruzione.',
     polyuriaNote: 'Poliuria rilevata (>3L/24h). Considerare diabete insipido, eccesso diuretici, diuresi osmotica.',
-    positiveValue: 'Inserire valore positivo',
   },
 
   // Validation messages

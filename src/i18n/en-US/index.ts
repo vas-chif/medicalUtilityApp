@@ -22,6 +22,8 @@ export default {
     attention: 'Attention',
     note: 'Note',
     warning: 'Warning',
+    years: 'years',
+    kg: 'kg',
   },
 
   // Navigation
@@ -173,7 +175,6 @@ export default {
     dosingModerate: 'Moderate impairment. Most renally eliminated drugs require dose reduction (typically 25-50%).',
     dosingSevere: 'Severe impairment. Significant dose reduction required (50-75%). Consider alternative drugs.',
     dosingEsrd: 'End-stage renal disease. Most drugs require major adjustment or are contraindicated. Consult nephrology and clinical pharmacist.',
-    positiveValue: 'Enter positive value',
   },
 
   // Fluid Balance Calculator
@@ -215,7 +216,6 @@ export default {
     notesMinus1000: 'Severe negative balance (<-1L/24h). Risk of hypovolemia, shock, acute kidney injury. Urgent fluid resuscitation required.',
     oliguriaNote: 'Oliguria detected (<400 mL/24h). Assess kidney function, perfusion, obstruction.',
     polyuriaNote: 'Polyuria detected (>3L/24h). Consider diabetes insipidus, diuretic excess, osmotic diuresis.',
-    positiveValue: 'Enter positive value',
   },
 
   // Validation messages
