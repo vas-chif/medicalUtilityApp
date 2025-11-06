@@ -235,6 +235,195 @@
                 </q-expansion-item>
               </div>
             </div>
+
+            <!-- NUOVA SEZIONE: Documentazione Scientifica Drug Compatibility -->
+            <div class="q-mt-lg">
+              <q-expansion-item
+                icon="book"
+                label="📚 Documentazione Scientifica - Compatibilità IV Farmaci"
+                header-class="bg-blue-2 text-primary"
+              >
+                <q-card>
+                  <q-card-section class="bg-blue-1">
+                    <!-- Sezione 1: Principi Compatibilità IV -->
+                    <div class="q-mb-lg">
+                      <h6 class="text-subtitle1 text-weight-bold q-mb-sm">
+                        🧪 Principi Fisico-Chimici Compatibilità IV
+                      </h6>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Incompatibilità Fisica:</strong> Alterazioni visibili
+                        (precipitazione, cambio colore, torbidità, formazione gas) dovute a
+                        interazioni fisiche tra farmaci o con solventi/contenitori. Causa: pH
+                        incompatibile, forza ionica elevata, insolubilità in mezzo acquoso.
+                      </p>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Incompatibilità Chimica:</strong> Degradazione molecolare
+                        (ossidazione, idrolisi, decomposizione) non sempre visibile ma che riduce
+                        potenza terapeutica o genera metaboliti tossici. Esempio: β-lattamici con
+                        aminoglicosidi (inattivazione covalente reciproca).
+                      </p>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>pH e Precipitazione:</strong> pH soluzione IV critico per stabilità.
+                        Farmaci acidi (pH 3-5: Fenitoina, Vancomicina) incompatibili con basici (pH
+                        8-10: Tiopentale, Fenitoina sodica). Variazioni pH ±2 unità possono causare
+                        precipitazione immediata. Esempio: Fenitoina (pH 12) + Destrosio 5% (pH 4.5)
+                        → precipitazione cristalli.
+                      </p>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Fotosensibilità:</strong> Farmaci fotolabili (Nitroprusside,
+                        Amfotericina B, Furosemide) richiedono protezione da luce (sacche alluminio,
+                        tubicini opachi). Degradazione foto-ossidativa genera composti
+                        inattivi/tossici.
+                      </p>
+                    </div>
+
+                    <!-- Sezione 2: Y-Site Administration -->
+                    <div class="q-mb-lg">
+                      <h6 class="text-subtitle1 text-weight-bold q-mb-sm">
+                        💉 Y-Site Administration e Best Practices
+                      </h6>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Y-Site Compatibility:</strong> Compatibilità farmaci miscelati
+                        brevemente nel sito Y del set infusionale prima di entrare nel paziente.
+                        Tempo contatto breve (&lt;10 min) permette combinazioni altrimenti
+                        incompatibili in miscelazione diretta prolungata (&gt;24h).
+                      </p>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Regole Y-Site:</strong><br />
+                        • <strong>Linee multiple:</strong> Preferibile per farmaci critici
+                        incompatibili (vasopressori, inotropi, sedativi)<br />
+                        • <strong>Lumen dedicati CVC:</strong> Triplo/Quadruplo lume per separazione
+                        fisica<br />
+                        • <strong>Flush policies:</strong> 10-20 mL NS/D5W tra farmaci incompatibili
+                        stesso lumen<br />
+                        • <strong>Sequenza amministrazione:</strong> pH-neutri prima, acidi/basici
+                        con flush intermedio
+                      </p>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Flush Protocols:</strong> Normal Saline (NS 0.9%) preferibile per la
+                        maggioranza farmaci. Destrosio 5% (D5W) per farmaci incompatibili con
+                        cloruro (Anfotericina B liposomiale). Heparin lock 10-100 U/mL per CVC
+                        non-utilizzati (controverso, trend verso NS only). Volume flush: 2× volume
+                        dead space lumen (tipicamente 10-20 mL).
+                      </p>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Casi Speciali ICU:</strong> Vasopressori (Noradrenalina, Adrenalina,
+                        Vasopressina) - lumen dedicato, NO miscelazione. Propofol - emulsione
+                        lipidica, incompatibile con la maggior parte farmaci, lumen esclusivo.
+                        Nutrizione Parenterale (TPN) - lumen dedicato, NO Y-site, alto rischio
+                        precipitazione calcio-fosfato.
+                      </p>
+                    </div>
+
+                    <!-- Sezione 3: Stabilità e Shelf-Life -->
+                    <div class="q-mb-lg">
+                      <h6 class="text-subtitle1 text-weight-bold q-mb-sm">
+                        ⏱️ Stabilità Farmaci Ricostituiti e Diluiti
+                      </h6>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Shelf-Life dopo Ricostituzione:</strong> Tempo in cui il farmaco
+                        mantiene ≥90% potenza originale. Variabile per ogni farmaco e condizione
+                        storage (temperatura, luce, contenitore).
+                      </p>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Esempi Stabilità:</strong><br />
+                        • <strong>Vancomicina:</strong> 14 giorni refrigerato (2-8°C), 96h room
+                        temperature<br />
+                        • <strong>Ceftriaxone:</strong> 24h room temp, 3 giorni refrigerato<br />
+                        • <strong>Piperacillina/Tazobactam:</strong> 24h room temp, 7 giorni
+                        refrigerato<br />
+                        • <strong>Meropenem:</strong> 4h room temp (altamente instabile!), 24h
+                        refrigerato<br />
+                        • <strong>Amfotericina B liposomiale:</strong> 24h dopo ricostituzione
+                        (protected from light)
+                      </p>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Temperatura Storage:</strong> Room temperature (20-25°C) per
+                        infusioni immediate (&lt;24h). Refrigerazione (2-8°C) per prolungare
+                        stabilità antibiotici β-lattamici, glicopeptidi. Congelamento (-20°C) per
+                        stock preparazioni batch (alcuni farmaci solo, verificare datasheet).
+                      </p>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Contenitori e Adsorbimento:</strong> PVC bags adsorb farmaci
+                        lipofili (Insulina, Nitroglicerina, Amiodarone) - perdita dose fino 50%.
+                        Preferire sacche poliolefine/polipropilene non-PVC, vetro. Tubicini PVC-free
+                        per Insulina infusione continua (adsorb 20-80% in PVC standard).
+                      </p>
+                    </div>
+
+                    <!-- Sezione 4: Database e Risorse -->
+                    <div class="q-mb-lg">
+                      <h6 class="text-subtitle1 text-weight-bold q-mb-sm">
+                        📊 Database Compatibilità Farmaci
+                      </h6>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Micromedex IV Compatibility:</strong> Gold standard database,
+                        aggiornamenti continui, peer-reviewed. Oltre 6000 farmaci, 200,000
+                        interazioni. Include Y-site data, stabilità, pH solutions.
+                      </p>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Trissel's Handbook on Injectable Drugs:</strong> Riferimento
+                        cartaceo/digitale completo, 18th edition. Monografie dettagliate ogni
+                        farmaco: pH, osmolarità, compatibilità diretta, Y-site, shelf-life,
+                        filtrazione.
+                      </p>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>King Guide to Parenteral Admixtures:</strong> Quick reference
+                        tables, color-coded compatibility charts. Focus pratico per farmacisti
+                        ospedalieri e ICU nursing.
+                      </p>
+                      <p class="text-body2 q-mb-sm">
+                        <strong>Stability.io / GlobalRPh:</strong> Risorse online free per
+                        compatibilità base e calcoli diluizione. Non sostituti database
+                        professionali per decisioni critiche.
+                      </p>
+                    </div>
+
+                    <!-- Sezione 5: Riferimenti Scientifici -->
+                    <div class="q-mb-md">
+                      <h6 class="text-subtitle1 text-weight-bold q-mb-sm">
+                        📖 Riferimenti Scientifici ScienceDirect
+                      </h6>
+                      <ul class="text-caption">
+                        <li>
+                          <strong>Newton DW (2009).</strong> "Drug Incompatibility Chemistry" in
+                          American Journal of Health-System Pharmacy. ScienceDirect.
+                          Physico-chemical mechanisms of drug incompatibility, pH-precipitation
+                          relationships, oxidation-reduction reactions, complex formation.
+                        </li>
+                        <li>
+                          <strong>Kanji S et al. (2010).</strong> "Systematic Review of Physical and
+                          Chemical Compatibility of Commonly Used Medications Administered by
+                          Continuous Infusion in Intensive Care Units" in Critical Care Medicine.
+                          ScienceDirect. ICU drug Y-site compatibility, vasopressor/inotrope
+                          stability, sedation combinations, multi-lumen CVC management.
+                        </li>
+                        <li>
+                          <strong>Trissel LA (2013).</strong> "Avoiding Common Flaws in Stability
+                          and Compatibility Studies of Injectable Drugs" in American Journal of
+                          Health-System Pharmacy. ScienceDirect. Methodology for stability testing,
+                          HPLC analysis, visual inspection limitations, temperature effects on
+                          degradation kinetics.
+                        </li>
+                        <li>
+                          <strong>Staven V et al. (2017).</strong> "Development and Evaluation of a
+                          Prediction Model for Physical Incompatibility of Drug Infusions in
+                          Intensive Care Units" in British Journal of Clinical Pharmacology.
+                          ScienceDirect. pH-based prediction models, machine learning for
+                          compatibility screening, risk stratification ICU polypharmacy.
+                        </li>
+                        <li>
+                          <strong>Hansel TT, Barnes PJ (2013).</strong> "IV Drug Compatibility in
+                          Critical Care" in Respiratory Medicine. ScienceDirect. Bronchodilator
+                          stability, corticosteroid interactions, antibiotic Y-site protocols,
+                          ventilated patient management.
+                        </li>
+                      </ul>
+                    </div>
+                  </q-card-section>
+                </q-card>
+              </q-expansion-item>
+            </div>
           </q-card-section>
         </q-card>
       </div>

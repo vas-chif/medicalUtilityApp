@@ -391,19 +391,19 @@ const navigateTo = async (path: string) => {
           </q-item-section>
         </q-item>
 
-        <!-- Dosage Calculator -->
+        <!-- Pharmacology (unificata: Dosage + Compatibility + Dilution + Infusion) -->
         <q-item
           clickable
-          :active="$route.path === '/dosage-calculator'"
-          @click="navigateTo('/dosage-calculator')"
+          :active="$route.path === '/pharmacology'"
+          @click="navigateTo('/pharmacology')"
           class="medical-menu-item"
         >
           <q-item-section avatar>
             <q-icon name="medication" color="red-6" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Dosage Calculator</q-item-label>
-            <q-item-label caption>Calcolo dosi farmacologiche</q-item-label>
+            <q-item-label>Pharmacology</q-item-label>
+            <q-item-label caption>Dosage, Compatibility, Dilution, Infusion</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -584,23 +584,25 @@ const navigateTo = async (path: string) => {
               </q-card-section>
             </q-card>
 
-            <!-- Dosage Calculator -->
+            <!-- Pharmacology (unificata) -->
             <q-card
               v-show="isToolVisible('dosage-calculator')"
               class="medical-tool-card cursor-pointer"
-              @click="navigateTo('/dosage-calculator')"
+              @click="navigateTo('/pharmacology')"
             >
               <q-card-section class="tool-card-content">
                 <div class="tool-icon-container q-mb-md">
                   <q-icon name="medication" size="3rem" class="tool-icon" />
                 </div>
-                <h5 class="tool-title text-h6 q-mb-sm">Dosage Calculator</h5>
+                <h5 class="tool-title text-h6 q-mb-sm">Clinical Pharmacology</h5>
                 <p class="tool-description text-body2 q-mb-md">
-                  Calcolo preciso delle dosi farmacologiche per peso, età e funzione renale
+                  Dosaggio, compatibilità IV, diluizioni e velocità infusione farmaci
                 </p>
                 <div class="tool-tags">
                   <q-chip size="sm" color="red-1" text-color="red-8">Farmacologia</q-chip>
                   <q-chip size="sm" color="red-1" text-color="red-8">Posologia</q-chip>
+                  <q-chip size="sm" color="purple-1" text-color="purple-8">Diluizione</q-chip>
+                  <q-chip size="sm" color="purple-1" text-color="purple-8">Infusion Rate</q-chip>
                 </div>
               </q-card-section>
             </q-card>
@@ -626,7 +628,8 @@ const navigateTo = async (path: string) => {
               </q-card-section>
             </q-card>
 
-            <!-- Drug Compatibility -->
+            <!-- Drug Compatibility - NASCOSTO: ora integrato in PharmacologyPage -->
+            <!--
             <q-card
               v-show="isToolVisible('drug-compatibility')"
               class="medical-tool-card"
@@ -646,7 +649,6 @@ const navigateTo = async (path: string) => {
                     >Terapia Intensiva</q-chip
                   >
                 </div>
-                <!-- Badge Coming Soon -->
                 <div class="coming-soon-badge">
                   <q-chip color="orange" text-color="white" icon="schedule" size="sm">
                     In Sviluppo - PDF Extraction in corso
@@ -654,6 +656,7 @@ const navigateTo = async (path: string) => {
                 </div>
               </q-card-section>
             </q-card>
+            -->
           </div>
 
           <!-- Nessun risultato -->
