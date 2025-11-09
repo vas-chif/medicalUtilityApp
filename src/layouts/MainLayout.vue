@@ -466,7 +466,7 @@ const navigateTo = async (path: string) => {
       <!-- Footer Drawer -->
       <div class="absolute-bottom q-pa-sm text-center">
         <div class="text-caption text-grey-6">© 2025 Medical Utility Pro</div>
-        <div class="text-caption text-grey-5">NYK-AI Development</div>
+        <div class="text-caption text-grey-5">Vasile Chifeac</div>
       </div>
     </q-drawer>
 

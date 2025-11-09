@@ -1,6 +1,7 @@
 .DS_Store
 .thumbs.db
 node_modules
+comands.txt
 
 # Quasar core related directories
 .quasar
@@ -55,3 +56,13 @@ PROMPT_MEDICAL_UTILITY_PROJECT.md
 
 # PDF files (keep in repo but ignore future uploads)
 # src/assets/*.pdf
+# === ENVIRONMENT VARIABLES ===
+# File con segreti e chiavi API - MAI su GitHub!
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# 🔐 CYBERSECURITY - Environment Master File
+.env.master

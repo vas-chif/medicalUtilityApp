@@ -120,11 +120,14 @@ IV drug interaction and incompatibility checking
 - **Reactive State** - Vue 3 Composition API with refs/computed
 - **Component-Based** - Reusable medical components
 - **Type-Safe** - Full TypeScript coverage
+- **Smart Environment** - 🆕 Auto-detection dev/prod with cost optimization
+- **Professional Logging** - 🆕 Integrated secure logging system
 
 ### Data Layer
 - **Local Database** - TypeScript drug database (src/data/drugs.ts)
-- **Future Ready** - Firebase Firestore integration prepared
+- **Firebase Ready** - Firestore integration with auto-switching configs
 - **Cache Strategy** - Browser cache for performance
+- **Environment Detection** - 🆕 Automatic dev/prod configuration loading
 
 ---
 
@@ -161,6 +164,74 @@ npm run build
 ### Development Server
 
 Access the app at: **http://localhost:9000**
+
+---
+
+## 🚀 Deployment
+
+### 🧠 Smart Environment Detection
+
+Medical Utility Pro uses **automatic environment detection** to switch between development and production configurations:
+
+```bash
+# Development (localhost)
+./deploy.sh dev
+# ✅ Uses .env.development
+# ✅ Remote logging DISABLED (free!)
+# ✅ Debug mode ON
+
+# Production (Firebase Hosting)
+./deploy.sh prod
+# ✅ Uses .env.production
+# ✅ Remote logging ENABLED
+# ✅ Analytics ENABLED
+```
+
+### Quick Deploy
+
+```bash
+# Development deploy
+./deploy.sh dev
+
+# Production deploy
+./deploy.sh prod
+```
+
+### Manual Deploy
+
+```bash
+# 1. Copy environment file
+cp .env.production .env
+
+# 2. Build
+yarn build
+
+# 3. Deploy to Firebase
+firebase deploy --only hosting
+```
+
+📖 **Full documentation**: See [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)
+
+### 🧠 How It Works
+
+The **Smart Environment System** automatically detects your environment:
+
+```typescript
+// Automatic detection priority:
+// 1. Hostname (localhost → dev, *.firebaseapp.com → prod)
+// 2. Environment variables (import.meta.env.MODE)
+// 3. URL patterns (staging., dev., test.)
+// 4. Default: production (safe fallback)
+```
+
+**Cost Optimization:**
+
+| Feature            | Development | Production |
+| ------------------ | ----------- | ---------- |
+| Remote Logging     | ❌ Disabled | ✅ Enabled |
+| Analytics          | ❌ Disabled | ✅ Enabled |
+| Debug Mode         | ✅ ON       | ❌ OFF     |
+| **Firebase Costs** | **€0**      | Optimized  |
 
 ---
 
@@ -365,7 +436,7 @@ This project is licensed under the **MIT License**.
 
 <div align="center">
 
-**Made with ❤️ by NYK-AI Development**
+**Made with ❤️ by Vasile Chifeac**
 
 ⭐ Star this repo if you find it useful! ⭐
 

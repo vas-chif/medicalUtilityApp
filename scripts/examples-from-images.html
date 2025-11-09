@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Start Example - Drug Data Entry</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 30px;
+      }
+
+      h1 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 2rem;
+      }
+
+      .example-section {
+        background: #f8f9fa;
+        border-left: 4px solid #27ae60;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+      }
+
+      .example-title {
+        font-weight: 600;
+        color: #27ae60;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+      }
+
+      .image-ref {
+        background: #fffbea;
+        border: 2px solid #f39c12;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+      }
+
+      .drug-entry {
+        background: white;
+        border: 2px solid #e0e0e0;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+      }
+
+      .drug-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .field {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 8px;
+        align-items: flex-start;
+      }
+
+      .field-label {
+        font-weight: 600;
+        color: #667eea;
+        min-width: 150px;
+      }
+
+      .field-value {
+        color: #2c3e50;
+        flex: 1;
+      }
+
+      .compatibility-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 80px 150px;
+        gap: 10px;
+        padding: 8px;
+        border-bottom: 1px solid #e0e0e0;
+        align-items: center;
+      }
+
+      .compatibility-row:first-child {
+        font-weight: 700;
+        background: #667eea;
+        color: white;
+        border-radius: 8px 8px 0 0;
+      }
+
+      .code-compatible {
+        background: #27ae60;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 4px;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .code-y-site {
+        background: #f39c12;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 4px;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .code-incompatible {
+        background: #e74c3c;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 4px;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .badge-cvc {
+        background: #95e1d3;
+        color: #2c3e50;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-right: 8px;
+      }
+
+      .badge-light {
+        background: #e67e22;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+      }
+
+      .note {
+        background: #e8f4ff;
+        border-left: 3px solid #3498db;
+        padding: 12px;
+        margin-top: 15px;
+        border-radius: 4px;
+        font-size: 0.95rem;
+      }
+
+      .matrix-section {
+        margin-top: 30px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>📖 Quick Start Example - Dati dalle Immagini</h1>
+      <p style="color: #7f8c8d; margin-bottom: 30px">
+        Esempi concreti estratti dalle 7 immagini della Tabella Compatibilità Farmaci del San
+        Gerardo Hospital
+      </p>
+
+      <!-- ESEMPIO 1: AMIODARONE -->
+      <div class="example-section">
+        <div class="example-title">🔍 Esempio 1: AMIODARONE (Immagine 1, Riga 1)</div>
+
+        <div class="image-ref">
+          <strong>📸 Riferimento Immagine 1:</strong> Prima riga della tabella dopo l'intestazione
+        </div>
+
+        <div class="drug-entry">
+          <div class="drug-name">
+            Amiodarone
+            <span class="badge-cvc">CVC</span>
+            <span class="badge-light">⚠️ LIGHT</span>
+          </div>
+
+          <div class="field">
+            <div class="field-label">ID:</div>
+            <div class="field-value">amiodarone</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Principio Attivo:</div>
+            <div class="field-value">Amiodarone Hydrochloride</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Categoria:</div>
+            <div class="field-value">antiarrhythmic</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Concentrazione:</div>
+            <div class="field-value">> 2mg/ml CVC+ | non diluito/Dma+/ml CVC+</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Via:</div>
+            <div class="field-value">intravenous</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Richiede CVC:</div>
+            <div class="field-value">
+              ✅ YES (indicato come "si" nella colonna "VIA CENTRALE / PERIFERICA")
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Fotosensibile:</div>
+            <div class="field-value">
+              ✅ YES (indicato con icona "CONSERVARE AL RIPARO DALLA LUCE")
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Note Cliniche:</div>
+            <div class="field-value">
+              Class III antiarrhythmic - CVC required for concentrations > 2mg/ml. PROTECT FROM
+              LIGHT. Monitor for QT prolongation.
+            </div>
+          </div>
+
+          <div class="note">
+            💡 <strong>Come trovare nella tabella:</strong> Cerca "AMIODARONE" nella prima colonna
+            (sinistra), poi guarda le colonne successive per concentrazione e indicazioni CVC/light.
+          </div>
+        </div>
+
+        <!-- Compatibility Matrix Example -->
+        <div class="matrix-section">
+          <div class="compatibility-row">
+            <div>Drug 1</div>
+            <div>Drug 2</div>
+            <div>Code</div>
+            <div>Meaning</div>
+          </div>
+          <div class="compatibility-row">
+            <div>Amiodarone</div>
+            <div>Dobutamine</div>
+            <div><span class="code-incompatible">I</span></div>
+            <div>Incompatible (Red cell in table)</div>
+          </div>
+          <div class="compatibility-row">
+            <div>Amiodarone</div>
+            <div>Dopamine</div>
+            <div><span class="code-y-site">Y</span></div>
+            <div>Y-site only (Yellow cell)</div>
+          </div>
+          <div class="compatibility-row">
+            <div>Amiodarone</div>
+            <div>Fentanyl</div>
+            <div><span class="code-compatible">C</span></div>
+            <div>Compatible (Green cell)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESEMPIO 2: DOPAMINE -->
+      <div class="example-section">
+        <div class="example-title">🔍 Esempio 2: DOPAMINE (Immagine 4, visibile nella matrice)</div>
+
+        <div class="drug-entry">
+          <div class="drug-name">
+            Dopamine
+            <span class="badge-light">⚠️ LIGHT</span>
+          </div>
+
+          <div class="field">
+            <div class="field-label">ID:</div>
+            <div class="field-value">dopamine</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Principio Attivo:</div>
+            <div class="field-value">Dopamine Hydrochloride</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Categoria:</div>
+            <div class="field-value">vasopressor</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Concentrazione:</div>
+            <div class="field-value">40mg/mL (standard dilution 400mg/250mL)</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Richiede CVC:</div>
+            <div class="field-value">❌ NO</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Fotosensibile:</div>
+            <div class="field-value">✅ YES</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Note Cliniche:</div>
+            <div class="field-value">
+              Vasopressor - Dose-dependent effects: low dose (renal), medium dose (cardiac), high
+              dose (vasoconstriction). Light sensitive.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESEMPIO 3: FENTANYL -->
+      <div class="example-section">
+        <div class="example-title">🔍 Esempio 3: FENTANYL (Immagine 3/4, analgesico comune)</div>
+
+        <div class="drug-entry">
+          <div class="drug-name">Fentanyl</div>
+
+          <div class="field">
+            <div class="field-label">ID:</div>
+            <div class="field-value">fentanyl</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Principio Attivo:</div>
+            <div class="field-value">Fentanyl Citrate</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Categoria:</div>
+            <div class="field-value">analgesic</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Concentrazione:</div>
+            <div class="field-value">50mcg/mL</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Richiede CVC:</div>
+            <div class="field-value">❌ NO</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Fotosensibile:</div>
+            <div class="field-value">❌ NO</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Note Cliniche:</div>
+            <div class="field-value">
+              Potent opioid analgesic - 100x more potent than morphine. Rapid onset, short duration.
+              Watch for respiratory depression.
+            </div>
+          </div>
+
+          <div class="note">
+            💡 <strong>Compatibilità Note:</strong> Fentanyl è generalmente compatibile (C - verde)
+            con la maggior parte dei farmaci comuni in ICU (vasopressori, sedativi, elettroliti).
+          </div>
+        </div>
+      </div>
+
+      <!-- ISTRUZIONI PRATICHE -->
+      <div class="example-section">
+        <div class="example-title">📝 Come Usare Questi Esempi nel Tool Web</div>
+
+        <ol style="margin-left: 20px; line-height: 1.8">
+          <li><strong>Apri il tool:</strong> <code>drug-data-entry-tool.html</code> nel browser</li>
+          <li><strong>Copia i dati</strong> da questi esempi nei campi corrispondenti</li>
+          <li>
+            <strong>Per ogni farmaco:</strong>
+            <ul style="margin-left: 20px; margin-top: 8px">
+              <li>Nome Farmaco = "Amiodarone"</li>
+              <li>Principio Attivo = "Amiodarone Hydrochloride"</li>
+              <li>Categoria = Seleziona "antiarrhythmic" dal dropdown</li>
+              <li>Concentrazione = Copia dalla tabella</li>
+              <li>✅ Spunta "Richiede CVC" se vedi "si" nella colonna</li>
+              <li>✅ Spunta "Fotosensibile" se vedi icona luce</li>
+              <li>Note Cliniche = Copia o scrivi note personalizzate</li>
+            </ul>
+          </li>
+          <li><strong>Clicca "Aggiungi Farmaco"</strong></li>
+          <li><strong>Ripeti per tutti i farmaci</strong> dalle 7 immagini</li>
+          <li><strong>Ogni 10-20 farmaci:</strong> Clicca "Scarica JSON" per backup</li>
+          <li><strong>Alla fine:</strong> Clicca "Genera Codice TypeScript"</li>
+        </ol>
+
+        <div class="note" style="margin-top: 20px">
+          🎯 <strong>Tip:</strong> Inizia con i farmaci più comuni (vasopressori: norepinephrine,
+          dopamine, dobutamine | sedativi: midazolam, propofol, fentanyl | antibiotici comuni) e
+          aggiungi gli altri progressivamente.
+        </div>
+      </div>
+
+      <!-- RIFERIMENTI TABELLA -->
+      <div class="example-section" style="border-left-color: #3498db">
+        <div class="example-title" style="color: #3498db">📚 Riferimenti Rapidi dalla Tabella</div>
+
+        <div style="margin-bottom: 15px">
+          <strong>Colonna "VIA CENTRALE / PERIFERICA":</strong>
+          <ul style="margin-left: 20px; margin-top: 8px; line-height: 1.6">
+            <li><strong>"si"</strong> in verde chiaro = CVC necessario</li>
+            <li><strong>"> Xmg/ml CVC+"</strong> = CVC richiesto sopra quella concentrazione</li>
+            <li><strong>"CVC+"</strong> = CVC sempre richiesto</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 15px">
+          <strong>Icone Speciali:</strong>
+          <ul style="margin-left: 20px; margin-top: 8px; line-height: 1.6">
+            <li>🔒 + "si" = CONSERVARE AL RIPARO DALLA LUCE</li>
+            <li>🔒 + icona sole = CONSERVARE+SOMMINISTRARE AL RIPARO DALLA LUCE</li>
+          </ul>
+        </div>
+
+        <div>
+          <strong>Codici Compatibilità nella Matrice:</strong>
+          <ul style="margin-left: 20px; margin-top: 8px; line-height: 1.6">
+            <li>🟢 <strong>Cella Verde</strong> = C (Compatible)</li>
+            <li>🟡 <strong>Cella Gialla</strong> = Y (Y-site only)</li>
+            <li>🔴 <strong>Cella Rossa</strong> = I (Incompatible)</li>
+            <li>🟠 <strong>Cella Arancione</strong> = ! (Conflicting data)</li>
+            <li>⚪ <strong>Cella Grigia/Vuota</strong> = '' (No data)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
