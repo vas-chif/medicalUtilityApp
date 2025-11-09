@@ -1,1 +1,26 @@
-// app global css in SCSS form
+html {
+  // scroll-behavior: smooth;
+  @import url('https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap');
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  &:hover {
+    color: $secondary;
+  }
+}
+
+.created-by {
+  text-align: center;
+
+  & span:hover {
+    color: #2b0545;
+    & .unique {
+      color: #b43030;
+    }
+  }
+}

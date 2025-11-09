@@ -466,7 +466,18 @@ const navigateTo = async (path: string) => {
       <!-- Footer Drawer -->
       <div class="absolute-bottom q-pa-sm text-center">
         <div class="text-caption text-grey-6">© 2025 Medical Utility Pro</div>
-        <div class="text-caption text-grey-5">Vasile Chifeac</div>
+        <div class="text-caption text-grey-5">
+          <a
+            class="created-by text-no-wrap"
+            href="https://uniqueyouagency.com/#/"
+            target="_blank"
+            rel="noopener noreferrer"
+            tabindex="6"
+            aria-label="Edit by: UniqueYouAgency"
+          >
+            <span>Unique<span class="unique">You</span>Agency</span>
+          </a>
+        </div>
       </div>
     </q-drawer>
 

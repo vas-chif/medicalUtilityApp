@@ -317,6 +317,6 @@ Se hai problemi:
 
 ---
 
-**Created by:** NYK-AI Development  
+**Created by:** Vasile Chifeac && UniqueYouAgency
 **Version:** 1.0.0  
 **Date:** 2024-11-07

@@ -1,0 +1,12 @@
+# Python dependencies for Medical Utility Pro scripts
+# Install: pip install -r requirements.txt
+
+# Database
+psycopg2-binary==2.9.9
+
+# Data manipulation
+pandas==2.1.4
+
+# Google Sheets API
+gspread==6.0.0
+google-auth==2.25.2
