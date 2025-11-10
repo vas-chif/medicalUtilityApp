@@ -267,7 +267,8 @@ Ti consiglio FORTEMENTE di cambiarla per sicurezza.
 ## 🎯 STACK TECNOLOGICO
 - **Frontend**: TypeScript, Quasar, Vue.js
 - **Package Manager**: Yarn (OBBLIGATORIO - mai npm!)
-- **Backend**: Python, Firebase, Docker
+- **Backend**: Python, Firebase, Docker, Google Apps Script v2.2.0 🆕
+- **Database**: Google Sheets (156+ farmaci) 🆕
 - **AI/ML**: Ollama, PyTorch, LangChain, ChromaDB
 - **AI Assistant in VS Code**: Continue.dev con Ollama locale (Llama 3.2 3B, CodeLlama 7B)
 - **Environment**: Smart auto-detection system (dev/prod) 🆕
@@ -1133,7 +1134,635 @@ Il sistema rileva automaticamente l'ambiente:
 
 ---
 
-## 🎯 PROSSIMI PASSI
+## 📊 GOOGLE APPS SCRIPT - BEST PRACTICES
+
+### **Quando Modificare Google Apps Script**
+
+**File:** `scripts/google-sheets-interface.gs` (2091 righe)
+
+**Workflow standard:**
+
+1. 📖 Apri file locale in VS Code
+2. ✏️ Fai modifiche (es. nuova funzione)
+3. 📋 Copia codice completo
+4. 🌐 Apri Google Apps Script Editor
+5. 📝 Incolla e salva
+6. 🧪 Testa con menu "🏥 Drug Compatibility"
+7. ✅ Valida risultati
+8. 💾 Commit su Git
+
+### **Debugging Google Apps Script**
+
+**Usa Logger.log() per debugging:**
+
+```javascript
+function debugFunction() {
+  Logger.log('=== DEBUG START ===');
+  Logger.log('Variable value: ' + myVar);
+  Logger.log('Array length: ' + myArray.length);
+  Logger.log('=== DEBUG END ===');
+}
+
+// Visualizza logs:
+// Tools > Script Editor > View > Logs
+// oppure Ctrl+Enter
+```
+
+**Mai usare console.log() in Apps Script!**
+
+- ❌ `console.log()` non funziona
+- ✅ `Logger.log()` per debugging
+- ✅ `Browser.msgBox()` per alert utente
+- ✅ `SpreadsheetApp.getUi().alert()` per notifiche
+
+### **Struttura Codice Apps Script**
+
+**Menu principale:**
+
+```javascript
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('🏥 Drug Compatibility')
+    .addItem('📝 Single Entry Mode', 'showSingleEntryDialog')
+    .addItem('📦 BULK Entry Mode', 'showBulkModeDialog')
+    .addItem('➕ Add New Drug', 'addNewDrugAlphabetically')
+    .addItem('📊 Statistics', 'showStatistics')
+    .addToUi();
+}
+```
+
+**Best practices:**
+
+- ✅ Emoji nei nomi menu (visibilità)
+- ✅ Nomi funzioni descrittivi (camelCase)
+- ✅ Separazione logica (dialog, processing, helpers)
+- ✅ Error handling con try/catch
+- ✅ Validazione input utente
+
+### **Cell Colorization Rules**
+
+```javascript
+function getColorForValue(value) {
+  switch (value) {
+    case 'C':
+      return '#90EE90'; // Verde (compatibile)
+    case 'Y':
+      return '#FFD580'; // Arancione (attenzione)
+    case 'I':
+      return '#FFB6C1'; // Rosso (incompatibile)
+    case '!':
+      return '#FFD966'; // Giallo (conflitto letteratura)
+    default:
+      return '#FFFFFF'; // Bianco (vuoto)
+  }
+}
+```
+
+**Applicazione colori:**
+
+```javascript
+function applyBatchUpdates(updates) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+
+  updates.forEach(function (update) {
+    var cell = sheet.getRange(update.row, update.col);
+    cell.setValue(update.value);
+    cell.setBackground(update.color); // ✅ Colore celle
+    cell.setFontColor('#000000'); // ✅ Testo nero (leggibilità)
+  });
+}
+```
+
+### **Performance Optimization**
+
+**BULK Mode (10x faster):**
+
+```javascript
+// ❌ LENTO - 100 operazioni separate
+for (var i = 0; i < drugs.length; i++) {
+  var cell = sheet.getRange(row, col + i);
+  cell.setValue(compatibility[i]);
+  cell.setBackground(getColorForValue(compatibility[i]));
+}
+
+// ✅ VELOCE - Batch update
+var updates = [];
+for (var i = 0; i < drugs.length; i++) {
+  updates.push({
+    row: row,
+    col: col + i,
+    value: compatibility[i],
+    color: getColorForValue(compatibility[i]),
+  });
+}
+applyBatchUpdates(updates); // 1 operazione batch
+```
+
+**Regole performance:**
+
+1. ✅ Batch operations dove possibile
+2. ✅ Minimizzare chiamate `getRange()`
+3. ✅ Cache risultati ripetuti
+4. ✅ Evitare loop con `setValue()` singolo
+5. ✅ Usare `getValues()` invece di `getValue()` multipli
+
+### **Integration con TypeScript**
+
+**Frontend chiama Apps Script via Web App:**
+
+```typescript
+// src/composables/useDrugCompatibility.ts
+interface DrugCompatibility {
+  drugA: string;
+  drugB: string;
+  compatibility: 'C' | 'Y' | 'I' | '!';
+  via?: string;
+  note?: string;
+}
+
+export function useDrugCompatibility() {
+  const SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
+
+  const fetchCompatibility = async (drugA: string, drugB: string): Promise<DrugCompatibility> => {
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ drugA, drugB }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch compatibility');
+      }
+
+      return response.json();
+    } catch (error) {
+      logger.error('Drug compatibility fetch failed', { drugA, drugB, error });
+      throw error;
+    }
+  };
+
+  return { fetchCompatibility };
+}
+```
+
+**Apps Script Web App endpoint:**
+
+```javascript
+function doPost(e) {
+  try {
+    var params = JSON.parse(e.postData.contents);
+    var drugA = params.drugA;
+    var drugB = params.drugB;
+
+    var compatibility = getCompatibility(drugA, drugB);
+
+    return ContentService.createTextOutput(JSON.stringify(compatibility)).setMimeType(
+      ContentService.MimeType.JSON,
+    );
+  } catch (error) {
+    Logger.log('Error: ' + error.message);
+    return ContentService.createTextOutput(JSON.stringify({ error: error.message })).setMimeType(
+      ContentService.MimeType.JSON,
+    );
+  }
+}
+```
+
+### **Prompt Examples per Google Apps Script**
+
+**Aggiungere funzionalità:**
+
+> "Nel file `scripts/google-sheets-interface.gs`, aggiungi funzione `exportToCSV()` che esporta tutte le compatibilità in formato CSV. Usa `Utilities.formatString()` per formattazione corretta. Aggiungi voce menu '📥 Export CSV' sotto Statistics."
+
+**Fixare bug:**
+
+> "Nel BULK Mode, quando inserisco '!' come compatibility, il cell background non viene applicato. Verifica funzione `getColorForValue()` e `applyBatchUpdates()`. Il simbolo '!' deve avere background #FFD966 (giallo)."
+
+**Performance optimization:**
+
+> "La funzione `findDrugColumn()` viene chiamata 100+ volte in BULK Mode. Implementa caching con JavaScript Map per ridurre lookup. Aggiungi performance logging con `Logger.log(new Date().getTime())` prima e dopo batch operation."
+
+---
+
+## � MEDICAL CALCULATOR - DOCUMENTATION STANDARDS
+
+### **MANDATORY Structure for All Medical Calculators**
+
+Ogni calcolatore medico DEVE seguire questa struttura documentativa completa per garantire accuratezza clinica e utilità professionale.
+
+#### **📋 Sezioni Obbligatorie**
+
+**1. 📊 Definizione e Significato Clinico**
+
+Spiega:
+
+- Cos'è il parametro/indice calcolato
+- Perché è importante clinicamente
+- In quali contesti viene utilizzato
+- Quali decisioni cliniche supporta
+
+**Esempio:**
+
+```markdown
+### 📊 Definizione e Significato Clinico
+
+Il **Quoziente Respiratorio (QR)** è il rapporto tra produzione di CO2 (VCO2) e consumo di O2 (VO2).
+Indica quale substrato energetico (carboidrati, lipidi, proteine) il corpo sta metabolizzando.
+
+**Importanza clinica:**
+
+- Valutazione stato metabolico paziente
+- Guida nutrizione artificiale
+- Ottimizzazione svezzamento ventilatorio
+- Monitoraggio stress metabolico
+```
+
+**2. 🔬 Fisiologia e Meccanismo**
+
+Spiega i meccanismi fisiopatologici sottostanti:
+
+- Metabolismo aerobico vs anaerobico (se rilevante)
+- Meccanismi di danno o protezione (es. ventilazione protettiva)
+- Pathway biochimici coinvolti
+- Relazione con altri parametri clinici
+
+**Esempio:**
+
+```markdown
+### 🔬 Metabolismo Aerobico vs Anaerobico
+
+**Metabolismo Carboidrati (QR ≈ 1.0):**
+
+- Glucosio + 6O2 → 6CO2 + 6H2O
+- Rapporto 1:1 tra CO2 prodotta e O2 consumato
+
+**Metabolismo Lipidi (QR ≈ 0.7):**
+
+- Acidi grassi richiedono più O2 per essere ossidati
+- Minor produzione CO2 relativa
+```
+
+**3. 📏 Come si Misura/Calcola**
+
+Dettagli pratici di misurazione:
+
+- Strumenti necessari
+- Metodologia di raccolta dati
+- Unità di misura
+- Tempo necessario per misurazione
+- Condizioni ottimali (es. steady state)
+
+**Esempio:**
+
+```markdown
+### 📏 Come si Misura il VCO2/VO2
+
+**Strumenti richiesti:**
+
+- Metabolimetro o ventilatore con modulo metabolico
+- Analizzatore gas espirati (O2, CO2)
+- Sistema di raccolta gas (closed circuit)
+
+**Procedura:**
+
+1. Paziente in steady state (15-30 minuti)
+2. Misurazione continua FiO2, FeO2, FeCO2
+3. Calcolo automatico VCO2 e VO2
+4. Media valori su 5-10 minuti
+```
+
+**4. 🧮 Formula Utilizzata e Componenti**
+
+Formula matematica completa con:
+
+- Equazione esatta
+- Definizione ogni variabile
+- Unità di misura per ogni parametro
+- Range validi per input
+- Formule alternative (se esistono)
+
+**Esempio:**
+
+```typescript
+### 🧮 Formula Utilizzata
+
+**Formula principale:**
+QR = VCO2 / VO2
+
+**Dove:**
+- VCO2 = Produzione CO2 (mL/min o L/min)
+- VO2 = Consumo O2 (mL/min o L/min)
+
+**Range input validi:**
+- VCO2: 100-500 mL/min (adulto a riposo)
+- VO2: 150-600 mL/min (adulto a riposo)
+
+**Formule correlate:**
+- Spesa Energetica = (3.9 × VO2) + (1.1 × VCO2)
+- QR non proteico = (VCO2 - 4.8×N) / (VO2 - 6.0×N)
+  Dove N = escrezione azoto urinario (g/24h)
+```
+
+**5. 🎯 Interpretazione Clinica Dettagliata**
+
+Significato clinico dei risultati:
+
+- Valori di riferimento normali
+- Valori patologici e loro significato
+- Correlazione con condizioni cliniche
+- Gravità e stratificazione rischio
+- Decision making basato su valori
+
+**Esempio:**
+
+```markdown
+### 🎯 Interpretazione Clinica Dettagliata
+
+| QR    | Substrato Predominante | Situazione Clinica                        |
+| ----- | ---------------------- | ----------------------------------------- |
+| < 0.7 | Chetosi/Digiuno        | Metabolismo lipidico esclusivo            |
+| 0.7   | Lipidi                 | Nutrizione bilanciata, riposo             |
+| 0.85  | Misto                  | Dieta equilibrata (50% CHO, 35% lipidi)   |
+| 1.0   | Carboidrati            | Nutrizione ricca CHO, esercizio moderato  |
+| > 1.0 | Lipogenesi             | Sovralimentazione, conversione CHO→Lipidi |
+| > 1.2 | Stress/Sepsi           | Ipermetabolismo, ipercatabolismo          |
+
+**Decisioni cliniche:**
+
+- QR > 1.0 → Ridurre apporto calorico/glucidico
+- QR < 0.7 → Aumentare carboidrati, rischio catabolismo
+- QR 0.85 → Target ottimale nutrizione artificiale
+```
+
+**6. 🔬 Analisi Dettagliata e Applicazioni Cliniche**
+
+Casi d'uso specifici:
+
+- Indicazioni precise
+- Controindicazioni
+- Limitazioni della formula
+- Popolazione target
+- Contesti clinici specifici (ICU, sala operatoria, etc.)
+
+**Esempio:**
+
+```markdown
+### 🔬 Applicazioni Cliniche
+
+**Nutrizione Artificiale ICU:**
+
+- Target QR 0.85-0.95 per nutrizione bilanciata
+- QR > 1.0 indica overfeeding → rischio steatosi epatica
+- Aggiustare CHO/Lipidi per ottimizzare QR
+
+**Svezzamento Ventilatorio:**
+
+- QR > 1.0 aumenta produzione CO2 → stress ventilatorio
+- Ridurre CHO facilita weaning (minor CO2)
+- Target QR < 0.95 in fase weaning
+
+**Limitazioni:**
+
+- ❌ Non affidabile in ventilazione con FiO2 > 60%
+- ❌ Non valido in presenza di acidosi metabolica severa
+- ❌ Richiede steady state metabolico (non in stress acuto)
+```
+
+**7. ⚠️ Valori di Riferimento e Alert**
+
+Tabelle complete con:
+
+- Range fisiologici
+- Soglie patologiche
+- Alert critici
+- Valori target terapeutici
+- Variazioni per età/sesso/condizione
+
+**Esempio:**
+
+```markdown
+### ⚠️ Valori di Riferimento
+
+**Range Fisiologici:**
+
+| Condizione          | QR  | Interpretazione         |
+| ------------------- | --- | ----------------------- |
+| Digiuno prolungato  | 0.6 | Chetosi fisiologica     |
+| Riposo, dieta mista | 0.8 | Metabolismo equilibrato |
+| Post-prandiale      | 0.9 | Digestione CHO          |
+| Esercizio moderato  | 1.0 | Metabolismo CHO         |
+| Lipogenesi attiva   | 1.2 | Sovralimentazione       |
+
+**Alert Critici:**
+
+- 🔴 QR > 1.3: OVERFEEDING SEVERO → ridurre calorie immediatamente
+- 🟡 QR > 1.0: Eccesso CHO → bilanciare nutrizione
+- 🟢 QR 0.85: Target ottimale
+- 🟡 QR < 0.7: Catabolismo → aumentare CHO
+- 🔴 QR < 0.6: Chetosi severa → nutrizione urgente
+```
+
+**8. 📚 Documentazione Medica Scientifica**
+
+Collegamenti a linee guida e consensus:
+
+- Società scientifiche di riferimento
+- Linee guida internazionali (WHO, AHA, ESPEN, etc.)
+- Consensus statements
+- Practice guidelines
+- Protocolli clinici validati
+
+**Esempio:**
+
+```markdown
+### 📚 Documentazione Medica Scientifica
+
+**Linee Guida Ufficiali:**
+
+- **ESPEN Guidelines on Parenteral Nutrition (2023)**
+  - Target QR: 0.85-0.95 in critically ill patients
+  - Avoid overfeeding (QR > 1.0)
+  - [Link ESPEN](https://www.espen.org)
+
+- **SCCM/ASPEN Critical Care Nutrition Guidelines**
+  - Indirect calorimetry gold standard
+  - QR monitoring per energy balance
+  - [Link SCCM](https://www.sccm.org)
+
+**Protocolli Clinici:**
+
+- ICU Nutrition Protocol - Target QR 0.85
+- Weaning Protocol - Reduce CHO if QR > 1.0
+```
+
+**9. 📖 Riferimenti Scientifici**
+
+Bibliografia con articoli peer-reviewed:
+
+- Studi originali (con DOI/PMID)
+- Review sistematiche
+- Meta-analisi
+- Libri di testo autorevoli
+- Database online (ScienceDirect, PubMed, MSD Manuals)
+
+**Esempio:**
+
+```markdown
+### 📖 Riferimenti Scientifici
+
+**Articoli Peer-Reviewed:**
+
+1. **Frayn KN. "Calculation of substrate oxidation rates in vivo from gaseous exchange."**
+   _J Appl Physiol._ 1983;55(2):628-634.
+   DOI: 10.1152/jappl.1983.55.2.628
+   [Link ScienceDirect](https://www.sciencedirect.com/science/article/pii/...)
+
+2. **McClave SA et al. "Guidelines for provision of nutrition support therapy in critically ill adult."**
+   _JPEN J Parenter Enteral Nutr._ 2016;40(2):159-211.
+   PMID: 26773077
+   [Link PubMed](https://pubmed.ncbi.nlm.nih.gov/26773077/)
+
+3. **Singer P et al. "ESPEN guideline on clinical nutrition in the ICU."**
+   _Clin Nutr._ 2019;38(1):48-79.
+   DOI: 10.1016/j.clnu.2018.08.037
+
+**Riferimenti Online:**
+
+- **MSD Manuals - Metabolic Assessment**
+  [Link MSD](https://www.msdmanuals.com/professional/nutritional-disorders/nutrition-general-considerations/nutritional-assessment)
+
+- **ScienceDirect - Respiratory Quotient**
+  [Link ScienceDirect](https://www.sciencedirect.com/topics/biochemistry-genetics-and-molecular-biology/respiratory-quotient)
+
+**Libri di Testo:**
+
+- Marino PL. _The ICU Book_, 4th Ed. Chapter 47: Nutritional Requirements
+- Guyton & Hall. _Textbook of Medical Physiology_, 14th Ed. Chapter 72: Energetics and Metabolic Rate
+```
+
+---
+
+### **🔧 Template Completo per Nuovo Calcolatore**
+
+Usa questo template quando crei un nuovo calcolatore:
+
+````markdown
+# 📊 [Nome Calcolatore]
+
+## 📊 Definizione e Significato Clinico
+
+[Cosa calcola, perché importante, contesti uso]
+
+## 🔬 [Fisiologia/Meccanismo Specifico]
+
+[Es: Metabolismo Aerobico vs Anaerobico, Ventilazione Protettiva, etc.]
+
+## 📏 Come si Misura/Calcola
+
+**Strumenti richiesti:**
+
+- [Lista strumenti]
+
+**Procedura:**
+
+1. [Step 1]
+2. [Step 2]
+
+## 🧮 Formula Utilizzata
+
+**Formula principale:**
+
+```
+[Formula matematica]
+```
+````
+
+**Dove:**
+
+- [Variabile 1] = [Definizione] ([unità])
+- [Variabile 2] = [Definizione] ([unità])
+
+**Range input validi:**
+
+- [Variabile 1]: [min-max] [unità]
+
+## 🎯 Interpretazione Clinica Dettagliata
+
+| Valore | Interpretazione | Azione Clinica |
+| ------ | --------------- | -------------- |
+| [val]  | [significato]   | [azione]       |
+
+## 🔬 Analisi Dettagliata e Applicazioni Cliniche
+
+**Indicazioni:**
+
+- [Indicazione 1]
+
+**Limitazioni:**
+
+- ❌ [Limitazione 1]
+
+## ⚠️ Valori di Riferimento
+
+| Condizione | Range | Alert |
+| ---------- | ----- | ----- |
+| [cond]     | [val] | [ico] |
+
+## 📚 Documentazione Medica Scientifica
+
+**Linee Guida:**
+
+- [Società] - [Titolo guideline] ([Anno])
+
+## 📖 Riferimenti Scientifici
+
+1. **[Autori]. "[Titolo]."**
+   _[Journal]_ [Anno];[Vol]:[Pagine].
+   DOI: [DOI]
+   [Link]
+
+```
+
+---
+
+### **🎯 Checklist Completezza Documentazione**
+
+Prima di finalizzare un calcolatore, verifica:
+
+- [ ] ✅ Definizione clinica chiara e completa
+- [ ] ✅ Fisiologia/meccanismo spiegato
+- [ ] ✅ Metodologia misurazione dettagliata
+- [ ] ✅ Formula matematica con ogni variabile definita
+- [ ] ✅ Unità di misura per ogni parametro
+- [ ] ✅ Range input validi specificati
+- [ ] ✅ Interpretazione clinica con tabella valori
+- [ ] ✅ Applicazioni cliniche specifiche
+- [ ] ✅ Limitazioni e controindicazioni
+- [ ] ✅ Valori di riferimento completi
+- [ ] ✅ Alert critici con emoji (🔴🟡🟢)
+- [ ] ✅ Linee guida internazionali citate
+- [ ] ✅ Almeno 3 riferimenti peer-reviewed
+- [ ] ✅ Link a ScienceDirect o MSD Manuals
+- [ ] ✅ DOI/PMID per ogni articolo
+- [ ] ✅ Codice TypeScript implementato e testato
+
+---
+
+### **📝 Esempio Prompt per Copilot**
+
+**Creare nuovo calcolatore:**
+
+> "Crea calcolatore **Indice di Ossigenazione (P/F Ratio)** seguendo MEDICAL CALCULATOR DOCUMENTATION STANDARDS da REGOLE_COPILOT.md. Includi tutte le 9 sezioni obbligatorie: Definizione Clinica, Fisiologia (Ipossiemia e ARDS), Come si Misura, Formula (PaO2/FiO2), Interpretazione (normale >400, ARDS <300), Applicazioni (ventilazione, PEEP), Valori Riferimento, Documentazione (Berlin Definition ARDS), Riferimenti Scientifici (almeno 3 con DOI). Implementa TypeScript con validazione input PaO2 (50-600 mmHg) e FiO2 (21-100%). Aggiungi alert critici 🔴 P/F < 100, 🟡 P/F 100-200, 🟢 P/F > 300."
+
+**Aggiornare calcolatore esistente:**
+
+> "Aggiorna calcolatore **BMI** seguendo nuovi MEDICAL CALCULATOR DOCUMENTATION STANDARDS. Mantieni codice esistente ma riorganizza documentazione con 9 sezioni: Definizione (indice massa corporea), Fisiologia (tessuto adiposo e rischio CV), Come si Misura (bilancia + stadiometro), Formula (peso/altezza²), Interpretazione (WHO classification), Applicazioni (screening obesità, rischio CV), Valori Riferimento (underweight <18.5, obesity ≥30), Documentazione (WHO Technical Report), Riferimenti (WHO 2000, NIH guidelines, ScienceDirect obesity reviews). Preserva tutti calcoli e validazioni attuali."
+
+---
+
+## �🎯 PROSSIMI PASSI
+```
 
 1. ✅ Sistema RAG bilingue funzionante
 2. ✅ Struttura cartelle studio creata

@@ -47,25 +47,25 @@ onMounted(() => {
  * Switch application language
  * @param lang - Language code ('it-IT' or 'en-US')
  */
-const switchLanguage = (lang: 'it-IT' | 'en-US'): void => {
-  currentLanguage.value = lang;
-  locale.value = lang;
-  localStorage.setItem('user-language', lang);
-};
+// const switchLanguage = (lang: 'it-IT' | 'en-US'): void => {
+//   currentLanguage.value = lang;
+//   locale.value = lang;
+//   localStorage.setItem('user-language', lang);
+// };
 
 /**
  * Get flag icon for current language
  */
-const getLanguageFlag = computed(() => {
-  return currentLanguage.value === 'it-IT' ? '🇮🇹' : '🇺🇸';
-});
+// const getLanguageFlag = computed(() => {
+//   return currentLanguage.value === 'it-IT' ? '🇮🇹' : '🇺🇸';
+// });
 
 /**
  * Get language label
  */
-const getLanguageLabel = computed(() => {
-  return currentLanguage.value === 'it-IT' ? 'Italiano' : 'English';
-});
+// const getLanguageLabel = computed(() => {
+//   return currentLanguage.value === 'it-IT' ? 'Italiano' : 'English';
+// });
 
 // Definizione degli strumenti
 interface MedicalTool {
@@ -247,7 +247,7 @@ const navigateTo = async (path: string) => {
         <q-space />
 
         <!-- Language Selector -->
-        <q-btn-dropdown
+        <!-- <q-btn-dropdown
           flat
           dense
           :label="getLanguageFlag"
@@ -283,7 +283,7 @@ const navigateTo = async (path: string) => {
               </q-item-section>
             </q-item>
           </q-list>
-        </q-btn-dropdown>
+        </q-btn-dropdown> -->
 
         <div class="text-subtitle2 text-white-7">v{{ appVersion }}</div>
       </q-toolbar>
