@@ -631,6 +631,329 @@ const getAgeNote = (): string => {
               </div>
             </q-expansion-item>
 
+            <!-- ========== DOCUMENTAZIONE SCIENTIFICA COMPLETA ========== -->
+
+            <!-- 📊 Definizione e Significato Clinico -->
+            <q-expansion-item
+              icon="info"
+              label="📊 Definizione e Significato del Dosaggio Farmacologico"
+              dense
+              class="q-mt-md"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Dosaggio farmacologico:</strong> Processo calcolo dose ottimale farmaco
+                  per ottenere efficacia terapeutica massima minimizzando tossicità. Integra
+                  parametri paziente (peso, età, funzione renale/epatica, comorbidità) con
+                  caratteristiche farmaco (farmacocinetica PK, farmacodinamica PD, indice
+                  terapeutico). Obiettivo: raggiungere concentrazione plasmatica target
+                  <strong>finestra terapeutica</strong> (Cmin efficace - Cmax sicura).
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong>Applicazioni cliniche:</strong> Antibiotici (dosaggio renale vancomicina,
+                  aminoglicosidi), anticoagulanti (eparina peso-based, warfarin INR-guided),
+                  chemioterapia (BSA body surface area), pediatria (mg/kg dosing), geriatria
+                  (riduzione GFR-based), ICU (continuous infusion vasopressori/sedativi), TDM
+                  Therapeutic Drug Monitoring (digoxin, phenytoin, immunosoppressori). Errori
+                  dosaggio causa 30-50% eventi avversi farmaci prevenibili.
+                </div>
+              </div>
+            </q-expansion-item>
+
+            <!-- 🔬 Fisiologia e Farmacocinetica -->
+            <q-expansion-item
+              icon="science"
+              label="🔬 Fisiologia della Farmacocinetica (ADME)"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>ADME - 4 Fasi Farmacocinetica:</strong> (1)
+                  <strong>Assorbimento (A):</strong> Farmaco sito somministrazione → circolo
+                  sistemico. Vie: orale (biodisponibilità F 30-100%, first-pass epatico), EV
+                  (F=100%), IM/SC (F variabile). Fattori: pH gastrico, motilità intestinale,
+                  perfusione tessuto. (2) <strong>Distribuzione (D):</strong>
+                  Circolazione → tessuti. Volume distribuzione (Vd): idrofili Vd ~0.1-0.2 L/kg
+                  (compartimento vascolare), lipofili Vd &gt;1 L/kg (tessuti adiposi, SNC). Binding
+                  proteine plasmatiche (albumina, α1-glicoproteina): solo frazione libera
+                  farmacologicamente attiva. (3)
+                  <strong>Metabolismo (M):</strong> Fegato enzimi CYP450 (Fase I ossidazione, Fase
+                  II coniugazione). Polimorfismi genetici: metabolizzatori lenti (accumulo), rapidi
+                  (sotto-dosaggio). Induttori (rifampicina, fenitoina) ↑metabolismo, inibitori
+                  (azoli, macrolidi) ↓metabolismo. (4) <strong>Eliminazione (E):</strong> Renale
+                  (filtrazione glomerulare + secrezione tubulare, clearance CL<sub>R</sub>
+                  GFR-dipendente), biliare (escrezione fecale, ciclo enteroepatico).
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong>Parametri PK chiave:</strong> <strong>Emivita (t½):</strong> Tempo
+                  riduzione 50% concentrazione plasmatica. t½ = 0.693 × Vd / CL. Steady-state dopo
+                  4-5 t½ (90-97% equilibrio). Farmaci t½ lungo (digoxin 36h) → accumulo lento, t½
+                  breve (penicillina 0.5-1h) → dosi frequenti.
+                  <strong>Clearance (CL):</strong> Volume plasma depurato/tempo (mL/min). CL totale
+                  = CL<sub>R</sub> renale + CL<sub>H</sub> epatica. Dose mantenimento = CL × C<sub
+                    >ss</sub
+                  >
+                  target / F. <strong>Biodisponibilità (F):</strong> Frazione dose raggiunge circolo
+                  sistemico. Orale F ridotta: metabolismo first-pass epatico, degradazione acido
+                  gastrico, assorbimento incompleto.
+                </div>
+              </div>
+            </q-expansion-item>
+
+            <!-- 📏 Come si Calcola il Dosaggio -->
+            <q-expansion-item
+              icon="straighten"
+              label="📏 Come si Calcola il Dosaggio Personalizzato"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Step 1 - Parametri Paziente:</strong> (1) <strong>Peso:</strong> Ideale
+                  (IBW), totale (TBW), adjusted (ABW = IBW + 0.4×(TBW-IBW) obesi). Formule IBW:
+                  maschi 50kg + 2.3kg/inch &gt;5 piedi, femmine 45.5kg + 2.3kg/inch. (2)
+                  <strong>Età:</strong> Neonati &lt;1 mese ↓clearance immaturity, anziani &gt;65
+                  anni ↓GFR fisiologico (-1 mL/min/anno da 40 anni), ↓massa magra, ↑grasso corporeo.
+                  (3) <strong>Funzione renale:</strong> Creatinina sierica → eGFR Cockcroft-Gault,
+                  CKD-EPI, MDRD. Classificare CKD G1-G5 (KDIGO). (4)
+                  <strong>Funzione epatica:</strong> Child-Pugh score (albumina, bilirubina, INR,
+                  ascite, encefalopatia) → Classe A/B/C riduzione dose 0-25-50%.
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Step 2 - Dose Loading (Carico):</strong> Raggiungere rapidamente C<sub
+                    >ss</sub
+                  >
+                  target senza attendere 4-5 emivite. Formula:
+                  <strong>Dose<sub>loading</sub> = Vd × C<sub>target</sub> / F</strong>. Esempio:
+                  Digoxin Vd=7L/kg, C<sub>target</sub>=1.5 ng/mL (1.5 mcg/L), paziente 70kg, F=0.7
+                  orale → Dose = 7×70×0.0015/0.7 = 1.05 mg ≈ 1 mg. Usare se emivita lunga
+                  (&gt;12-24h) o necessità effetto rapido (crisi).
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong>Step 3 - Dose Mantenimento:</strong> Mantenere C<sub>ss</sub>
+                  steady-state. Formula:
+                  <strong>Dose<sub>maint</sub> = CL × C<sub>ss</sub> / F</strong> oppure
+                  <strong>Dose<sub>maint</sub> = (Vd × k<sub>e</sub> × C<sub>ss</sub>) / F</strong>
+                  dove k<sub>e</sub>=0.693/t½ costante eliminazione. Frequenza: Intervallo τ = t½
+                  (dosi q24h se t½~24h, q6h se t½~6h). Infusione continua: Rate = CL × C<sub
+                    >ss</sub
+                  >
+                  (mg/h). Esempio vancomicina: CL 5 L/h, C<sub>ss</sub> 15 mg/L → 15×5=75 mg/h = 1.8
+                  g/giorno diviso q12h → 900 mg q12h.
+                </div>
+              </div>
+            </q-expansion-item>
+
+            <!-- 🎯 Interpretazione Clinica Dosaggio -->
+            <q-expansion-item
+              icon="psychology"
+              label="🎯 Interpretazione Clinica e Aggiustamenti Dose"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Aggiustamento Funzione Renale (GFR-based):</strong> eGFR &gt;60 mL/min →
+                  dose standard. <strong>eGFR 30-59</strong> (CKD G3a-b): riduzione 25-50% farmaci
+                  eliminazione renale (antibiotici β-lattamici, vancomicina, aminoglicosidi, LMWH,
+                  metformina). <strong>eGFR 15-29</strong> (G4): riduzione 50-75%, ↑intervallo dosi
+                  (q12h→q24h). <strong>eGFR &lt;15</strong> (G5 dialisi): riduzione 75-90%,
+                  considerare dose supplementare post-dialisi farmaci dializzabili (basso peso
+                  molecolare, basso Vd, basso protein binding: aminoglicosidi, vancomicina dose
+                  extra 5-10 mg/kg post-HD). Evitare: NSAIDs (nefrotossicità), metformina (acidosi
+                  lattica), gliburide (ipoglicemia).
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Aggiustamento Epatico (Child-Pugh):</strong> <strong>Child A</strong> (5-6
+                  punti, compensato): dose standard maggioranza farmaci.
+                  <strong>Child B</strong> (7-9 punti, moderato): riduzione 25-50% farmaci
+                  metabolismo epatico (warfarin, fenitoina, propranolol, benzodiazepine, oppioidi).
+                  <strong>Child C</strong> (10-15 punti, scompensato): riduzione 50-75%, evitare
+                  farmaci epatotossici (paracetamolo &gt;2g/die, statine, metotrexato).
+                  Monitoraggio: INR anticoagulanti, albumina (↓binding → ↑frazione libera farmaco).
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Popolazioni Speciali - Pediatria:</strong> Neonati 0-1 mese: ↓CL
+                  renale/epatica (immaturità), ↑Vd (↑acqua corporea 75-80% vs 60% adulti), dose
+                  mg/kg ↓20-50% + intervalli prolungati. Lattanti 1-12 mesi: CL rapida maturazione,
+                  dose mg/kg simile/superiore adulti. Bambini 1-12 anni: CL/kg superiore adulti
+                  (metabolismo accelerato), dose mg/kg ×1.2-1.5 adulti. Formula BSA: Dose pediatrica
+                  = Dose adulto × (BSA paziente m² / 1.73 m²).
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong>Popolazioni Speciali - Geriatria:</strong> Anziani &gt;65 anni: ↓GFR
+                  fisiologico (regola: GFR = 140-età mL/min), ↓massa magra (↓Vd farmaci idrofili:
+                  digoxin, aminoglicosidi), ↑grasso corporeo (↑Vd lipofili: benzodiazepine,
+                  accumulo), ↓albumina (↑frazione libera), polifarmacoterapia (interazioni).
+                  <strong>Beers Criteria AGS:</strong> Evitare benzos t½ lungo (diazepam, flurazepam
+                  → cadute, fratture), anticholinergics (confusione), NSAIDs (bleeding GI, CKD),
+                  sliding-scale insulin (ipoglicemia). Start low, go slow: iniziare 25-50% dose
+                  adulto standard, titolare lentamente q7-14 giorni.
+                </div>
+              </div>
+            </q-expansion-item>
+
+            <!-- 🔬 Applicazioni Cliniche TDM -->
+            <q-expansion-item
+              icon="medical_services"
+              label="🔬 Applicazioni Cliniche e TDM (Therapeutic Drug Monitoring)"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>TDM - Farmaci Indice Terapeutico Stretto:</strong> Monitoraggio
+                  concentrazioni plasmatiche guida dosaggio. Indicazioni: (1) Finestra terapeutica
+                  stretta (tossicità vicina dose efficace), (2) Variabilità farmacocinetica
+                  inter-individuale elevata, (3) Impossibilità monitoraggio clinico diretto
+                  efficacia. <strong>Timing prelievi:</strong> C<sub>trough</sub> valle pre-dose
+                  (vancomicina, tacrolimus), C<sub>peak</sub> picco post-dose (aminoglicosidi), AUC
+                  area under curve (vancomicina AUC/MIC).
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Antibiotici TDM:</strong> <strong>Vancomicina:</strong> Target
+                  AUC<sub>24</sub>/MIC 400-600 (infezioni MRSA), C<sub>trough</sub> 15-20 mg/L
+                  (obsoleto, rischio nefrotossicità). Bayesian dosing software (precision dosing).
+                  <strong>Aminoglicosidi</strong> (gentamicina, tobramicina, amikacina): Dosaggio
+                  once-daily 5-7 mg/kg q24h. C<sub>peak</sub> 1h post 20-30 mg/L (gentamicina),
+                  C<sub>trough</sub> &lt;1 mg/L. Efficacia concentration-dependent (↑picco
+                  ↑killing), tossicità time-dependent (↓esposizione cumulativa). Monitorare
+                  creatinina q48-72h (nefrotossicità 5-10%).
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Anticoagulanti:</strong> <strong>Warfarin:</strong> INR target 2-3 (FA,
+                  TVP/EP), 2.5-3.5 (valvole meccaniche). Genotipo CYP2C9 + VKORC1 predice dose
+                  iniziale. Interazioni: antibiotici ↑INR (↓sintesi vit.K flora intestinale),
+                  rifampicina ↓INR (induzione CYP2C9). <strong>Eparina:</strong> aPTT 1.5-2.5×
+                  baseline (50-70 sec), loading 80 U/kg bolus + 18 U/kg/h infusion, aggiustare aPTT
+                  q6h protocollo. <strong>LMWH</strong> (enoxaparina): 1 mg/kg q12h o 1.5 mg/kg
+                  q24h, non necessita monitoraggio routine (anti-Xa se obesità BMI&gt;40,
+                  gravidanza, CKD G4-5 target 0.6-1.0 U/mL).
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong>Altri Farmaci TDM:</strong> <strong>Digoxin:</strong> 0.5-2.0 ng/mL
+                  (0.8-1.2 scompenso cardiaco, evitare &gt;2 aritmie), prelievo ≥6h post-dose
+                  steady-state (7-10 giorni). <strong>Lithium:</strong> 0.6-1.2 mEq/L (disturbo
+                  bipolare), prelievo 12h post-dose, tossicità &gt;1.5 (tremori, confusione,
+                  aritmie). <strong>Phenytoin:</strong> 10-20 mcg/mL (totale), 1-2 mcg/mL (libero se
+                  ipoalbuminemia), cinetica saturazione (Michaelis-Menten): piccoli ↑dose → grandi
+                  ↑concentrazione. <strong>Immunosoppressori</strong> (tacrolimus, ciclosporina,
+                  sirolimus): C<sub>trough</sub> target variabile organo trapianto, aggiustare ogni
+                  3-5 giorni.
+                </div>
+              </div>
+            </q-expansion-item>
+
+            <!-- ⚠️ Valori di Riferimento e Alert -->
+            <q-expansion-item
+              icon="warning"
+              label="⚠️ Range Terapeutici, Valori Tossici e Alert"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Ranges Terapeutici Comuni:</strong> Digoxin 0.5-2.0 ng/mL, Lithium 0.6-1.2
+                  mEq/L, Vancomicina trough 10-20 mg/L (AUC/MIC 400-600 preferito), Gentamicina peak
+                  20-30 mg/L trough &lt;1 mg/L, Phenytoin 10-20 mcg/mL, Carbamazepine 4-12 mcg/mL,
+                  Valproate 50-100 mcg/mL, Theophylline 10-20 mcg/mL, Tacrolimus 5-15 ng/mL
+                  (variabile organo), Ciclosporina 100-400 ng/mL, Methotrexate (timing dipendente:
+                  24h &lt;5 μM, 48h &lt;0.5 μM, 72h &lt;0.1 μM).
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs text-weight-bold text-red-9">
+                  <strong>ALERT TOSSICITÀ CRITICA:</strong> Digoxin &gt;2.5 ng/mL (aritmie
+                  ventricolari, blocchi AV, nausea, confusione, visione gialla), Lithium &gt;2.0
+                  mEq/L (tremori grossolani, disartria, convulsioni, coma, insufficienza renale),
+                  Vancomicina trough &gt;25-30 mg/L (nefrotossicità AKI, ototossicità), Gentamicina
+                  trough &gt;2 mg/L (nefrotossicità, ototossicità irreversibile), Phenytoin &gt;30
+                  mcg/mL (nistagmo, atassia, confusione, convulsioni paradosso), Theophylline &gt;25
+                  mcg/mL (tachicardia, aritmie, convulsioni, morte), Methotrexate delayed clearance
+                  (insufficienza renale, terzo spazio ascite/versamenti → leucovorin rescue 10-100
+                  mg/m² q6h fino MTX &lt;0.05 μM).
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Soglie eGFR Aggiustamento Dose:</strong> eGFR ≥90 (G1 normale) dose
+                  standard. <strong>eGFR 60-89</strong> (G2): monitorare farmaci nefrotossici, dose
+                  standard maggioranza. <strong>eGFR 45-59</strong> (G3a): riduzione 25%
+                  eliminazione renale predominante. <strong>eGFR 30-44</strong> (G3b): riduzione
+                  50%, evitare metformina. <strong>eGFR 15-29</strong> (G4): riduzione 50-75%,
+                  controindicati NSAIDs, spironolactone. <strong>eGFR &lt;15</strong>
+                  (G5 dialisi): riduzione 75-90%, solo farmaci dializzabili dose supplementare
+                  post-HD.
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong>Indice Terapeutico (TI):</strong> Ratio TD<sub>50</sub> (dose tossica 50%)
+                  / ED<sub>50</sub> (dose efficace 50%). TI stretto &lt;2: warfarin (TI~1.5),
+                  digoxin (TI~2), lithium (TI~2), aminoglicosidi (TI~2-3), phenytoin (TI~2). TI
+                  largo &gt;10: penicilline (TI~100), cefalosporine (TI&gt;50). TDM obbligatorio se
+                  TI &lt;3. Margine sicurezza ristretto: piccole variazioni dose → tossicità.
+                </div>
+              </div>
+            </q-expansion-item>
+
+            <!-- 📚 Documentazione e Linee Guida -->
+            <q-expansion-item
+              icon="menu_book"
+              label="📚 Documentazione Scientifica e Linee Guida Internazionali"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>KDIGO Clinical Practice Guideline - Drug Dosing in CKD (2024):</strong>
+                  Raccomandazioni aggiustamento dose farmaci insufficienza renale. Classificazione
+                  eGFR G1-G5, formule stima funzione renale (CKD-EPI 2021 senza razza,
+                  Cockcroft-Gault, cistatina C), tabelle dosaggio farmaci comuni (antibiotici,
+                  antivirali, anticoagulanti, ipoglicemizzanti, cardiovascolari). Raccomandazioni:
+                  eGFR &lt;60 → screening farmaci dose adjustment, evitare farmaci nefrotossici
+                  cumulativi (NSAIDs, aminoglicosidi cronici, radiocontrasti iodati ripetuti).
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Sanford Guide to Antimicrobial Therapy (2024):</strong> Reference standard
+                  dosaggio antibiotici. Tabelle dose adjustment funzione renale, dose
+                  loading/maintenance, dosaggi pediatrici weight-based, durate terapia infezioni
+                  specifiche, MIC breakpoints sensibilità, interazioni farmacologiche. Sezioni:
+                  dosaggio beta-lattamici (penicilline, cefalosporine, carbapenemi), vancomicina
+                  AUC-guided dosing, aminoglicosidi once-daily, fluoroquinoloni, antifungini (azoli,
+                  echinocandine, amfotericina), antivirali (acyclovir, ganciclovir, antiretrovirali
+                  HIV).
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>FDA Guidance - Clinical Pharmacology Considerations (2020):</strong> Linee
+                  guida FDA studi farmacocinetica popolazioni speciali. Requisiti studi PK:
+                  insufficienza renale (eGFR &lt;30), insufficienza epatica (Child-Pugh A/B/C),
+                  anziani &gt;65 anni, pediatria (neonati, lattanti, bambini, adolescenti
+                  stratificati età), obesità (BMI&gt;30), gravidanza. Modelli population PK (PopPK),
+                  PBPK physiologically-based pharmacokinetics. Labeling requirements: dosaggio
+                  aggiustamenti sezioni specifiche (renal/hepatic impairment, geriatrics,
+                  pediatrics).
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>American Geriatrics Society Beers Criteria (2023):</strong> Lista farmaci
+                  potenzialmente inappropriati anziani (PIM). 3 categorie: (1) Evitare sempre:
+                  benzodiazepine t½ lungo (diazepam, flurazepam → delirium, cadute, fratture),
+                  antipsicotici prima generazione (aloperidol → EPS, mortalità demenza),
+                  anticholinergics (difenidramina, ossibutinina → confusione, ritenzione urinaria),
+                  NSAIDs (sanguinamento GI, CKD, scompenso), (2) Evitare in patologie specifiche:
+                  deliriants in demenza, vasodilatatori in sincope, (3) Usare con cautela riduzione
+                  dose: SSRI (iponatriemia), anticoagulanti (bleeding), antidiabetici (ipoglicemia
+                  severe gliburide/repaglinide).
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong>ASHP Pediatric Dosing Guidelines (2022):</strong> American Society
+                  Health-System Pharmacists. Dosaggio farmaci età pediatrica. Formule peso-based
+                  (mg/kg/dose), BSA-based (chemioterapia), conversione adulto-pediatrico, tabelle
+                  età-specifiche (neonati pretermine &lt;37 settimane gestazione, term 37-42,
+                  lattanti 1-12 mesi, bambini 1-12 anni, adolescenti 12-18). Aggiustamenti funzione
+                  renale pediatrica (Schwartz formula eGFR: k×altezza/creatinina, k=0.45 lattanti,
+                  0.55 bambini, 0.7 adolescenti maschi). Via somministrazione: EV diluizioni
+                  (concentrazioni max sicurezza), orale formulazioni liquide, rettale (paracetamolo,
+                  diazepam), inalatoria (broncodilatatori, steroidi).
+                </div>
+              </div>
+            </q-expansion-item>
+
             <!-- Formule -->
             <q-expansion-item
               icon="functions"

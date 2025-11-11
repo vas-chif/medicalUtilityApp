@@ -327,6 +327,26 @@ const getClinicalActions = (score: number): string => {
               class="q-mb-md"
             />
 
+            <!-- 📊 Definizione e Significato Clinico -->
+            <q-expansion-item
+              icon="info"
+              label="📊 Definizione e Significato Clinico"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8">
+                  L'<strong>APGAR Score</strong> (Virginia Apgar, 1952) valuta rapidamente la
+                  vitalità neonatale tramite 5 parametri: <strong>A</strong>ppearance (colorito),
+                  <strong>P</strong>ulse (FC), <strong>G</strong>rimace (riflessi),
+                  <strong>A</strong>ctivity (tono), <strong>R</strong>espiration (respirazione).
+                  Punteggio 0-2 per parametro, totale 0-10. Valutato a 1min (adattamento immediato)
+                  e 5min (stabilizzazione). Score 7-10: normale. 4-6: depressione moderata. 0-3:
+                  depressione severa, rianimazione urgente.
+                </div>
+              </div>
+            </q-expansion-item>
+
             <!-- Azioni Cliniche -->
             <q-expansion-item icon="medical_services" label="Azioni Cliniche" dense default-opened>
               <div class="q-pa-sm bg-grey-1">
@@ -397,6 +417,313 @@ const getClinicalActions = (score: number): string => {
                   </q-item-section>
                 </q-item>
               </q-list>
+            </q-expansion-item>
+
+            <!-- 🔬 Fisiologia Transizione Neonatale -->
+            <q-expansion-item
+              icon="science"
+              label="🔬 Fisiologia Transizione Fetale-Neonatale"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Adattamenti Respiratori:</strong> Primo respiro (pressione -40/-60 cmH₂O)
+                  espande polmoni, clearance liquido polmonare, attivazione surfactante. FR normale
+                  40-60/min. Cianosi periferica (acrocianosi) normale prime 24h.
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Adattamenti Cardiovascolari:</strong> Clampaggio cordone + espansione
+                  polmonare → ↓resistenza polmonare, ↑flusso polmoni, chiusura forame ovale e dotto
+                  arterioso (10-15h). FC normale 120-160 bpm.
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong>Vulnerabilità SNC:</strong> Cervello consuma 60% O₂ totale. Asfissia →
+                  encefalopatia ipossico-ischemica (HIE) → rischio paralisi cerebrale, epilessia.
+                  Neuroprotection: ipotermia terapeutica 33-34°C × 72h riduce mortalità/disabilità
+                  ~40%.
+                </div>
+              </div>
+            </q-expansion-item>
+
+            <!-- 📏 Come si Valuta -->
+            <q-expansion-item icon="straighten" label="📏 Come si Valuta" dense class="q-mt-xs">
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Timing:</strong> 1 minuto (adattamento immediato), 5 minuti
+                  (stabilizzazione/risposta interventi). Se score &lt;7 a 5min → ripetere ogni 5min
+                  (10, 15, 20min).
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Metodi:</strong> Appearance (ispezione colorito), Pulse (auscultazione
+                  precordiale 6sec×10 o palpazione cordone), Grimace (aspirazione nasofaringe),
+                  Activity (osservare tono/movimenti), Respiration (osservare FR, pianto).
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong>Operatori:</strong> Ostetrica (parti normali), Pediatra/Neonatologo (parti
+                  a rischio, rianimazione). Personale competente rianimazione deve essere
+                  disponibile a OGNI nascita (AAP/WHO standards).
+                </div>
+              </div>
+            </q-expansion-item>
+
+            <!-- 🧮 Formula e Componenti -->
+            <q-expansion-item
+              icon="calculate"
+              label="🧮 Formula e Componenti"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-sm text-center text-weight-bold">
+                  Score APGAR = A + P + G + A + R (0-10 punti totali)
+                </div>
+                <q-list dense class="q-pl-sm">
+                  <q-item dense>
+                    <q-item-section>
+                      <q-item-label caption>
+                        <strong>A - Appearance:</strong> 0=cianosi/pallore, 1=corpo roseo estremità
+                        blu, 2=completamente roseo
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item dense>
+                    <q-item-section>
+                      <q-item-label caption>
+                        <strong>P - Pulse:</strong> 0=assente, 1=&lt;100 bpm, 2=≥100 bpm
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item dense>
+                    <q-item-section>
+                      <q-item-label caption>
+                        <strong>G - Grimace:</strong> 0=nessuna risposta, 1=smorfie,
+                        2=tosse/starnuto/pianto
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item dense>
+                    <q-item-section>
+                      <q-item-label caption>
+                        <strong>A - Activity:</strong> 0=flaccido, 1=qualche flessione, 2=movimenti
+                        attivi
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item dense>
+                    <q-item-section>
+                      <q-item-label caption>
+                        <strong>R - Respiration:</strong> 0=assente, 1=debole/irregolare, 2=pianto
+                        vigoroso
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </div>
+            </q-expansion-item>
+
+            <!-- 🎯 Interpretazione Clinica Dettagliata -->
+            <q-expansion-item
+              icon="psychology"
+              label="🎯 Interpretazione Clinica Dettagliata"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <q-list dense bordered>
+                  <q-item class="bg-green-1">
+                    <q-item-section>
+                      <q-item-label class="text-weight-bold text-green-9">
+                        Score 7-10: Neonato Normale (Vigorous Infant)
+                      </q-item-label>
+                      <q-item-label caption class="q-mt-xs">
+                        <strong>Significato:</strong> Adattamento cardio-respiratorio ottimale.
+                        Neonato vigile, attivo, pianto forte. Score 8-9 comune (acrocianosi = -1
+                        Appearance). <strong>Azione:</strong> Cure standard: asciugare, contatto
+                        pelle-pelle con madre, monitoraggio temperatura, allattamento precoce entro
+                        1h. Dimissione nido dopo 24-48h se parametri stabili.
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item class="bg-orange-2 q-mt-sm">
+                    <q-item-section>
+                      <q-item-label class="text-weight-bold text-orange-9">
+                        Score 4-6: Depressione Moderata (Moderately Depressed)
+                      </q-item-label>
+                      <q-item-label caption class="q-mt-xs">
+                        <strong>Significato:</strong> Difficoltà transizione, possibile ipossia
+                        lieve, liquido polmonare residuo, prematurità lieve, farmaci materni
+                        (oppioidi, solfato magnesio). <strong>Azione:</strong> Stimolazione tattile
+                        vigorosa (strofinare schiena), aspirazione vie aeree, O₂ supplementare
+                        30-40% con maschera/CPAP, monitoraggio SatO₂. Rivalutare APGAR 5min. Se
+                        miglioramento → osservazione. Se persistenza → intensificare supporto.
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item class="bg-red-2 q-mt-sm">
+                    <q-item-section>
+                      <q-item-label class="text-weight-bold text-red-9">
+                        🚨 Score 0-3: Depressione Severa (Severely Depressed)
+                      </q-item-label>
+                      <q-item-label caption class="q-mt-xs">
+                        <strong>Significato EMERGENZA:</strong> Asfissia perinatale, apnea,
+                        bradicardia/arresto cardiaco, shock. Rischio HIE elevato.
+                        <strong>Azione IMMEDIATA:</strong> (1) Ventilazione pressione positiva (PPV)
+                        con pallone Ambu + maschera O₂ 21-30%, FR 40-60/min, (2) Se FC&lt;60 dopo
+                        30sec PPV → intubazione + compressioni toraciche 3:1 (3 compressioni:1
+                        ventilazione), (3) Adrenalina IV/intraossea 0.01-0.03 mg/kg se FC&lt;60
+                        persistente, (4) Valutare volume expansion se sospetto ipovolemia/shock.
+                        APGAR 0-3 a 5min → considerare ipotermia terapeutica se criterio HIE.
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </div>
+            </q-expansion-item>
+
+            <!-- 🔬 Applicazioni Cliniche -->
+            <q-expansion-item
+              icon="medical_services"
+              label="🔬 Applicazioni Cliniche"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>1. Guida Rianimazione:</strong> APGAR 1min identifica neonati che
+                  necessitano intervento immediato. Golden Minute: primi 60sec critici per
+                  valutazione e inizio rianimazione. Rianimazione non attende APGAR se
+                  apnea/bradicardia evidente.
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>2. Valutazione Efficacia Interventi:</strong> APGAR 5min misura risposta a
+                  rianimazione. Miglioramento 1min→5min (es. 3→8) = rianimazione efficace.
+                  Persistenza score basso ≤3 a 5min = prognosi sfavorevole, alto rischio sequele.
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>3. Comunicazione Standardizzata:</strong> Linguaggio universale per équipe
+                  (ostetrica, pediatra, infermiera). Documentazione medico-legale essenziale.
+                  Facilita handover neonato da sala parto a TIN (Terapia Intensiva Neonatale).
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong>4. Ricerca e Audit:</strong> Database APGAR per analisi outcome
+                  perinatali, qualità assistenza, comparazioni internazionali. Screening popolazioni
+                  a rischio (diabete gestazionale, pre-eclampsia, parto pretermine).
+                </div>
+              </div>
+            </q-expansion-item>
+
+            <!-- ⚠️ Valori di Riferimento e Alert -->
+            <q-expansion-item
+              icon="warning"
+              label="⚠️ Valori di Riferimento e Alert"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>APGAR 1 minuto:</strong> 7-10 (85-90% neonati), 4-6 (8-10%), 0-3 (1-2%).
+                  Score basso 1min può essere transitorio, non sempre predice outcome.
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>APGAR 5 minuti:</strong> 7-10 (95-98% neonati), 4-6 (2-3%), 0-3 (&lt;1%).
+                  <strong>Valore prognostico forte:</strong> Score 5min 0-3 → mortalità neonatale
+                  ×20-50, paralisi cerebrale ×10-100 vs score ≥7.
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs text-weight-bold text-red-9">
+                  <strong>ALERT CRITICI:</strong> Score 5min ≤3 → alto rischio HIE, valutare
+                  ipotermia terapeutica entro 6h. Score 0-3 persistente a 10-20min → mortalità ~50%,
+                  disabilità maggiore 60-80% sopravviventi.
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong>Fattori Confondenti:</strong> Prematurità (&lt;37 settimane) → score più
+                  bassi normali per immaturità SNC/polmoni. Farmaci materni (oppioidi, solfato Mg) →
+                  depressione transitoria. Anomalie congenite (cardiopatie, ernia diaframmatica) →
+                  score basso non da asfissia.
+                </div>
+              </div>
+            </q-expansion-item>
+
+            <!-- 📚 Documentazione Medica Scientifica -->
+            <q-expansion-item
+              icon="menu_book"
+              label="📚 Documentazione e Linee Guida"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>AAP/AHA Neonatal Resuscitation Program (NRP) 2020:</strong>
+                  Raccomandazioni evidenze-based rianimazione neonatale. APGAR guida intensità
+                  interventi ma rianimazione inizia immediatamente se apnea/FC&lt;100 alla nascita.
+                  Golden Minute critico: 0-60sec valutazione + inizio PPV se necessaria.
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>WHO Essential Newborn Care (2010):</strong> Standard globale assistenza
+                  neonatale. APGAR Score obbligatorio a 1 e 5min in tutte nascite. Personale formato
+                  rianimazione disponibile sempre. Ipotermia terapeutica per HIE moderata-severa
+                  entro 6h (riduce mortalità/disabilità ~40%).
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>ILCOR Consensus (2020):</strong> International Liaison Committee on
+                  Resuscitation. Algoritmo rianimazione neonatale: iniziare con aria ambiente (21%
+                  O₂), titolare FiO₂ secondo SatO₂ target. Evitare iperossia (danno radicali
+                  liberi).
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong>ACOG Committee Opinion (2015):</strong> APGAR Score non deve essere usato
+                  da solo per diagnosi asfissia. Necessari criteri aggiuntivi: pH cordone &lt;7.0,
+                  deficit basi ≥12 mmol/L, encefalopatia neonatale, disfunzione multi-organo.
+                </div>
+              </div>
+            </q-expansion-item>
+
+            <!-- 📖 Riferimenti Scientifici -->
+            <q-expansion-item
+              icon="import_contacts"
+              label="📖 Riferimenti Scientifici"
+              dense
+              class="q-mt-xs"
+            >
+              <div class="bg-grey-1 q-pa-sm">
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong
+                    >Apgar V. "A proposal for a new method of evaluation of the newborn
+                    infant"</strong
+                  >
+                  (1953). Curr Res Anesth Analg 32(4):260-267. PMID: 13083014. Studio originale che
+                  introduce score. Validato su 2096 neonati, correlazione con mortalità e morbilità.
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Casey BM, et al. "The continuing value of the Apgar score"</strong>
+                  (2001). N Engl J Med 344(7):467-471. PMID: 11172187. Large cohort 151,891 neonati.
+                  Score 5min 0-3 predittore forte mortalità neonatale (OR 146 vs score 7-10) e
+                  paralisi cerebrale (OR 244).
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>Li F, et al. "Apgar score and long-term health outcomes"</strong> (2019).
+                  Pediatrics 143(4):e20182846. Meta-analisi 6.7M neonati. Score 5min &lt;7 associato
+                  a ↑rischio epilessia (RR 4.8), ADHD (RR 1.9), disturbi spettro autistico (RR 1.5)
+                  in follow-up 5-10 anni.
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <strong>MSD Manuals - Professional: Neonatal Resuscitation.</strong> Capitolo su
+                  valutazione e rianimazione neonato. Include algoritmo AAP/AHA, indicazioni
+                  intubazione, farmaci (adrenalina, volume expanders), gestione ipotermia
+                  terapeutica.
+                </div>
+                <div class="text-caption text-grey-8">
+                  <strong
+                    >ScienceDirect Encyclopedia of Infant and Early Childhood Development
+                    (2020):</strong
+                  >
+                  Capitolo "Apgar Score and Newborn Assessment". Trattazione completa storia,
+                  fisiologia transizione neonatale, limitazioni score (prematurità, farmaci,
+                  anomalie congenite), integrazione con altri assessment (pH cordone, lactato).
+                </div>
+              </div>
             </q-expansion-item>
           </q-card-section>
         </q-card>
