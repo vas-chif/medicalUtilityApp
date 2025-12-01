@@ -9,8 +9,8 @@
  */
 
 import { ref } from 'vue';
-import QuozienteRespiratorioCalculator from 'src/components/QuozienteRespiratorioCalculator.vue';
-import MechanicalPowerCalculator from 'src/components/MechanicalPowerCalculator.vue';
+import QuozienteRespiratorioCalculator from 'src/components/IntensiveCare/QuozienteRespiratorioCalculator.vue';
+import MechanicalPowerCalculator from 'src/components/IntensiveCare/MechanicalPowerCalculator.vue';
 
 // Tab attivo
 const activeTab = ref('quoziente');
@@ -34,7 +34,6 @@ const activeTab = ref('quoziente');
     <q-card>
       <q-tabs
         v-model="activeTab"
-        dense
         class="text-grey"
         active-color="primary"
         indicator-color="primary"

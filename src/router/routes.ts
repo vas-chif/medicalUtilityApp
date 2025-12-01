@@ -25,9 +25,14 @@ const routes: RouteRecordRaw[] = [
       // Pharmacology - Pagina unificata (4 tabs: Dosage, Compatibility, Dilution, Infusion)
       { path: 'pharmacology', component: () => import('pages/PharmacologyPage.vue') },
 
+      // Drug Compatibility - Pagina dedicata (3 tabs: Checker, Documentation, Lumen Allocator)
+      { path: 'drug-compatibility', component: () => import('pages/DrugCompatibilityPage.vue') },
+
       // Redirect vecchie route farmacologia → nuova pagina unificata
       { path: 'dosage-calculator', redirect: '/pharmacology' },
-      { path: 'drug-compatibility', redirect: '/pharmacology' },
+
+      // 🧪 TEMPORARY TEST ROUTE - DrugSelector.vue validation (DELETE AFTER TESTING)
+      { path: 'test-drug-selector', component: () => import('pages/TestDrugSelectorPage.vue') },
     ],
   },
 

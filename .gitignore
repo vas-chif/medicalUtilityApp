@@ -35,7 +35,7 @@ yarn-error.log*
 
 # Firebase
 .firebase/
-.firebaserc
+# .firebaserc (NEEDED for GitHub Actions deploy - DO NOT IGNORE)
 firebase-debug.log
 
 # VS Code
@@ -66,3 +66,5 @@ PROMPT_MEDICAL_UTILITY_PROJECT.md
 
 # 🔐 CYBERSECURITY - Environment Master File
 .env.master
+# Firebase CI Token (local reference only)
+.firebase-token.txt

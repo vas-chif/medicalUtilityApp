@@ -119,7 +119,7 @@ const getInterpretationColor = (): string => {
 <template>
   <div class="q-pa-md">
     <!-- Medical Info Banner -->
-    <q-banner class="bg-orange-1 text-orange-9 q-mb-md" rounded dense>
+    <q-banner class="bg-orange-1 text-orange-9 q-mb-md" rounded>
       <template v-slot:avatar>
         <q-icon name="warning" color="orange" />
       </template>
@@ -148,7 +148,6 @@ const getInterpretationColor = (): string => {
               label="RR (Frequenza Respiratoria)"
               suffix="atti/min"
               outlined
-              dense
               class="q-mb-sm"
             >
               <template v-slot:prepend>
@@ -163,8 +162,6 @@ const getInterpretationColor = (): string => {
               step="0.01"
               label="VTe (Volume Tidal Espiratorio)"
               suffix="litri"
-              outlined
-              dense
               class="q-mb-sm"
             >
               <template v-slot:prepend>
@@ -177,9 +174,7 @@ const getInterpretationColor = (): string => {
               v-model.number="formData.Picco"
               type="number"
               label="P.Picco (Pressione di Picco)"
-              suffix="cmH2O"
               outlined
-              dense
               class="q-mb-sm"
             >
               <template v-slot:prepend>
@@ -191,10 +186,8 @@ const getInterpretationColor = (): string => {
             <q-input
               v-model.number="formData.Plateau"
               type="number"
-              label="P.Plateau (Pressione di Plateau)"
               suffix="cmH2O"
               outlined
-              dense
               class="q-mb-sm"
             >
               <template v-slot:prepend>
@@ -205,11 +198,9 @@ const getInterpretationColor = (): string => {
             <!-- PEEP -->
             <q-input
               v-model.number="formData.PeeP"
-              type="number"
               label="PEEP (Pressione Fine Espirazione)"
               suffix="cmH2O"
               outlined
-              dense
               class="q-mb-md"
             >
               <template v-slot:prepend>
@@ -274,16 +265,16 @@ const getInterpretationColor = (): string => {
             <!-- 📊 Definizione e Significato Clinico -->
             <q-expansion-item
               icon="info"
-              label="📊 Definizione e Significato Clinico del Mechanical Power"
-              dense
-              class="q-mt-xs"
+              label="1️⃣ Definizione e Significato Clinico del Mechanical Power"
+              class="q-mt-md"
+              header-class="bg-blue-1 text-blue-9"
             >
-              <div class="bg-grey-1 q-pa-md">
+              <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
                   Cos'è il Mechanical Power e Perché è Importante
                 </div>
 
-                <q-list dense>
+                <q-list>
                   <q-item>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
@@ -312,7 +303,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-body2 text-weight-bold q-mb-xs q-mt-md">
                   📌 Significato Clinico Fondamentale:
                 </div>
-                <q-list dense>
+                <q-list>
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="coronavirus" color="red" size="xs" />
@@ -423,7 +414,7 @@ const getInterpretationColor = (): string => {
                   </q-item>
                 </q-list>
 
-                <q-banner dense class="bg-blue-1 text-blue-9 q-mt-md">
+                <q-banner class="bg-blue-1 text-blue-9 q-mt-md">
                   <template v-slot:avatar>
                     <q-icon name="lightbulb" color="blue" />
                   </template>
@@ -439,17 +430,17 @@ const getInterpretationColor = (): string => {
                     "realmente ventilato", non al polmone anatomico totale.
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- 🔬 Fisiologia e Meccanismi di Danno Polmonare (VILI) -->
             <q-expansion-item
               icon="science"
-              label="🔬 Fisiologia e Meccanismi di Danno Polmonare (VILI)"
-              dense
-              class="q-mt-xs"
+              label="2️⃣ Fisiologia e Meccanismi di Danno Polmonare (VILI)"
+              class="q-mt-md"
+              header-class="bg-green-1 text-green-9"
             >
-              <div class="bg-grey-1 q-pa-md">
+              <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
                   Meccanica Polmonare e Patogenesi del VILI
                 </div>
@@ -457,7 +448,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-body2 text-weight-bold q-mb-xs">
                   🫁 Meccanica Respiratoria Normale vs ARDS:
                 </div>
-                <q-list dense class="q-mb-md">
+                <q-list class="q-mb-md">
                   <q-item>
                     <q-item-section>
                       <q-item-label caption>
@@ -486,7 +477,7 @@ const getInterpretationColor = (): string => {
                   ⚠️ 4 Meccanismi Patogenetici del VILI:
                 </div>
 
-                <q-list dense bordered class="q-mb-md">
+                <q-list bordered class="q-mb-md">
                   <q-item class="bg-red-1">
                     <q-item-section>
                       <q-item-label class="text-weight-bold text-red-9">
@@ -595,7 +586,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-body2 text-weight-bold q-mb-xs">
                   ⚡ Mechanical Power come Parametro Unificante VILI:
                 </div>
-                <q-banner dense class="bg-indigo-1 text-indigo-9">
+                <q-banner class="bg-indigo-1 text-indigo-9">
                   <template v-slot:avatar>
                     <q-icon name="calculate" color="indigo" />
                   </template>
@@ -617,17 +608,17 @@ const getInterpretationColor = (): string => {
                     per comparazioni accurate.
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- 📏 Come si Misura il Mechanical Power -->
             <q-expansion-item
               icon="straighten"
-              label="📏 Come si Misura il Mechanical Power"
-              dense
-              class="q-mt-xs"
+              label="3️⃣ Come si Misura il Mechanical Power"
+              class="q-mt-md"
+              header-class="bg-amber-1 text-amber-9"
             >
-              <div class="bg-grey-1 q-pa-md">
+              <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
                   Metodi di Misurazione e Parametri Necessari
                 </div>
@@ -635,7 +626,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-body2 text-weight-bold q-mb-xs">
                   📋 Parametri Ventilatori Richiesti per Calcolo MP:
                 </div>
-                <q-list dense class="q-mb-md">
+                <q-list class="q-mb-md">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="speed" color="blue" size="xs" />
@@ -754,7 +745,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-body2 text-weight-bold q-mb-xs q-mt-md">
                   🖥️ Metodi di Acquisizione Dati dal Ventilatore:
                 </div>
-                <q-list dense bordered class="q-mb-md bg-grey-1">
+                <q-list bordered class="q-mb-md bg-grey-1">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="monitor" color="indigo" size="xs" />
@@ -821,7 +812,7 @@ const getInterpretationColor = (): string => {
                   </q-item>
                 </q-list>
 
-                <q-banner dense class="bg-amber-1 text-amber-9 q-mt-md">
+                <q-banner class="bg-amber-1 text-amber-9 q-mt-md">
                   <template v-slot:avatar>
                     <q-icon name="warning" color="amber-9" />
                   </template>
@@ -847,18 +838,18 @@ const getInterpretationColor = (): string => {
                     calcolo completo o valore automatico da ventilatore avanzato.
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- 🎯 Interpretazione Clinica Dettagliata -->
             <q-expansion-item
               icon="warning"
-              label="🎯 Interpretazione Clinica Dettagliata"
-              dense
+              label="5️⃣ Interpretazione Clinica Dettagliata"
               default-opened
-              class="text-primary text-weight-bold"
+              class="q-mt-md"
+              header-class="bg-orange-1 text-orange-9"
             >
-              <q-list dense class="bg-grey-1">
+              <q-list class="bg-grey-1">
                 <q-item>
                   <q-item-section avatar>
                     <q-icon color="green" name="check_circle" size="xs" />
@@ -917,10 +908,10 @@ const getInterpretationColor = (): string => {
             <q-expansion-item
               icon="school"
               label="Definizione e Significato Clinico"
-              dense
-              class="q-mt-xs"
+              class="q-mt-md"
+              header-class="bg-orange-2 text-orange-10"
             >
-              <div class="bg-grey-1 q-pa-sm">
+              <q-card class="q-pa-sm">
                 <div class="text-body2 text-weight-bold q-mb-sm">Cos'è il Mechanical Power?</div>
                 <div class="text-caption text-grey-8 q-mb-sm">
                   Il <strong>Mechanical Power (MP)</strong> rappresenta l'<strong
@@ -932,7 +923,7 @@ const getInterpretationColor = (): string => {
                   componenti della ventilazione che contribuiscono al danno polmonare:
                 </div>
 
-                <q-list dense class="q-pl-md">
+                <q-list class="q-pl-md">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="chevron_right" color="primary" size="xs" />
@@ -992,7 +983,7 @@ const getInterpretationColor = (): string => {
                   meccanismi principali:
                 </div>
 
-                <q-list dense class="q-pl-md q-mt-sm">
+                <q-list class="q-pl-md q-mt-sm">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="warning" color="orange" size="xs" />
@@ -1037,17 +1028,17 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                   </q-item>
                 </q-list>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- Ventilazione Protettiva vs Dannosa -->
             <q-expansion-item
               icon="compare_arrows"
               label="Ventilazione Protettiva vs Ventilazione Dannosa"
-              dense
-              class="q-mt-xs"
+              class="q-mt-md"
+              header-class="bg-orange-2 text-orange-10"
             >
-              <div class="bg-grey-1 q-pa-sm">
+              <q-card class="q-pa-sm">
                 <div class="text-body2 text-weight-bold text-positive q-mb-sm">
                   ✅ Ventilazione Protettiva (MP &lt;17 J/min)
                 </div>
@@ -1055,7 +1046,7 @@ const getInterpretationColor = (): string => {
                   Strategia che minimizza l'energia trasferita al polmone riducendo il rischio di
                   VILI:
                 </div>
-                <q-list dense class="q-pl-md">
+                <q-list class="q-pl-md">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="check_circle" color="positive" size="xs" />
@@ -1119,7 +1110,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-caption text-grey-8 q-mb-xs">
                   Trasferimento eccessivo di energia che aumenta drammaticamente il rischio di VILI:
                 </div>
-                <q-list dense class="q-pl-md">
+                <q-list class="q-pl-md">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="dangerous" color="negative" size="xs" />
@@ -1185,17 +1176,17 @@ const getInterpretationColor = (): string => {
                   contribuiscono al danno. Due pazienti con stesso Pplateau possono avere MP diversi
                   a seconda di RR, VT, e pattern respiratorio.
                 </div>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- Come si Calcola il Mechanical Power -->
             <q-expansion-item
               icon="calculate"
               label="Come si Calcola il Mechanical Power"
-              dense
-              class="q-mt-xs"
+              class="q-mt-md"
+              header-class="bg-cyan-2 text-cyan-10"
             >
-              <div class="bg-grey-1 q-pa-sm">
+              <q-card class="q-pa-sm">
                 <div class="text-body2 text-weight-bold q-mb-sm">
                   Origine della Formula di Gattinoni
                 </div>
@@ -1212,7 +1203,7 @@ const getInterpretationColor = (): string => {
                 </div>
 
                 <div class="text-caption text-grey-8 q-mb-xs">Dove:</div>
-                <q-list dense class="q-pl-md q-mb-sm">
+                <q-list class="q-pl-md q-mb-sm">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="chevron_right" color="primary" size="xs" />
@@ -1312,17 +1303,17 @@ const getInterpretationColor = (): string => {
                 <div class="text-caption text-grey-8">
                   Moltiplicando per RR (cicli/min) si ottiene l'energia totale per minuto (J/min).
                 </div>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- 🧮 Formula Dettagliata -->
             <q-expansion-item
               icon="functions"
-              label="🧮 Formula Dettagliata e Componenti"
-              dense
-              class="q-mt-xs"
+              label="4️⃣ Formula Dettagliata e Componenti"
+              class="q-mt-md"
+              header-class="bg-cyan-1 text-cyan-9"
             >
-              <div class="bg-grey-1 q-pa-sm">
+              <q-card class="q-pa-sm">
                 <div class="text-body2 text-weight-bold q-mb-sm text-center">Formula Completa</div>
 
                 <div class="bg-primary text-white q-pa-sm q-mb-sm">
@@ -1335,10 +1326,10 @@ const getInterpretationColor = (): string => {
                   <strong>Breakdown dei componenti:</strong>
                 </div>
 
-                <q-list dense class="q-mb-sm">
+                <q-list class="q-mb-sm">
                   <q-item>
                     <q-item-section avatar>
-                      <q-chip size="sm" color="blue" text-color="white" dense>RR</q-chip>
+                      <q-chip size="sm" color="blue" text-color="white">RR</q-chip>
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
@@ -1351,7 +1342,7 @@ const getInterpretationColor = (): string => {
 
                   <q-item>
                     <q-item-section avatar>
-                      <q-chip size="sm" color="green" text-color="white" dense>VTe</q-chip>
+                      <q-chip size="sm" color="green" text-color="white">VTe</q-chip>
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
@@ -1364,7 +1355,7 @@ const getInterpretationColor = (): string => {
 
                   <q-item>
                     <q-item-section avatar>
-                      <q-chip size="sm" color="orange" text-color="white" dense
+                      <q-chip size="sm" color="orange" text-color="white"
                         >P<sub>picco</sub></q-chip
                       >
                     </q-item-section>
@@ -1379,7 +1370,7 @@ const getInterpretationColor = (): string => {
 
                   <q-item>
                     <q-item-section avatar>
-                      <q-chip size="sm" color="purple" text-color="white" dense>ΔP</q-chip>
+                      <q-chip size="sm" color="purple" text-color="white">ΔP</q-chip>
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
@@ -1392,7 +1383,7 @@ const getInterpretationColor = (): string => {
 
                   <q-item>
                     <q-item-section avatar>
-                      <q-chip size="sm" color="grey-7" text-color="white" dense>0.098</q-chip>
+                      <q-chip size="sm" color="grey-7" text-color="white">0.098</q-chip>
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
@@ -1411,30 +1402,30 @@ const getInterpretationColor = (): string => {
                   <div class="text-caption text-grey-8">
                     <strong>Paziente con ARDS moderata</strong>:
                   </div>
-                  <q-list dense class="q-pl-md">
-                    <q-item dense>
+                  <q-list class="q-pl-md">
+                    <q-item>
                       <q-item-section>
                         <q-item-label caption>RR = 25 atti/min</q-item-label>
                       </q-item-section>
                     </q-item>
-                    <q-item dense>
+                    <q-item>
                       <q-item-section>
                         <q-item-label caption
                           >VTe = 0.40 litri (400 ml, ~6 ml/kg per 70 kg)</q-item-label
                         >
                       </q-item-section>
                     </q-item>
-                    <q-item dense>
+                    <q-item>
                       <q-item-section>
                         <q-item-label caption>P<sub>picco</sub> = 30 cmH₂O</q-item-label>
                       </q-item-section>
                     </q-item>
-                    <q-item dense>
+                    <q-item>
                       <q-item-section>
                         <q-item-label caption>P<sub>plateau</sub> = 26 cmH₂O</q-item-label>
                       </q-item-section>
                     </q-item>
-                    <q-item dense>
+                    <q-item>
                       <q-item-section>
                         <q-item-label caption>PEEP = 12 cmH₂O</q-item-label>
                       </q-item-section>
@@ -1464,17 +1455,17 @@ const getInterpretationColor = (): string => {
                   sicurezza. Ridurre RR a 20 atti/min (tollerando ipercapnia permissiva) ridurrebbe
                   MP a ~18 J/min, entrando nella zona di attenzione.
                 </div>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- 🔬 Analisi Dettagliata e Applicazioni Cliniche -->
             <q-expansion-item
               icon="science"
-              label="🔬 Analisi Dettagliata e Applicazioni Cliniche"
-              dense
-              class="q-mt-xs"
+              label="6️⃣ Analisi Dettagliata e Applicazioni Cliniche"
+              class="q-mt-md"
+              header-class="bg-purple-1 text-purple-9"
             >
-              <div class="bg-grey-1 q-pa-sm">
+              <q-card class="q-pa-sm">
                 <div class="text-body2 text-weight-bold q-mb-sm">
                   🏥 Utilizzo Clinico del Mechanical Power
                 </div>
@@ -1495,7 +1486,7 @@ const getInterpretationColor = (): string => {
                   Medicine).
                 </div>
                 <div class="text-caption text-grey-8 q-mb-xs"><strong>Strategia</strong>:</div>
-                <q-list dense class="q-pl-md q-mb-sm">
+                <q-list class="q-pl-md q-mb-sm">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="check" color="positive" size="xs" />
@@ -1562,7 +1553,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-caption text-grey-8 q-mb-xs">
                   <strong>Indicatori positivi</strong>:
                 </div>
-                <q-list dense class="q-pl-md q-mb-sm">
+                <q-list class="q-pl-md q-mb-sm">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="trending_down" color="positive" size="xs" />
@@ -1613,7 +1604,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-caption text-grey-8 q-mb-xs">
                   <strong>Quando ricalcolare MP</strong>:
                 </div>
-                <q-list dense class="q-pl-md q-mb-sm">
+                <q-list class="q-pl-md q-mb-sm">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="sync" color="primary" size="xs" />
@@ -1670,7 +1661,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-caption text-grey-8 q-mb-xs">
                   Nonostante sia un parametro promettente, il MP ha alcune limitazioni importanti:
                 </div>
-                <q-list dense class="q-pl-md q-mb-sm">
+                <q-list class="q-pl-md q-mb-sm">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="warning" color="orange" size="xs" />
@@ -1731,7 +1722,7 @@ const getInterpretationColor = (): string => {
 
                 <!-- Riferimenti -->
                 <div class="text-body2 text-weight-bold q-mb-xs">📚 Riferimenti Scientifici</div>
-                <q-list dense class="q-pl-md">
+                <q-list class="q-pl-md">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="article" color="primary" size="xs" />
@@ -1782,22 +1773,22 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                   </q-item>
                 </q-list>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- ⚠️ Valori di Riferimento e Alert Critici -->
             <q-expansion-item
               icon="warning"
-              label="⚠️ Valori di Riferimento e Alert Critici"
-              dense
-              class="q-mt-xs"
+              label="7️⃣ Valori di Riferimento e Alert Critici"
+              class="q-mt-md"
+              header-class="bg-red-1 text-red-9"
             >
-              <div class="bg-grey-1 q-pa-md">
+              <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
                   Threshold di Mechanical Power e Stratificazione del Rischio VILI
                 </div>
 
-                <q-list dense bordered class="q-mb-md">
+                <q-list bordered class="q-mb-md">
                   <q-item class="bg-green-1">
                     <q-item-section avatar>
                       <q-icon name="check_circle" color="green" size="sm" />
@@ -1908,7 +1899,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-body2 text-weight-bold q-mb-xs q-mt-md">
                   🎯 Correzione MP per Compliance Polmonare (MP Normalizzato):
                 </div>
-                <q-banner dense class="bg-indigo-1 text-indigo-9 q-mb-md">
+                <q-banner class="bg-indigo-1 text-indigo-9 q-mb-md">
                   <template v-slot:avatar>
                     <q-icon name="calculate" color="indigo" />
                   </template>
@@ -1928,7 +1919,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-body2 text-weight-bold q-mb-xs">
                   📊 Evidenze Scientifiche Threshold MP:
                 </div>
-                <q-list dense class="bg-grey-1">
+                <q-list class="bg-grey-1">
                   <q-item>
                     <q-item-section>
                       <q-item-label caption>
@@ -1950,22 +1941,22 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                   </q-item>
                 </q-list>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- 📚 Documentazione Medica Scientifica -->
             <q-expansion-item
               icon="menu_book"
-              label="📚 Documentazione Medica Scientifica e Linee Guida"
-              dense
-              class="q-mt-xs"
+              label="8️⃣ Documentazione Medica Scientifica e Linee Guida"
+              class="q-mt-md"
+              header-class="bg-indigo-1 text-indigo-9"
             >
-              <div class="bg-grey-1 q-pa-md">
+              <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
                   Linee Guida Internazionali e Raccomandazioni Evidence-Based
                 </div>
 
-                <q-list dense>
+                <q-list>
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="description" color="primary" size="xs" />
@@ -2083,7 +2074,7 @@ const getInterpretationColor = (): string => {
                   </q-item>
                 </q-list>
 
-                <q-banner dense class="bg-amber-1 text-amber-9 q-mt-md">
+                <q-banner class="bg-amber-1 text-amber-9 q-mt-md">
                   <template v-slot:avatar>
                     <q-icon name="info" color="amber-9" />
                   </template>
@@ -2100,22 +2091,22 @@ const getInterpretationColor = (): string => {
                     MP in future guidelines 2024-2025.
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- 📖 Riferimenti Scientifici e Bibliografia -->
             <q-expansion-item
               icon="import_contacts"
-              label="📖 Riferimenti Scientifici e Bibliografia Peer-Reviewed"
-              dense
-              class="q-mt-xs"
+              label="9️⃣ Riferimenti Scientifici e Bibliografia Peer-Reviewed"
+              class="q-mt-md"
+              header-class="bg-teal-1 text-teal-9"
             >
-              <div class="bg-grey-1 q-pa-md">
+              <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
                   Letteratura Scientifica Fondamentale e Risorse Autorevoli
                 </div>
 
-                <q-list dense>
+                <q-list>
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="article" color="blue" size="xs" />
@@ -2284,7 +2275,7 @@ const getInterpretationColor = (): string => {
                   </q-item>
                 </q-list>
 
-                <q-banner dense class="bg-indigo-1 text-indigo-9 q-mt-md">
+                <q-banner class="bg-indigo-1 text-indigo-9 q-mt-md">
                   <template v-slot:avatar>
                     <q-icon name="verified" color="indigo" />
                   </template>
@@ -2301,7 +2292,7 @@ const getInterpretationColor = (): string => {
                     tradizionali.
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
           </q-card-section>
         </q-card>

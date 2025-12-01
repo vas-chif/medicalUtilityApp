@@ -1,0 +1,58 @@
+# 🚀 GitHub Actions Workflow - Deploy automatico Firebase
+#
+# 🎓 CONCETTO:
+# - Trigger: MANUALE (workflow_dispatch) → deploy controllato
+# - Branch "main" → deploy su Firebase Hosting
+# - Usa FIREBASE_TOKEN_MEDICAL_UTILITY come secret per autenticazione
+#
+# FLOW:
+# 1. Checkout codice da GitHub
+# 2. Setup Node.js v22
+# 3. Installa dipendenze (yarn)
+# 4. Build produzione (quasar build)
+# 5. Deploy su Firebase Hosting (solo se branch main)
+
+name: Deploy to Firebase Hosting
+
+# Trigger: solo manuale (disabilitato auto-deploy su push)
+on:
+  # push:
+  #   branches:
+  #     - main
+  # Deploy manuale da GitHub UI (Tab Actions → Run workflow)
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout del repository
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      # Step 3: Installa dipendenze
+      - name: 📦 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # Step 4: Build produzione (usa quasar build in modalità SPA)
+      - name: 🏗️ Build Quasar app
+        run: npx quasar build -m spa
+        env:
+          NODE_ENV: production
+
+      # Step 5: Deploy su Firebase (richiede FIREBASE_TOKEN_MEDICAL_UTILITY secret)
+      - name: 🚀 Deploy to Firebase Hosting
+        if: github.ref == 'refs/heads/main'
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN_MEDICAL_UTILITY }}
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_MEDICAL_UTILITY }}

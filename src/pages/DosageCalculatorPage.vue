@@ -598,7 +598,7 @@ const getAgeNote = (): string => {
             <q-expansion-item
               icon="info"
               label="📋 Informazioni Farmaco"
-              class="text-primary"
+             
               v-if="selectedDrug"
             >
               <div class="q-pa-md bg-grey-1">
@@ -616,7 +616,7 @@ const getAgeNote = (): string => {
             <!-- Avvertenze -->
             <q-expansion-item
               icon="warning"
-              label="⚠️ Avvertenze Importanti"
+              label="Avvertenze Importanti"
               class="text-orange q-mt-sm"
               v-if="result.totalDose > 0"
             >
@@ -636,7 +636,7 @@ const getAgeNote = (): string => {
             <!-- 📊 Definizione e Significato Clinico -->
             <q-expansion-item
               icon="info"
-              label="📊 Definizione e Significato del Dosaggio Farmacologico"
+              label="Definizione e Significato del Dosaggio Farmacologico"
               dense
               class="q-mt-md"
             >
@@ -663,7 +663,7 @@ const getAgeNote = (): string => {
             <!-- 🔬 Fisiologia e Farmacocinetica -->
             <q-expansion-item
               icon="science"
-              label="🔬 Fisiologia della Farmacocinetica (ADME)"
+              label="Fisiologia della Farmacocinetica (ADME)"
               dense
               class="q-mt-xs"
             >
@@ -704,7 +704,7 @@ const getAgeNote = (): string => {
             <!-- 📏 Come si Calcola il Dosaggio -->
             <q-expansion-item
               icon="straighten"
-              label="📏 Come si Calcola il Dosaggio Personalizzato"
+              label="Come si Calcola il Dosaggio Personalizzato"
               dense
               class="q-mt-xs"
             >
@@ -748,7 +748,7 @@ const getAgeNote = (): string => {
             <!-- 🎯 Interpretazione Clinica Dosaggio -->
             <q-expansion-item
               icon="psychology"
-              label="🎯 Interpretazione Clinica e Aggiustamenti Dose"
+              label="Interpretazione Clinica e Aggiustamenti Dose"
               dense
               class="q-mt-xs"
             >
@@ -797,7 +797,7 @@ const getAgeNote = (): string => {
             <!-- 🔬 Applicazioni Cliniche TDM -->
             <q-expansion-item
               icon="medical_services"
-              label="🔬 Applicazioni Cliniche e TDM (Therapeutic Drug Monitoring)"
+              label="Applicazioni Cliniche e TDM (Therapeutic Drug Monitoring)"
               dense
               class="q-mt-xs"
             >
@@ -848,7 +848,7 @@ const getAgeNote = (): string => {
             <!-- ⚠️ Valori di Riferimento e Alert -->
             <q-expansion-item
               icon="warning"
-              label="⚠️ Range Terapeutici, Valori Tossici e Alert"
+              label="Range Terapeutici, Valori Tossici e Alert"
               dense
               class="q-mt-xs"
             >
@@ -895,7 +895,7 @@ const getAgeNote = (): string => {
             <!-- 📚 Documentazione e Linee Guida -->
             <q-expansion-item
               icon="menu_book"
-              label="📚 Documentazione Scientifica e Linee Guida Internazionali"
+              label="Documentazione Scientifica e Linee Guida Internazionali"
               dense
               class="q-mt-xs"
             >
@@ -957,7 +957,7 @@ const getAgeNote = (): string => {
             <!-- Formule -->
             <q-expansion-item
               icon="functions"
-              label="🧮 Formule Utilizzate"
+              label="Formule Utilizzate"
               class="text-primary q-mt-sm"
               v-if="result.totalDose > 0"
             >
@@ -976,7 +976,7 @@ const getAgeNote = (): string => {
             <!-- NUOVA SEZIONE: Documentazione Scientifica Farmacologia -->
             <q-expansion-item
               icon="book"
-              label="📚 Documentazione Scientifica - Farmacologia Clinica"
+              label="Documentazione Scientifica - Farmacologia Clinica"
               class="text-primary q-mt-md"
             >
               <div class="q-pa-md bg-blue-1">

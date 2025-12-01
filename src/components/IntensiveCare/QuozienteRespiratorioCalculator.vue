@@ -176,7 +176,7 @@ const getInterpretationColor = (): string => {
 <template>
   <div class="q-pa-md">
     <!-- Medical Info Banner -->
-    <q-banner class="bg-blue-1 text-blue-9 q-mb-md" rounded dense>
+    <q-banner class="bg-blue-1 text-blue-9 q-mb-md" rounded>
       <template v-slot:avatar>
         <q-icon name="info" color="blue" />
       </template>
@@ -204,7 +204,6 @@ const getInterpretationColor = (): string => {
               label="PvCO2 (CO2 Venosa)"
               suffix="mmHg"
               outlined
-              dense
               class="q-mb-sm"
             >
               <template v-slot:prepend>
@@ -220,7 +219,6 @@ const getInterpretationColor = (): string => {
               label="PaCO2 (CO2 Arteriosa)"
               suffix="mmHg"
               outlined
-              dense
               class="q-mb-sm"
             >
               <template v-slot:prepend>
@@ -236,7 +234,6 @@ const getInterpretationColor = (): string => {
               label="HB (Emoglobina)"
               suffix="g/dL"
               outlined
-              dense
               class="q-mb-sm"
             >
               <template v-slot:prepend>
@@ -252,7 +249,6 @@ const getInterpretationColor = (): string => {
               label="SaO2 (Saturazione O2 Arteriosa)"
               suffix="%"
               outlined
-              dense
               class="q-mb-sm"
               :rules="[(val) => (val >= 0 && val <= 100) || 'Valore 0-100%']"
             >
@@ -269,7 +265,6 @@ const getInterpretationColor = (): string => {
               label="SvO2 (Saturazione O2 Venosa)"
               suffix="%"
               outlined
-              dense
               class="q-mb-sm"
               :rules="[(val) => (val >= 0 && val <= 100) || 'Valore 0-100%']"
             >
@@ -286,7 +281,6 @@ const getInterpretationColor = (): string => {
               label="PaO2 (Pressione O2 Arteriosa)"
               suffix="mmHg"
               outlined
-              dense
               class="q-mb-sm"
             >
               <template v-slot:prepend>
@@ -302,7 +296,6 @@ const getInterpretationColor = (): string => {
               label="PvO2 (Pressione O2 Venosa)"
               suffix="mmHg"
               outlined
-              dense
               class="q-mb-md"
             >
               <template v-slot:prepend>
@@ -365,7 +358,7 @@ const getInterpretationColor = (): string => {
             </div>
 
             <!-- Alert critici -->
-            <q-banner v-if="result > 1.2" class="bg-red-1 text-red-9 q-mb-xs" rounded dense>
+            <q-banner v-if="result > 1.2" class="bg-red-1 text-red-9 q-mb-xs" rounded>
               <template v-slot:avatar>
                 <q-icon name="warning" color="red" size="sm" />
               </template>
@@ -379,7 +372,6 @@ const getInterpretationColor = (): string => {
               v-if="result < 0.7 && result > 0"
               class="bg-orange-1 text-orange-9"
               rounded
-              dense
             >
               <template v-slot:avatar>
                 <q-icon name="info" color="orange" size="sm" />
@@ -391,13 +383,13 @@ const getInterpretationColor = (): string => {
 
             <!-- Definizione e Significato Clinico -->
             <q-expansion-item
-              icon="school"
-              label="Definizione e Significato Clinico"
-              dense
+              icon="info"
+              label="1️⃣ Definizione e Significato Clinico"
               default-opened
-              class="q-mt-xs text-primary text-weight-bold"
+              class="q-mt-md"
+              header-class="bg-blue-1 text-blue-9"
             >
-              <div class="bg-grey-1 q-pa-sm">
+              <q-card class="q-pa-sm">
                 <div class="text-body2 text-weight-bold q-mb-sm">
                   Cos'è il Quoziente Respiratorio (QR)?
                 </div>
@@ -415,7 +407,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-body2 text-weight-bold q-mb-xs">
                   📊 Valori Fisiologici Normali:
                 </div>
-                <q-list dense class="q-pl-md q-mb-sm">
+                <q-list class="q-pl-md q-mb-sm">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="chevron_right" color="primary" size="xs" />
@@ -479,17 +471,17 @@ const getInterpretationColor = (): string => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- Metabolismo Aerobico vs Anaerobico -->
             <q-expansion-item
               icon="biotech"
               label="Metabolismo Aerobico vs Anaerobico"
-              dense
-              class="q-mt-xs"
+              class="q-mt-md"
+              header-class="bg-green-2 text-green-10"
             >
-              <div class="bg-grey-1 q-pa-sm">
+              <q-card class="q-pa-sm">
                 <div class="text-body2 text-weight-bold text-positive q-mb-sm">
                   ✅ Metabolismo Aerobico (QR: 0.7 - 1.0)
                 </div>
@@ -507,7 +499,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-caption text-grey-8 q-mb-xs">
                   In situazioni di <strong>metabolismo anaerobico</strong>, come in caso di:
                 </div>
-                <q-list dense class="q-pl-md q-mb-sm">
+                <q-list class="q-pl-md q-mb-sm">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="warning" color="orange" size="xs" />
@@ -558,7 +550,7 @@ const getInterpretationColor = (): string => {
                   determinare un <strong>innalzamento del QR oltre 1.0</strong>.
                 </div>
 
-                <q-banner class="bg-red-1 text-red-9" dense rounded>
+                <q-banner class="bg-red-1 text-red-9" rounded>
                   <template v-slot:avatar>
                     <q-icon name="warning" color="red" size="xs" />
                   </template>
@@ -570,17 +562,17 @@ const getInterpretationColor = (): string => {
                     di <strong>seguire quasi in tempo reale l'evoluzione dello shock</strong>.
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- Come si Misura il VCO2/VO2 -->
             <q-expansion-item
               icon="science"
               label="Come si Misura il VCO2/VO2"
-              dense
-              class="q-mt-xs"
+              class="q-mt-md"
+              header-class="bg-amber-2 text-amber-10"
             >
-              <div class="bg-grey-1 q-pa-sm">
+              <q-card class="q-pa-sm">
                 <div class="text-body2 text-weight-bold q-mb-sm">Metodi di Misurazione:</div>
 
                 <div class="q-mb-sm">
@@ -639,7 +631,7 @@ const getInterpretationColor = (): string => {
                   </div>
                 </div>
 
-                <q-banner class="bg-amber-1 text-amber-9" dense rounded>
+                <q-banner class="bg-amber-1 text-amber-9" rounded>
                   <template v-slot:avatar>
                     <q-icon name="info" color="amber" size="xs" />
                   </template>
@@ -649,113 +641,18 @@ const getInterpretationColor = (): string => {
                     la calorimetria indiretta.
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
 
-            <!-- 📊 Definizione e Significato Clinico -->
-            <q-expansion-item
-              icon="info"
-              label="📊 Definizione e Significato Clinico"
-              dense
-              class="q-mt-xs"
-            >
-              <div class="bg-grey-1 q-pa-sm">
-                <p class="text-caption q-mb-sm">
-                  <strong>Definizione Fisiologica:</strong> Il Quoziente Respiratorio (RQ o
-                  Respiratory Quotient) è il rapporto molare tra la quantità di CO₂ prodotta (VCO₂)
-                  e la quantità di O₂ consumata (VO₂) a livello sistemico:
-                  <strong>RQ = VCO₂ / VO₂</strong>. Riflette il tipo di substrato energetico
-                  ossidato dall'organismo a livello cellulare (carboidrati, lipidi, proteine) e lo
-                  stato metabolico generale.
-                </p>
-                <p class="text-caption q-mb-sm">
-                  <strong>Significato Clinico - Indicatore Metabolico Multiplo:</strong>
-                </p>
-                <q-list dense class="q-pl-md q-mb-sm">
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="battery_charging_full" color="primary" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption>
-                        <strong>Tipo di Substrato Energetico:</strong> RQ 0.7 = ossidazione lipidi
-                        (efficienza energetica), RQ 0.85 = dieta mista, RQ 1.0 = ossidazione
-                        carboidrati (consumo O₂ maggiore)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="monitor_heart" color="red" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption>
-                        <strong>Soglia Anaerobica:</strong> RQ &gt;1.0 indica metabolismo anaerobico
-                        (produzione lattato, acidosi). Marcatore precoce di insufficienza
-                        circolatoria in shock/sepsi (precede ↑lattato)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="restaurant" color="orange" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption>
-                        <strong>Valutazione Nutrizionale ICU:</strong> Monitoraggio equilibrio
-                        nutrizionale in pazienti critici (overfeeding → RQ &gt;1.0 → lipogenesi,
-                        accumulo CO₂, difficoltà svezzamento ventilatore)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="fitness_center" color="green" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption>
-                        <strong>Fisiologia Esercizio:</strong> Shift metabolico da lipidi (riposo,
-                        esercizio leggero) a carboidrati (esercizio intenso). RQ crossover point
-                        ~60% VO₂max
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="science" color="purple" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption>
-                        <strong>Calcolo Dispendio Energetico:</strong> Calorimetria indiretta
-                        utilizza VO₂ + RQ per calcolare REE (Resting Energy Expenditure) con
-                        equazione Weir: REE = [3.9(VO₂) + 1.1(VCO₂)] × 1.44
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-                <q-banner class="bg-blue-1 text-blue-9" dense rounded>
-                  <template v-slot:avatar>
-                    <q-icon name="info" color="blue" size="xs" />
-                  </template>
-                  <div class="text-caption">
-                    <strong>Nota Pratica:</strong> Il RQ misurato rappresenta il rapporto sistemico
-                    (polmonare), non il rapporto tissutale (RER - Respiratory Exchange Ratio). In
-                    condizioni steady-state (riposo, esercizio submassimale), RQ ≈ RER. In
-                    condizioni non-steady-state (esercizio massimale, iperventilazione, acidosi), RQ
-                    può essere &gt;1.0 anche senza anaerobiosi (compenso respiratorio acidosi).
-                  </div>
-                </q-banner>
-              </div>
-            </q-expansion-item>
 
             <!-- 🔬 Fisiologia del Metabolismo Aerobico vs Anaerobico -->
             <q-expansion-item
-              icon="biotech"
-              label="🔬 Fisiologia: Metabolismo Aerobico vs Anaerobico"
-              dense
-              class="q-mt-xs"
+              icon="science"
+              label="2️⃣ Fisiologia: Metabolismo Aerobico vs Anaerobico"
+              class="q-mt-md"
+              header-class="bg-green-1 text-green-9"
             >
-              <div class="bg-grey-1 q-pa-sm">
+              <q-card class="q-pa-sm">
                 <p class="text-caption text-weight-bold q-mb-xs">
                   Ossidazione Substrati Energetici - Stechiometria:
                 </p>
@@ -769,7 +666,7 @@ const getInterpretationColor = (): string => {
                     </p>
                     <p class="text-caption text-center text-weight-bold">RQ = 6 CO₂ / 6 O₂ = 1.0</p>
                   </div>
-                  <q-list dense class="q-pl-md">
+                  <q-list class="q-pl-md">
                     <q-item>
                       <q-item-section>
                         <q-item-label caption>
@@ -794,7 +691,7 @@ const getInterpretationColor = (): string => {
                       RQ = 16 CO₂ / 23 O₂ = 0.7
                     </p>
                   </div>
-                  <q-list dense class="q-pl-md">
+                  <q-list class="q-pl-md">
                     <q-item>
                       <q-item-section>
                         <q-item-label caption>
@@ -816,7 +713,7 @@ const getInterpretationColor = (): string => {
                   <div class="bg-purple-1 q-pa-xs rounded-borders q-mb-xs">
                     <p class="text-caption text-center text-weight-bold">RQ = ~0.8</p>
                   </div>
-                  <q-list dense class="q-pl-md">
+                  <q-list class="q-pl-md">
                     <q-item>
                       <q-item-section>
                         <q-item-label caption>
@@ -837,7 +734,7 @@ const getInterpretationColor = (): string => {
                   </p>
                   <p class="text-caption text-center text-weight-bold">RQ &gt; 1.0</p>
                 </div>
-                <q-list dense class="q-pl-md">
+                <q-list class="q-pl-md">
                   <q-item>
                     <q-item-section>
                       <q-item-label caption>
@@ -858,7 +755,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                   </q-item>
                 </q-list>
-                <q-banner class="bg-orange-1 text-orange-9 q-mt-sm" dense rounded>
+                <q-banner class="bg-orange-1 text-orange-9 q-mt-sm" rounded>
                   <template v-slot:avatar>
                     <q-icon name="warning" color="orange" size="xs" />
                   </template>
@@ -870,23 +767,23 @@ const getInterpretationColor = (): string => {
                     svezzamento (↑drive respiratorio).
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- 📏 Come si Misura il RQ -->
             <q-expansion-item
-              icon="speed"
-              label="📏 Come si Misura il Quoziente Respiratorio"
-              dense
-              class="q-mt-xs"
+              icon="straighten"
+              label="3️⃣ Come si Misura il Quoziente Respiratorio"
+              class="q-mt-md"
+              header-class="bg-amber-1 text-amber-9"
             >
-              <div class="bg-grey-1 q-pa-sm">
+              <q-card class="q-pa-sm">
                 <p class="text-caption text-weight-bold q-mb-xs">Metodi di Misurazione Diretta:</p>
                 <div class="q-mb-sm">
                   <p class="text-caption">
                     <strong>1. Calorimetria Indiretta (Gold Standard):</strong>
                   </p>
-                  <q-list dense class="q-pl-md">
+                  <q-list class="q-pl-md">
                     <q-item>
                       <q-item-section>
                         <q-item-label caption>
@@ -929,7 +826,7 @@ const getInterpretationColor = (): string => {
                   <p class="text-caption">
                     <strong>2. Stima da Emogasanalisi Artero-Venosa (Metodo Utilizzato):</strong>
                   </p>
-                  <q-list dense class="q-pl-md">
+                  <q-list class="q-pl-md">
                     <q-item>
                       <q-item-section>
                         <q-item-label caption>
@@ -976,7 +873,7 @@ const getInterpretationColor = (): string => {
                     </q-item>
                   </q-list>
                 </div>
-                <q-banner class="bg-cyan-1 text-cyan-9" dense rounded>
+                <q-banner class="bg-cyan-1 text-cyan-9" rounded>
                   <template v-slot:avatar>
                     <q-icon name="science" color="cyan" size="xs" />
                   </template>
@@ -987,12 +884,17 @@ const getInterpretationColor = (): string => {
                     disponibile, ma validare con trend clinici (bilancio azotato, peso, albumina).
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- Formula Utilizzata -->
-            <q-expansion-item icon="functions" label="🧮 Formula Utilizzata" dense class="q-mt-xs">
-              <div class="bg-grey-1 q-pa-sm">
+            <q-expansion-item
+              icon="functions"
+              label="4️⃣ Formula Utilizzata"
+              class="q-mt-md"
+              header-class="bg-cyan-1 text-cyan-9"
+            >
+              <q-card class="q-pa-sm">
                 <div class="bg-primary text-white q-pa-sm q-mb-sm">
                   <div class="text-body2 text-center">
                     QR = (PvCO2 - PaCO2) / [(HB × 1.36 × (SaO2 - SvO2)) / 100 + (PaO2 - PvO2) ×
@@ -1003,10 +905,10 @@ const getInterpretationColor = (): string => {
                 <div class="text-caption text-grey-8 q-mb-xs">
                   <strong>Dove:</strong>
                 </div>
-                <q-list dense class="q-pl-md">
+                <q-list class="q-pl-md">
                   <q-item>
                     <q-item-section avatar>
-                      <q-chip size="sm" color="blue" text-color="white" dense>1.36</q-chip>
+                      <q-chip size="sm" color="blue" text-color="white">1.36</q-chip>
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
@@ -1016,7 +918,7 @@ const getInterpretationColor = (): string => {
                   </q-item>
                   <q-item>
                     <q-item-section avatar>
-                      <q-chip size="sm" color="orange" text-color="white" dense>0.003</q-chip>
+                      <q-chip size="sm" color="orange" text-color="white">0.003</q-chip>
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
@@ -1025,17 +927,17 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                   </q-item>
                 </q-list>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- Analisi Dettagliata e Applicazioni Cliniche -->
             <q-expansion-item
-              icon="insights"
-              label="🔬 Analisi Dettagliata e Applicazioni"
-              dense
-              class="q-mt-xs"
+              icon="local_hospital"
+              label="6️⃣ Analisi Dettagliata e Applicazioni"
+              class="q-mt-md"
+              header-class="bg-purple-1 text-purple-9"
             >
-              <div class="bg-grey-1 q-pa-sm">
+              <q-card class="q-pa-sm">
                 <div class="text-body2 text-weight-bold q-mb-sm">Componenti del Calcolo:</div>
                 <div class="row q-gutter-xs q-mb-sm">
                   <div class="col-12 bg-blue-1 q-pa-xs rounded-borders">
@@ -1072,7 +974,7 @@ const getInterpretationColor = (): string => {
                 <q-separator class="q-my-sm" />
 
                 <div class="text-body2 text-weight-bold q-mb-xs">📊 Applicazioni Cliniche:</div>
-                <q-list dense class="q-pl-md q-mb-sm">
+                <q-list class="q-pl-md q-mb-sm">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="check" color="positive" size="xs" />
@@ -1131,7 +1033,7 @@ const getInterpretationColor = (): string => {
                 </q-list>
 
                 <div class="text-body2 text-weight-bold q-mb-xs">⚠️ Limiti e Considerazioni:</div>
-                <q-list dense class="q-pl-md">
+                <q-list class="q-pl-md">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="warning" color="orange" size="xs" />
@@ -1183,22 +1085,22 @@ const getInterpretationColor = (): string => {
                   indiretta con analisi dei gas respiratori (Encyclopedia of Respiratory Medicine,
                   ScienceDirect Medical Literature).
                 </div>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- 🎯 Interpretazione Clinica Dettagliata -->
             <q-expansion-item
               icon="psychology"
-              label="🎯 Interpretazione Clinica Dettagliata"
-              dense
-              class="q-mt-xs"
+              label="5️⃣ Interpretazione Clinica Dettagliata"
+              class="q-mt-md"
+              header-class="bg-orange-1 text-orange-9"
             >
-              <div class="bg-grey-1 q-pa-md">
+              <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
                   Range di Valori e Significato Clinico
                 </div>
 
-                <q-list dense bordered class="q-mb-md">
+                <q-list bordered class="q-mb-md">
                   <q-item class="bg-purple-1">
                     <q-item-section>
                       <q-item-label class="text-weight-bold"
@@ -1337,7 +1239,7 @@ const getInterpretationColor = (): string => {
                   </q-item>
                 </q-list>
 
-                <q-banner dense class="bg-indigo-1 text-indigo-9 q-mt-md">
+                <q-banner class="bg-indigo-1 text-indigo-9 q-mt-md">
                   <template v-slot:avatar>
                     <q-icon name="lightbulb" color="indigo" />
                   </template>
@@ -1351,17 +1253,17 @@ const getInterpretationColor = (): string => {
                     &gt;70%.
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- ⚠️ Valori di Riferimento e Alert Critici -->
             <q-expansion-item
               icon="warning"
-              label="⚠️ Valori di Riferimento e Alert Critici"
-              dense
-              class="q-mt-xs"
+              label="7️⃣ Valori di Riferimento e Alert Critici"
+              class="q-mt-md"
+              header-class="bg-red-1 text-red-9"
             >
-              <div class="bg-grey-1 q-pa-md">
+              <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
                   Range di Riferimento per Condizione Fisiologica
                 </div>
@@ -1369,7 +1271,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-body2 text-weight-bold q-mb-xs">
                   1️⃣ Condizioni a Riposo (Post-Assorbitivo):
                 </div>
-                <q-list dense bordered class="q-mb-md bg-grey-1">
+                <q-list bordered class="q-mb-md bg-grey-1">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon color="purple" name="bedtime" size="xs" />
@@ -1405,7 +1307,7 @@ const getInterpretationColor = (): string => {
                 </q-list>
 
                 <div class="text-body2 text-weight-bold q-mb-xs">2️⃣ Stato Post-Prandiale:</div>
-                <q-list dense bordered class="q-mb-md bg-grey-1">
+                <q-list bordered class="q-mb-md bg-grey-1">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon color="blue" name="restaurant" size="xs" />
@@ -1440,7 +1342,7 @@ const getInterpretationColor = (): string => {
                 </q-list>
 
                 <div class="text-body2 text-weight-bold q-mb-xs">3️⃣ Durante Esercizio Fisico:</div>
-                <q-list dense bordered class="q-mb-md bg-grey-1">
+                <q-list bordered class="q-mb-md bg-grey-1">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon color="green" name="directions_walk" size="xs" />
@@ -1508,7 +1410,7 @@ const getInterpretationColor = (): string => {
                 <div class="text-body2 text-weight-bold q-mb-xs text-red-9">
                   🚨 ALERT CRITICI - Thresholds di Intervento:
                 </div>
-                <q-list dense bordered class="bg-red-1">
+                <q-list bordered class="bg-red-1">
                   <q-item class="bg-orange-2">
                     <q-item-section avatar>
                       <q-icon color="orange" name="warning" size="sm" />
@@ -1576,7 +1478,7 @@ const getInterpretationColor = (): string => {
                   </q-item>
                 </q-list>
 
-                <q-banner dense class="bg-blue-grey-1 text-blue-grey-9 q-mt-md">
+                <q-banner class="bg-blue-grey-1 text-blue-grey-9 q-mt-md">
                   <template v-slot:avatar>
                     <q-icon name="science" color="blue-grey" />
                   </template>
@@ -1592,22 +1494,22 @@ const getInterpretationColor = (): string => {
                     (glicemia, lattato, corpi chetonici, ScvO₂).
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- 📚 Documentazione Medica Scientifica -->
             <q-expansion-item
               icon="menu_book"
-              label="📚 Documentazione Medica Scientifica"
-              dense
-              class="q-mt-xs"
+              label="8️⃣ Documentazione Medica Scientifica"
+              class="q-mt-md"
+              header-class="bg-indigo-1 text-indigo-9"
             >
-              <div class="bg-grey-1 q-pa-md">
+              <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
                   Linee Guida Internazionali e Protocolli Clinici
                 </div>
 
-                <q-list dense class="q-mb-md">
+                <q-list class="q-mb-md">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="description" color="primary" size="xs" />
@@ -1723,7 +1625,7 @@ const getInterpretationColor = (): string => {
                   </q-item>
                 </q-list>
 
-                <q-banner dense class="bg-amber-1 text-amber-9">
+                <q-banner class="bg-amber-1 text-amber-9">
                   <template v-slot:avatar>
                     <q-icon name="policy" color="amber-9" />
                   </template>
@@ -1740,22 +1642,22 @@ const getInterpretationColor = (): string => {
                     indicazioni orientative su stato metabolico e adeguatezza nutrizione.
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
 
             <!-- 📖 Riferimenti Scientifici -->
             <q-expansion-item
               icon="import_contacts"
-              label="📖 Riferimenti Scientifici e Bibliografia"
-              dense
-              class="q-mt-xs"
+              label="9️⃣ Riferimenti Scientifici e Bibliografia"
+              class="q-mt-md"
+              header-class="bg-teal-1 text-teal-9"
             >
-              <div class="bg-grey-1 q-pa-md">
+              <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
                   Letteratura Scientifica Peer-Reviewed e Risorse Autorevoli
                 </div>
 
-                <q-list dense class="q-mb-md">
+                <q-list class="q-mb-md">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon name="article" color="blue" size="xs" />
@@ -1944,7 +1846,7 @@ const getInterpretationColor = (): string => {
                   </q-item>
                 </q-list>
 
-                <q-banner dense class="bg-indigo-1 text-indigo-9">
+                <q-banner class="bg-indigo-1 text-indigo-9">
                   <template v-slot:avatar>
                     <q-icon name="verified" color="indigo" />
                   </template>
@@ -1961,7 +1863,7 @@ const getInterpretationColor = (): string => {
                     Per approfondimenti, consultare database PubMed con PMID forniti.
                   </div>
                 </q-banner>
-              </div>
+              </q-card>
             </q-expansion-item>
           </q-card-section>
         </q-card>

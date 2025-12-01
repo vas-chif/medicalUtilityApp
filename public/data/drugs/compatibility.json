@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdate": "2025-12-01T16:01:13.553311",
+    "totalDrugs": 3,
+    "source": "Google Sheets CSV Export",
+    "generatedBy": "convert_sheet_to_json.py"
+  },
+  "compatibility": [
+    {
+      "drug1Id": "abiciximab",
+      "drug2Id": "acetilcisteina",
+      "compatibility": "I",
+      "description": {
+        "it": "Incompatibile - NON somministrare insieme",
+        "en": "Incompatible - DO NOT administer together"
+      },
+      "notes": {
+        "it": "Compatibilità abiciximab + acetilcisteina",
+        "en": "Compatibility abiciximab + acetilcisteina"
+      }
+    }
+  ]
+}

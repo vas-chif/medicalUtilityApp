@@ -9,6 +9,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import type { MedicalTool, MenuSection } from 'src/types/MenuTypes';
 
 // Router
 const router = useRouter();
@@ -67,16 +68,104 @@ onMounted(() => {
 //   return currentLanguage.value === 'it-IT' ? 'Italiano' : 'English';
 // });
 
-// Definizione degli strumenti
-interface MedicalTool {
-  id: string;
-  title: string;
-  description: string;
-  categories: string[];
-  keywords: string[];
-  disabled?: boolean; // Tool temporaneamente disabilitato
-}
+// ============================================================
+// MENU CONFIGURATION
+// ============================================================
 
+/**
+ * Menu Sections for Drawer Navigation
+ */
+const menuSections: MenuSection[] = [
+  {
+    header: '🧮 Calcolatrici Mediche',
+    icon: 'calculate',
+    items: [
+      {
+        id: 'intensive-care',
+        title: 'Intensive Care Utility',
+        caption: 'Mechanical Power & Quoziente Respiratorio',
+        icon: 'local_hospital',
+        iconColor: 'red-6',
+        route: '/intensive-care',
+      },
+      {
+        id: 'clinical-assessment',
+        title: 'Clinical Assessment',
+        caption: 'APGAR, GCS, NEWS, SOFA',
+        icon: 'assignment',
+        iconColor: 'green-6',
+        route: '/clinical-assessment',
+      },
+      {
+        id: 'bmi-calculator',
+        title: 'BMI Calculator',
+        caption: 'Indice massa corporea',
+        icon: 'fitness_center',
+        iconColor: 'orange-6',
+        route: '/bmi-calculator',
+      },
+      {
+        id: 'gfr-calculator',
+        title: 'GFR Calculator',
+        caption: 'Filtrato glomerulare renale',
+        icon: 'water_drop',
+        iconColor: 'cyan-6',
+        route: '/gfr-calculator',
+      },
+      {
+        id: 'pharmacology',
+        title: 'Pharmacology',
+        caption: 'Dosage, Compatibility, Dilution, Infusion',
+        icon: 'medication',
+        iconColor: 'red-6',
+        route: '/pharmacology',
+      },
+      {
+        id: 'apgar-score',
+        title: 'APGAR Score',
+        caption: 'Valutazione neonatale',
+        icon: 'child_care',
+        iconColor: 'pink-6',
+        route: '/apgar-score',
+      },
+      {
+        id: 'drug-compatibility',
+        title: 'Compatibilità Farmaci',
+        caption: 'Interazioni farmacologiche IV',
+        icon: 'science',
+        iconColor: 'purple-6',
+        route: '/drug-compatibility',
+        disabled: false, // ✅ ATTIVATO - Database JSON bilingue pronto!
+      },
+    ],
+  },
+  {
+    header: 'ℹ️ Informazioni',
+    icon: 'info',
+    items: [
+      {
+        id: 'about',
+        title: 'About',
+        caption: 'Informazioni app',
+        icon: 'info',
+        iconColor: 'info',
+        route: '/about',
+      },
+      {
+        id: 'help',
+        title: 'Aiuto',
+        caption: 'Documentazione',
+        icon: 'help',
+        iconColor: 'warning',
+        route: '/help',
+      },
+    ],
+  },
+];
+
+/**
+ * Medical Tools for Homepage Search/Filter
+ */
 const medicalTools: MedicalTool[] = [
   {
     id: 'intensiveCare',
@@ -150,7 +239,7 @@ const medicalTools: MedicalTool[] = [
       'endovenosa',
       'Y-site',
     ],
-    disabled: true, // Disabilitato temporaneamente - PDF data extraction in progress
+    disabled: false, // ✅ ATTIVATO - Database JSON bilingue pronto!
   },
 ];
 
@@ -222,7 +311,9 @@ const navigateTo = async (path: string) => {
         />
 
         <q-toolbar-title class="medical-title">
-          <q-icon name="local_hospital" size="md" class="q-mr-sm" />
+          <q-avatar size="25px" class="medical-avatar q-mb-sm" square>
+            <q-img src="../assets/icon_logo.png" color="white" />
+          </q-avatar>
           Medical Utility Pro
         </q-toolbar-title>
 
@@ -294,7 +385,7 @@ const navigateTo = async (path: string) => {
       <!-- Header Drawer -->
       <div class="drawer-header q-pa-md text-center">
         <q-avatar size="60px" class="medical-avatar q-mb-sm">
-          <q-icon name="medical_services" size="30px" color="white" />
+          <q-img src="../assets/icon_logo.png" color="white" />
         </q-avatar>
         <div class="text-h6 text-primary">Medical Utility</div>
         <div class="text-caption text-grey-6">Strumenti Medici Professionali</div>
@@ -322,145 +413,42 @@ const navigateTo = async (path: string) => {
 
         <q-separator class="q-my-sm" />
 
-        <!-- Sezione Calcolatrici -->
-        <q-item-label header class="text-primary text-weight-bold">
-          🧮 Calcolatrici Mediche
-        </q-item-label>
+        <!-- Dynamic Menu Sections -->
+        <template v-for="(section, sectionIndex) in menuSections" :key="`section-${sectionIndex}`">
+          <!-- Section Header -->
+          <q-item-label header class="text-primary text-weight-bold">
+            {{ section.header }}
+          </q-item-label>
 
-        <!-- Intensive Care Utility (unificato) -->
-        <q-item
-          clickable
-          :active="$route.path === '/intensive-care'"
-          @click="navigateTo('/intensive-care')"
-          class="medical-menu-item"
-        >
-          <q-item-section avatar>
-            <q-icon name="local_hospital" color="red-6" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Intensive Care Utility</q-item-label>
-            <q-item-label caption>Mechanical Power & Quoziente Respiratorio</q-item-label>
-          </q-item-section>
-        </q-item>
+          <!-- Section Items -->
+          <q-item
+            v-for="item in section.items"
+            :key="item.id"
+            clickable
+            :active="$route.path === item.route"
+            @click="navigateTo(item.route)"
+            :class="['medical-menu-item', item.disabled ? 'menu-item-disabled' : '']"
+            :disable="item.disabled"
+          >
+            <q-item-section avatar>
+              <q-icon :name="item.icon" :color="item.disabled ? 'grey-5' : item.iconColor" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label :class="item.disabled ? 'text-grey-6' : ''">
+                {{ item.title }}
+              </q-item-label>
+              <q-item-label caption :class="item.disabled ? 'text-grey-5' : ''">
+                {{ item.caption }}
+              </q-item-label>
+            </q-item-section>
+            <q-item-section side v-if="item.badge">
+              <q-badge :color="item.badge.color" :label="item.badge.label" />
+            </q-item-section>
+          </q-item>
 
-        <!-- Clinical Assessment & Scoring -->
-        <q-item
-          clickable
-          :active="$route.path === '/clinical-assessment'"
-          @click="navigateTo('/clinical-assessment')"
-          class="medical-menu-item"
-        >
-          <q-item-section avatar>
-            <q-icon name="assignment" color="green-6" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Clinical Assessment</q-item-label>
-            <q-item-label caption>APGAR, GCS, NEWS, SOFA</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <!-- BMI Calculator -->
-        <q-item
-          clickable
-          :active="$route.path === '/bmi-calculator'"
-          @click="navigateTo('/bmi-calculator')"
-          class="medical-menu-item"
-        >
-          <q-item-section avatar>
-            <q-icon name="fitness_center" color="orange-6" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>BMI Calculator</q-item-label>
-            <q-item-label caption>Indice massa corporea</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <!-- GFR Calculator -->
-        <q-item
-          clickable
-          :active="$route.path === '/gfr-calculator'"
-          @click="navigateTo('/gfr-calculator')"
-          class="medical-menu-item"
-        >
-          <q-item-section avatar>
-            <q-icon name="water_drop" color="cyan-6" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>GFR Calculator</q-item-label>
-            <q-item-label caption>Filtrato glomerulare renale</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <!-- Pharmacology (unificata: Dosage + Compatibility + Dilution + Infusion) -->
-        <q-item
-          clickable
-          :active="$route.path === '/pharmacology'"
-          @click="navigateTo('/pharmacology')"
-          class="medical-menu-item"
-        >
-          <q-item-section avatar>
-            <q-icon name="medication" color="red-6" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Pharmacology</q-item-label>
-            <q-item-label caption>Dosage, Compatibility, Dilution, Infusion</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <!-- APGAR Score -->
-        <q-item
-          clickable
-          :active="$route.path === '/apgar-score'"
-          @click="navigateTo('/apgar-score')"
-          class="medical-menu-item"
-        >
-          <q-item-section avatar>
-            <q-icon name="child_care" color="pink-6" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>APGAR Score</q-item-label>
-            <q-item-label caption>Valutazione neonatale</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <!-- Drug Compatibility -->
-        <q-item disable class="medical-menu-item menu-item-disabled">
-          <q-item-section avatar>
-            <q-icon name="science" color="grey-5" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label class="text-grey-6">Compatibilità Farmaci</q-item-label>
-            <q-item-label caption class="text-grey-5"> In sviluppo - PDF extraction </q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-badge color="orange" label="Soon" />
-          </q-item-section>
-        </q-item>
-
-        <q-separator class="q-my-md" />
-
-        <!-- Sezione Info -->
-        <q-item-label header class="text-grey-7"> ℹ️ Informazioni </q-item-label>
-
-        <q-item clickable class="medical-menu-item">
-          <q-item-section avatar>
-            <q-icon name="info" color="info" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>About</q-item-label>
-            <q-item-label caption>Informazioni app</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item clickable class="medical-menu-item">
-          <q-item-section avatar>
-            <q-icon name="help" color="warning" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Aiuto</q-item-label>
-            <q-item-label caption>Documentazione</q-item-label>
-          </q-item-section>
-        </q-item>
+          <!-- Separator between sections (not after last) -->
+          <q-separator v-if="sectionIndex < menuSections.length - 1" class="q-my-md" />
+        </template>
       </q-list>
 
       <!-- Footer Drawer -->
@@ -488,7 +476,10 @@ const navigateTo = async (path: string) => {
         <!-- Hero Section -->
         <div class="hero-section q-pa-xl text-center">
           <div class="hero-content">
-            <q-icon name="local_hospital" size="4rem" class="hero-icon q-mb-md" />
+            <q-avatar size="120px" class="medical-avatar q-mb-sm" square>
+              <q-img src="../assets/icon_logo.png" color="white" />
+            </q-avatar>
+
             <h1 class="hero-title text-h3 q-mb-sm">Medical Utility Pro</h1>
             <p class="hero-subtitle text-h6 q-mb-lg">
               Strumenti medici professionali per calcoli clinici precisi e affidabili
@@ -639,20 +630,19 @@ const navigateTo = async (path: string) => {
               </q-card-section>
             </q-card>
 
-            <!-- Drug Compatibility - NASCOSTO: ora integrato in PharmacologyPage -->
-            <!--
+            <!-- Drug Compatibility Checker -->
             <q-card
               v-show="isToolVisible('drug-compatibility')"
-              class="medical-tool-card"
-              :class="{ 'tool-disabled': true }"
+              class="medical-tool-card cursor-pointer"
+              @click="navigateTo('/drug-compatibility')"
             >
               <q-card-section class="tool-card-content">
                 <div class="tool-icon-container q-mb-md">
-                  <q-icon name="science" size="3rem" class="tool-icon" />
+                  <q-icon name="science" size="3rem" class="tool-icon" color="purple-6" />
                 </div>
-                <h5 class="tool-title text-h6 q-mb-sm">Compatibilità Farmaci</h5>
+                <h5 class="tool-title text-h6 q-mb-sm">🧪 Drug Compatibility Checker</h5>
                 <p class="tool-description text-body2 q-mb-md">
-                  Controllo interazioni e incompatibilità farmacologiche IV
+                  Verifica compatibilità IV tra farmaci per somministrazione Y-site sicura
                 </p>
                 <div class="tool-tags">
                   <q-chip size="sm" color="purple-1" text-color="purple-8">Farmacologia</q-chip>
@@ -660,14 +650,8 @@ const navigateTo = async (path: string) => {
                     >Terapia Intensiva</q-chip
                   >
                 </div>
-                <div class="coming-soon-badge">
-                  <q-chip color="orange" text-color="white" icon="schedule" size="sm">
-                    In Sviluppo - PDF Extraction in corso
-                  </q-chip>
-                </div>
               </q-card-section>
             </q-card>
-            -->
           </div>
 
           <!-- Nessun risultato -->

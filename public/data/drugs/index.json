@@ -1,0 +1,95 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdate": "2025-12-01T16:01:13.553311",
+    "totalDrugs": 3,
+    "source": "Google Sheets CSV Export",
+    "generatedBy": "convert_sheet_to_json.py"
+  },
+  "drugs": [
+    {
+      "id": "abiciximab",
+      "name": {
+        "it": "Abiciximab",
+        "en": "Abiciximab"
+      },
+      "category": {
+        "it": "Altro",
+        "en": "Other"
+      },
+      "description": {
+        "it": "",
+        "en": ""
+      },
+      "administrationRoute": {
+        "it": "Endovenosa",
+        "en": "Intravenous"
+      },
+      "concentration": {
+        "it": "Vedi scheda tecnica",
+        "en": "See technical sheet"
+      },
+      "isPhotosensitive": false,
+      "specialNotes": {
+        "it": "Farmaco #1",
+        "en": "Drug #1"
+      }
+    },
+    {
+      "id": "acetilcisteina",
+      "name": {
+        "it": "Acetilcisteina",
+        "en": "Acetilcisteina"
+      },
+      "category": {
+        "it": "Altro",
+        "en": "Other"
+      },
+      "description": {
+        "it": "",
+        "en": ""
+      },
+      "administrationRoute": {
+        "it": "Endovenosa",
+        "en": "Intravenous"
+      },
+      "concentration": {
+        "it": "Vedi scheda tecnica",
+        "en": "See technical sheet"
+      },
+      "isPhotosensitive": false,
+      "specialNotes": {
+        "it": "Farmaco #2",
+        "en": "Drug #2"
+      }
+    },
+    {
+      "id": "aciclovir",
+      "name": {
+        "it": "Aciclovir",
+        "en": "Aciclovir"
+      },
+      "category": {
+        "it": "Altro",
+        "en": "Other"
+      },
+      "description": {
+        "it": "",
+        "en": ""
+      },
+      "administrationRoute": {
+        "it": "Endovenosa",
+        "en": "Intravenous"
+      },
+      "concentration": {
+        "it": "Vedi scheda tecnica",
+        "en": "See technical sheet"
+      },
+      "isPhotosensitive": false,
+      "specialNotes": {
+        "it": "Farmaco #3",
+        "en": "Drug #3"
+      }
+    }
+  ]
+}

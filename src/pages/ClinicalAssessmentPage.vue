@@ -2,15 +2,17 @@
 <script setup lang="ts">
 /**
  * @file ClinicalAssessmentPage.vue
- * @description Pagina unificata per Clinical Assessment & Scoring: APGAR, GCS, NEWS, SOFA
+ * @description Unified page for Clinical Assessment & Scoring Systems: APGAR, GCS, NEWS (link), SOFA (link)
  * @author Vasile Chifeac
  * @created 2025-11-06
- * @modified 2025-11-06
+ * @modified 2025-11-13
  */
 
 import { ref } from 'vue';
-import APGARScoreCalculator from 'src/components/APGARScoreCalculator.vue';
-import GCSCalculator from 'src/components/GCSCalculator.vue';
+import APGARScoreCalculator from 'src/components/ClinicalAssessment/APGARScoreCalculator.vue';
+import GCSCalculator from 'src/components/ClinicalAssessment/GCSCalculator.vue';
+import NEWSScoreCalculator from 'src/components/ClinicalAssessment/NEWSScoreCalculator.vue';
+import SOFAScoreCalculator from 'src/components/ClinicalAssessment/SOFAScoreCalculator.vue';
 
 // Tab attivo
 const activeTab = ref('apgar');
@@ -29,17 +31,17 @@ const activeTab = ref('apgar');
         Clinical Assessment & Scoring
       </h4>
       <p class="text-subtitle1 text-grey-7">
-        Sistemi di valutazione clinica e scoring - Neonatologia, Emergenze, Terapia Intensiva
+        Clinical assessment and scoring systems - Neonatology, Emergency Medicine, Intensive Care
       </p>
 
       <!-- Info Banner -->
-      <q-banner class="bg-green-1 text-green-9 q-mt-md" rounded dense>
+      <q-banner class="bg-green-1 text-green-9 q-mt-md" rounded>
         <template v-slot:avatar>
           <q-icon name="info" color="green" />
         </template>
         <div class="text-body2">
-          <strong>Scoring Systems:</strong> Strumenti validati per la valutazione rapida e 
-          standardizzata dello stato clinico. Essenziali per triage, prognosi e monitoraggio.
+          <strong>Scoring Systems:</strong> Validated tools for rapid and standardized clinical
+          status assessment. Essential for triage, prognosis and monitoring.
         </div>
       </q-banner>
     </div>
@@ -48,7 +50,6 @@ const activeTab = ref('apgar');
     <q-card>
       <q-tabs
         v-model="activeTab"
-        dense
         class="text-grey"
         active-color="primary"
         indicator-color="primary"
@@ -57,12 +58,8 @@ const activeTab = ref('apgar');
       >
         <q-tab name="apgar" icon="child_care" label="APGAR Score" />
         <q-tab name="gcs" icon="psychology" label="Glasgow Coma Scale" />
-        <q-tab name="news" icon="emergency" label="NEWS Score" disabled>
-          <q-tooltip>In arrivo</q-tooltip>
-        </q-tab>
-        <q-tab name="sofa" icon="medical_services" label="SOFA Score" disabled>
-          <q-tooltip>In arrivo</q-tooltip>
-        </q-tab>
+        <q-tab name="news" icon="emergency" label="NEWS Score" />
+        <q-tab name="sofa" icon="medical_services" label="SOFA Score" />
       </q-tabs>
 
       <q-separator />
@@ -78,22 +75,14 @@ const activeTab = ref('apgar');
           <GCSCalculator />
         </q-tab-panel>
 
-        <!-- Tab NEWS (placeholder) -->
+        <!-- Tab NEWS Score -->
         <q-tab-panel name="news">
-          <div class="q-pa-md text-center text-grey-6">
-            <q-icon name="construction" size="xl" class="q-mb-md" />
-            <div class="text-h6">National Early Warning Score</div>
-            <div class="text-body2">Prossimamente disponibile</div>
-          </div>
+          <NEWSScoreCalculator />
         </q-tab-panel>
 
-        <!-- Tab SOFA (placeholder) -->
+        <!-- Tab SOFA Score -->
         <q-tab-panel name="sofa">
-          <div class="q-pa-md text-center text-grey-6">
-            <q-icon name="construction" size="xl" class="q-mb-md" />
-            <div class="text-h6">Sequential Organ Failure Assessment</div>
-            <div class="text-body2">Prossimamente disponibile</div>
-          </div>
+          <SOFAScoreCalculator />
         </q-tab-panel>
       </q-tab-panels>
     </q-card>

@@ -1,3 +1,6 @@
+> "Crea calcolatore **Indice di Ossigenazione (P/F Ratio)** seguendo MEDICAL CALCULATOR DOCUMENTATION STANDARDS da REGOLE_COPILOT.md. Includi tutte le 9 sezioni obbligatorie: Definizione Clinica, Fisiologia (Ipossiemia e ARDS), Come si Misura, Formula (PaO2/FiO2), Interpretazione (normale >400, ARDS <300), Applicazioni (ventilazione, PEEP), Valori Riferimento, Documentazione (Berlin Definition ARDS), Riferimenti Scientifici (almeno 3 con DOI). Implementa TypeScript con validazione input PaO2 (50-600 mmHg) e FiO2 (21-100%). Aggiungi alert critici 🔴 P/F < 100, 🟡 P/F 100-200, 🟢 P/F > 300.
+> "Crea calcolatore **BMI** seguendo nuovi MEDICAL CALCULATOR DOCUMENTATION STANDARDS. Mantieni codice esistente ma riorganizza documentazione con 9 sezioni: Definizione (indice massa corporea), Fisiologia (tessuto adiposo e rischio CV), Come si Misura (bilancia + stadiometro), Formula (peso/altezza²), Interpretazione (WHO classification), Applicazioni (screening obesità, rischio CV), Valori Riferimento (underweight <18.5, obesity ≥30), Documentazione (WHO Technical Report), Riferimenti (WHO 2000, NIH guidelines, ScienceDirect obesity reviews). Preserva tutti calcoli e validazioni attuali.
+
 # 🤖 REGOLE PERMANENTI COPILOT - NYK-AI-V1
 
 ## 👨‍🏫 RUOLO: SENIOR MENTOR & INSEGNANTE
@@ -273,6 +276,192 @@ Ti consiglio FORTEMENTE di cambiarla per sicurezza.
 - **AI Assistant in VS Code**: Continue.dev con Ollama locale (Llama 3.2 3B, CodeLlama 7B)
 - **Environment**: Smart auto-detection system (dev/prod) 🆕
 - **Logging**: Professional secure logging (useSecureLogger + useSecureFirestore) 🆕
+
+---
+
+## 🏗️ ARCHITETTURA COMPONENTI - REGOLA OBBLIGATORIA
+
+**PROBLEMA:** File Pages giganti (5000+ righe) non mantenibili e difficili da refactorare.
+
+**SOLUZIONE:** Separazione responsabilità con componenti modulari riutilizzabili.
+
+### **REGOLA ARCHITETTURA PAGES:**
+
+1️⃣ **PAGES = SOLO LAYOUT E ORCHESTRAZIONE**
+   - File `src/pages/*Page.vue` contiene SOLO:
+     - ✅ Tab system (`q-tabs`, `q-tab-panels`)
+     - ✅ Breadcrumbs navigation
+     - ✅ Import componenti calculator
+     - ✅ Layout generale (max 200-300 righe)
+   - ❌ NO logica calcolo
+   - ❌ NO form markup esteso
+   - ❌ NO sezioni documentazione
+
+2️⃣ **COMPONENTI CALCULATOR = LOGICA + UI COMPLETA**
+   - Ogni calculator in `src/components/[PageName]/`
+   - Esempio: `src/components/GFR/eGFRCalculator.vue`
+   - Contiene:
+     - ✅ Form inputs completi
+     - ✅ Logica calcolo (functions)
+     - ✅ Risultati visualizzazione
+     - ✅ Documentazione NEWS-style (9 sezioni)
+     - ✅ Self-contained (300-800 righe)
+
+3️⃣ **STRUTTURA CARTELLE OBBLIGATORIA:**
+```
+src/
+├── pages/
+│   ├── GFRCalculatorPage.vue          # 206 righe: Layout + 3 Tabs
+│   ├── PharmacologyPage.vue           # 3435 righe: Layout + 4 Tabs
+│   ├── BMICalculatorPage.vue          # 2592 righe: Layout + 4 Tabs
+│   ├── ClinicalAssessmentPage.vue     # 91 righe: Layout + 4 Tabs
+│   ├── IntensiveCareUtilityPage.vue   # 63 righe: Layout + 2 Tabs
+│   ├── NEWSScoreCalculatorPage.vue    # Standalone (usa componente)
+│   └── SOFAScoreCalculatorPage.vue    # Standalone (usa componente)
+│
+├── components/
+│   ├── GFR/                           # ✅ Componenti GFR Calculator
+│   │   ├── eGFRCalculator.vue         # Tab 1: eGFR (MDRD/CKD-EPI)
+│   │   ├── CrClCalculator.vue         # Tab 2: Creatinine Clearance
+│   │   └── FluidBalanceCalculator.vue # Tab 3: Fluid Balance
+│   │
+│   ├── ClinicalAssessment/            # ✅ Componenti Clinical Assessment
+│   │   ├── APGARScoreCalculator.vue   # Tab 1: APGAR Score (neonatologia)
+│   │   ├── GCSCalculator.vue          # Tab 2: Glasgow Coma Scale
+│   │   ├── NEWSScoreCalculator.vue    # Tab 3: NEWS Score (early warning)
+│   │   └── SOFAScoreCalculator.vue    # Tab 4: SOFA Score (organ failure)
+│   │
+│   ├── IntensiveCare/                 # ✅ Componenti Intensive Care
+│   │   ├── QuozienteRespiratorioCalculator.vue  # Tab 1: Quoziente Resp.
+│   │   └── MechanicalPowerCalculator.vue         # Tab 2: Mechanical Power
+│   │
+│   ├── BMI/                           # 🔜 Componenti BMI Calculator (FUTURE)
+│   │   ├── BMICalculator.vue          # Tab 1: BMI Calculator
+│   │   ├── BSACalculator.vue          # Tab 2: BSA Calculator
+│   │   ├── IBWCalculator.vue          # Tab 3: IBW Calculator
+│   │   └── ABWCalculator.vue          # Tab 4: ABW Calculator
+│   │
+│   ├── Pharmacology/                  # 🔜 Componenti Pharmacology (FUTURE)
+│   │   ├── DosageCalculator.vue       # Tab 1: Dosage Calculator
+│   │   ├── DrugDilution.vue           # Tab 2: Drug Dilution
+│   │   └── InfusionRate.vue           # Tab 3: Infusion Rate
+│   │
+│   ├── Compatibility/                 # 🔜 Componenti Drug Compatibility (FUTURE)
+│   │   └── DrugCompatibility.vue      # Tab 1: Drug Compatibility Checker
+│   │
+│   ├── BaseCalculator.vue             # Base component (resta in root)
+│   └── MedicalInput.vue               # Base component (resta in root)
+```
+
+4️⃣ **BILINGUE ITALIANO/INGLESE (FUTURO)**
+   - ✅ **ADESSO:** Tutto testo in ITALIANO
+   - ✅ **PROPS:** Predisposti per i18n con chiavi descrittive
+   - ✅ **FUTURO:** Sistema i18n con file `src/i18n/it-IT/` e `src/i18n/en-US/`
+   - ✅ **ESEMPIO PROPS BILINGUE:**
+```typescript
+interface CalculatorProps {
+  /** Titolo calcolatore (IT: "Calcolatore eGFR", EN: "eGFR Calculator") */
+  title: string;
+  /** Descrizione breve (IT: "Filtrato glomerulare...", EN: "Glomerular filtration...") */
+  description: string;
+  /** Testo pulsante calcola (IT: "Calcola", EN: "Calculate") */
+  calculateButtonText?: string;
+}
+
+// Usage NOW (Italian)
+<eGFRCalculator
+  title="Calcolatore eGFR"
+  description="Filtrato glomerulare stimato (MDRD/CKD-EPI)"
+  calculateButtonText="Calcola GFR"
+/>
+
+// Usage FUTURE (i18n)
+<eGFRCalculator
+  :title="t('gfr.egfr.title')"
+  :description="t('gfr.egfr.description')"
+  :calculateButtonText="t('common.calculate')"
+/>
+```
+
+5️⃣ **VANTAGGI ARCHITETTURA:**
+   - ✅ **Manutenibilità:** File piccoli (200-800 righe), facili da leggere
+   - ✅ **Riusabilità:** Componenti calculator standalone riutilizzabili
+   - ✅ **Testing:** Unit test semplici per singolo calculator
+   - ✅ **Performance:** Lazy loading per tab non attivi
+   - ✅ **Scalabilità:** Aggiungere nuovi calculator = nuovi file componenti
+   - ✅ **Team Collaboration:** Sviluppatori lavorano su file separati (no conflitti Git)
+
+6️⃣ **MIGRAZIONE GRADUALE:**
+   - **FASE 1 (ADESSO):** GFRCalculatorPage.vue (5533 → 200 righe) + 3 componenti
+   - **FASE 2:** PharmacologyPage.vue (3435 → 250 righe) + 4 componenti
+   - **FASE 3:** BMICalculatorPage.vue (2592 → 300 righe) + 3 componenti
+   - **FASE 4:** Standardizzare altri Pages seguendo pattern
+
+7️⃣ **TEMPLATE PAGE STANDARD:**
+```vue
+<!-- GFRCalculatorPage.vue (TARGET: 200 righe) -->
+<script setup lang="ts">
+import { ref } from 'vue';
+
+// Import componenti calculator
+import eGFRCalculator from 'src/components/GFR/eGFRCalculator.vue';
+import CrClCalculator from 'src/components/GFR/CrClCalculator.vue';
+import FluidBalanceCalculator from 'src/components/GFR/FluidBalanceCalculator.vue';
+
+const activeTab = ref<string>('egfr');
+</script>
+
+<template>
+  <q-page padding>
+    <!-- Breadcrumbs -->
+    <q-breadcrumbs class="q-mb-md">
+      <q-breadcrumbs-el label="Home" to="/" />
+      <q-breadcrumbs-el label="Calcolatori Renali" />
+    </q-breadcrumbs>
+
+    <!-- Page Title -->
+    <div class="text-h4 text-weight-bold q-mb-md">
+      Calcolatori Funzionalità Renale
+    </div>
+
+    <!-- Tab System -->
+    <q-card>
+      <q-tabs v-model="activeTab" align="left">
+        <q-tab name="egfr" label="eGFR" icon="water_drop" />
+        <q-tab name="crcl" label="Creatinine Clearance" icon="science" />
+        <q-tab name="fluid" label="Fluid Balance" icon="opacity" />
+      </q-tabs>
+
+      <q-separator />
+
+      <q-tab-panels v-model="activeTab">
+        <!-- Tab 1: eGFR Calculator -->
+        <q-tab-panel name="egfr">
+          <eGFRCalculator />
+        </q-tab-panel>
+
+        <!-- Tab 2: Creatinine Clearance -->
+        <q-tab-panel name="crcl">
+          <CrClCalculator />
+        </q-tab-panel>
+
+        <!-- Tab 3: Fluid Balance -->
+        <q-tab-panel name="fluid">
+          <FluidBalanceCalculator />
+        </q-tab-panel>
+      </q-tab-panels>
+    </q-card>
+  </q-page>
+</template>
+```
+
+8️⃣ **RIFERIMENTI STANDARD:**
+   - Seguire **CODING_STANDARDS.md** § Component Structure
+   - Applicare **STYLE_REFACTOR_TRACKING.md** § NEWS-style documentation
+   - Usare **useSecureLogger** per logging professionale
+   - Props typed con TypeScript strict mode
+
+---
 
 ## 🔒 PRINCIPI FONDAMENTALI PROGETTO
 
@@ -839,7 +1028,7 @@ python3 scripts/ai/query_chromadb.py "technical terms in english" --collection a
 
 ---
 
-## 📚 Teoria (ITALIANO con termini EN)
+## 📚 Teoria (ITALIANO con termini IT (EN))
 
 Il **Broadcasting** (trasmissione automatica) è un meccanismo...
 
@@ -1352,6 +1541,208 @@ function doPost(e) {
 Ogni calcolatore medico DEVE seguire questa struttura documentativa completa per garantire accuratezza clinica e utilità professionale.
 
 #### **📋 Sezioni Obbligatorie**
+
+**IMPORTANTE:** Ogni sezione documentativa DEVE seguire lo **style standard NEWS Score** con:
+
+- Background colors specifici per ogni sezione (bg-blue-1, bg-green-1, etc.)
+- Icone colorate coerenti con il tema della sezione
+- Header con `header-class` matching background
+- Struttura `q-expansion-item` collapsabile
+
+**Riferimento standard:** `src/pages/BMICalculatorPage.vue`
+**Riferimento standard:** `src/components/NEWSScoreCalculator.vue`
+
+**Esempio template da seguire:**
+
+```vue
+<!-- 1️⃣ Definizione e Significato Clinico -->
+<q-expansion-item
+  icon="info"
+  color="medical-mint"
+  label="Definizione e Significato Clinico"
+  class="q-mt-sm"
+  header-class="bg-blue-1 text-blue-9"
+>
+  <q-card class="bg-blue-1">
+    <q-card-section>
+      <p class="text-weight-bold">📊 Cosa Rappresenta</p>
+      [Contenuto...]
+    </q-card-section>
+  </q-card>
+</q-expansion-item>
+
+<!-- 2️⃣ Fisiologia/Meccanismo -->
+<q-expansion-item
+  icon="science"
+  color="medical-mint"
+  label="Fisiologia e Meccanismo"
+  class="q-mt-sm"
+  header-class="bg-green-1 text-green-9"
+>
+  <q-card class="bg-green-1">
+    [Contenuto...]
+  </q-card>
+</q-expansion-item>
+
+<!-- 3️⃣ Come si Misura/Calcola -->
+<q-expansion-item
+  icon="straighten"
+  color="medical-mint"
+  label="Come si Misura/Calcola"
+  class="q-mt-sm"
+  header-class="bg-amber-1 text-amber-9"
+>
+  <q-card class="bg-amber-1">
+    [Contenuto...]
+  </q-card>
+</q-expansion-item>
+
+<!-- 4️⃣ Formula e Componenti -->
+<q-expansion-item
+  icon="functions"
+  color="medical-mint"
+  label="Formula Utilizzata e Componenti"
+  class="q-mt-sm"
+  header-class="bg-cyan-1 text-cyan-9"
+>
+  <q-card class="bg-cyan-1">
+    [Contenuto...]
+  </q-card>
+</q-expansion-item>
+
+<!-- 5️⃣ Interpretazione Clinica -->
+<q-expansion-item
+  icon="psychology"
+  color="medical-mint"
+  label="Interpretazione Clinica"
+  class="q-mt-sm"
+  header-class="bg-orange-1 text-orange-9"
+>
+  <q-card class="bg-orange-1">
+    [Contenuto...]
+  </q-card>
+</q-expansion-item>
+
+<!-- 6️⃣ Applicazioni Cliniche -->
+<q-expansion-item
+  icon="local_hospital"
+  color="medical-mint"
+  label="Applicazioni Cliniche"
+  class="q-mt-sm"
+  header-class="bg-purple-1 text-purple-9"
+>
+  <q-card class="bg-purple-1">
+    [Contenuto...]
+  </q-card>
+</q-expansion-item>
+
+<!-- 7️⃣ Valori Riferimento e Alert -->
+<q-expansion-item
+  icon="warning"
+  color="medical-mint"
+  label="Valori di Riferimento e Alert"
+  class="q-mt-sm"
+  header-class="bg-red-1 text-red-9"
+>
+  <q-card class="bg-red-1">
+    [Contenuto...]
+  </q-card>
+</q-expansion-item>
+
+<!-- 8️⃣ Documentazione Medica -->
+<q-expansion-item
+  icon="menu_book"
+  color="medical-mint"
+  label="Medical Documentation and Guidelines"
+  class="q-mt-sm"
+  header-class="bg-indigo-1 text-indigo-9"
+>
+  <q-card class="bg-indigo-1">
+    [Contenuto...]
+  </q-card>
+</q-expansion-item>
+
+<!-- 9️⃣ Riferimenti Scientifici -->
+<q-expansion-item
+  icon="science"
+  color="medical-mint"
+  label="Riferimenti Scientifici (PMID)"
+  class="q-mt-sm"
+  header-class="bg-teal-1 text-teal-9"
+>
+  <q-card class="bg-teal-1">
+    [Contenuto...]
+  </q-card>
+</q-expansion-item>
+```
+
+**Color Scheme Standard (OBBLIGATORIO):**
+
+| Sezione            | Background    | Text Color      | Icon             |
+| ------------------ | ------------- | --------------- | ---------------- |
+| 1️⃣ Definizione     | `bg-blue-1`   | `text-blue-9`   | `info`           |
+| 2️⃣ Fisiologia      | `bg-green-1`  | `text-green-9`  | `science`        |
+| 3️⃣ Misurazione     | `bg-amber-1`  | `text-amber-9`  | `straighten`     |
+| 4️⃣ Formula         | `bg-cyan-1`   | `text-cyan-9`   | `functions`      |
+| 5️⃣ Interpretazione | `bg-orange-1` | `text-orange-9` | `psychology`     |
+| 6️⃣ Applicazioni    | `bg-purple-1` | `text-purple-9` | `local_hospital` |
+| 7️⃣ Valori/Alert    | `bg-red-1`    | `text-red-9`    | `warning`        |
+| 8️⃣ Documentazione  | `bg-indigo-1` | `text-indigo-9` | `menu_book`      |
+| 9️⃣ Riferimenti     | `bg-teal-1`   | `text-teal-9`   | `science`        |
+
+**Regole Styling:**
+
+1. ✅ **SEMPRE** usare `color="medical-mint"` per uniformità
+2. ✅ **SEMPRE** usare `class="q-mt-sm"` per spacing consistente
+3. ✅ **Header class** DEVE matchare background: `header-class="bg-[color]-1 text-[color]-9"`
+4. ✅ **Card wrapper** DEVE avere stesso background del header
+5. ✅ **Icone** devono essere semantiche (info, science, functions, etc.)
+6. ✅ **Emoji numerici** (1️⃣-9️⃣) nei commenti per navigazione rapida
+7. ✅ **Collapsabile** di default (miglior UX mobile)
+8. ✅ **Contenuto strutturato** con `<p class="text-weight-bold">` per sottosezioni
+
+**Esempio BAD vs GOOD:**
+
+```vue
+<!-- ❌ BAD - Stile inconsistente -->
+<q-expansion-item label="Formula">
+  <div>
+    <p>Formula qui...</p>
+  </div>
+</q-expansion-item>
+
+<!-- ✅ GOOD - Stile NEWS standard -->
+<q-expansion-item
+  icon="functions"
+  color="medical-mint"
+  label="Formula Utilizzata e Componenti"
+  class="q-mt-sm"
+  header-class="bg-cyan-1 text-cyan-9"
+>
+  <q-card class="bg-cyan-1">
+    <q-card-section>
+      <p class="text-weight-bold">🧮 Formula Principale</p>
+      <p>[Formula qui...]</p>
+    </q-card-section>
+  </q-card>
+</q-expansion-item>
+```
+
+**Quando applicare:**
+
+- ✅ Nuovi calcolatori medici
+- ✅ Refactoring documentazione esistente
+- ✅ Fix styling inconsistente
+- ⚠️ NON modificare componenti già approvati senza richiesta esplicita
+
+**File di riferimento completo:**
+
+- `src/pages/NEWSScoreCalculatorPage.vue` - 9 sezioni perfettamente stilizzate
+- `src/pages/SOFAScoreCalculatorPage.vue` - Altro esempio completo
+
+---
+
+#### **📋 Contenuto Sezioni Obbligatorie**
 
 **1. 📊 Definizione e Significato Clinico**
 

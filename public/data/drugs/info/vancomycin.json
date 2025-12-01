@@ -1,0 +1,135 @@
+{
+  "id": "vancomycin",
+  "name": {
+    "it": "Vancomicina",
+    "en": "Vancomycin"
+  },
+  "activeIngredient": {
+    "it": "Vancomicina cloridrato",
+    "en": "Vancomycin hydrochloride"
+  },
+  "category": {
+    "it": "antibiotico",
+    "en": "antibiotic"
+  },
+  "dosage": {
+    "adult": {
+      "it": "15-20 mg/kg EV ogni 8-12 ore (target trough: 10-20 mcg/mL per la maggior parte delle infezioni, 15-20 mcg/mL per infezioni gravi da MRSA)",
+      "en": "15-20 mg/kg IV every 8-12 hours (target trough: 10-20 mcg/mL for most infections, 15-20 mcg/mL for serious MRSA infections)"
+    },
+    "pediatric": {
+      "it": "10-15 mg/kg EV ogni 6 ore (massimo 2 g/dose)",
+      "en": "10-15 mg/kg IV every 6 hours (maximum 2 g/dose)"
+    },
+    "renalAdjustment": {
+      "it": "CrCl >50 mL/min: Nessun aggiustamento. CrCl 10-50 mL/min: Ridurre frequenza a ogni 24-48h basandosi sui livelli. CrCl <10 mL/min o emodialisi: Dose di carico 15-20 mg/kg, poi dose basata sui livelli trough (solitamente ogni 48-96h). Monitorare i livelli attentamente.",
+      "en": "CrCl >50 mL/min: No adjustment. CrCl 10-50 mL/min: Reduce frequency to q24-48h based on levels. CrCl <10 mL/min or hemodialysis: Loading dose 15-20 mg/kg, then dose based on trough levels (usually q48-96h). Monitor levels closely."
+    },
+    "hepaticAdjustment": {
+      "it": "Nessun aggiustamento necessario per insufficienza epatica",
+      "en": "No dosage adjustment required for hepatic impairment"
+    }
+  },
+  "contraindications": {
+    "it": [
+      "Ipersensibilità nota alla vancomicina",
+      "Precedente reazione grave (sindrome di Stevens-Johnson, necrolisi epidermica tossica)"
+    ],
+    "en": [
+      "Known hypersensitivity to vancomycin",
+      "Previous severe reaction (Stevens-Johnson syndrome, toxic epidermal necrolysis)"
+    ]
+  },
+  "sideEffects": {
+    "it": [
+      "Sindrome dell'Uomo Rosso (reazione mediata da istamina da infusione rapida - infondere in ≥60 min per prevenire)",
+      "Nefrotossicità (specialmente con aminoglicosidi concomitanti o livelli trough elevati >20 mcg/mL)",
+      "Ototossicità (perdita uditiva irreversibile - monitorare in anziani e con farmaci ototossici concomitanti)",
+      "Tromboflebite nel sito di iniezione",
+      "Rash, febbre, brividi",
+      "Neutropenia (rara, con terapia prolungata >3 settimane)"
+    ],
+    "en": [
+      "Red Man Syndrome (histamine-mediated reaction from rapid infusion - infuse over ≥60 min to prevent)",
+      "Nephrotoxicity (especially with concurrent aminoglycosides or high trough levels >20 mcg/mL)",
+      "Ototoxicity (irreversible hearing loss - monitor in elderly and with concurrent ototoxic drugs)",
+      "Thrombophlebitis at injection site",
+      "Rash, fever, chills",
+      "Neutropenia (rare, with prolonged therapy >3 weeks)"
+    ]
+  },
+  "interactions": [
+    {
+      "drug": {
+        "it": "Aminoglicosidi (Gentamicina, Amikacina, Tobramicina)",
+        "en": "Aminoglycosides (Gentamicin, Amikacin, Tobramycin)"
+      },
+      "effect": {
+        "it": "Aumento del rischio di nefrotossicità (incidenza 20-35% se combinati) e ototossicità",
+        "en": "Increased risk of nephrotoxicity (20-35% incidence when combined) and ototoxicity"
+      },
+      "recommendation": {
+        "it": "Evitare uso concomitante se possibile. Se necessario, monitorare la funzionalità renale (SCr, CrCl) giornalmente e i livelli farmacologici (vancomicina trough + picco/trough aminoglicoside) attentamente. Garantire idratazione adeguata.",
+        "en": "Avoid concurrent use if possible. If necessary, monitor renal function (SCr, CrCl) daily and drug levels (vancomycin trough + aminoglycoside peak/trough) closely. Ensure adequate hydration."
+      },
+      "severity": "critical"
+    },
+    {
+      "drug": {
+        "it": "Diuretici dell'ansa (Furosemide, Bumetanide)",
+        "en": "Loop Diuretics (Furosemide, Bumetanide)"
+      },
+      "effect": {
+        "it": "Aumento del rischio di ototossicità. Inoltre, furosemide è fisicamente incompatibile (precipitazione)",
+        "en": "Increased risk of ototoxicity. Also, furosemide is physically incompatible (precipitation)"
+      },
+      "recommendation": {
+        "it": "Evitare di miscelare nella stessa linea IV. Lavare la linea accuratamente tra i farmaci. Monitorare udito e funzionalità renale.",
+        "en": "Avoid mixing in same IV line. Flush line thoroughly between drugs. Monitor hearing and renal function."
+      },
+      "severity": "critical"
+    },
+    {
+      "drug": {
+        "it": "FANS (Ibuprofene, Ketorolac)",
+        "en": "NSAIDs (Ibuprofen, Ketorolac)"
+      },
+      "effect": {
+        "it": "Aumento del rischio di nefrotossicità",
+        "en": "Increased risk of nephrotoxicity"
+      },
+      "recommendation": {
+        "it": "Monitorare la funzionalità renale attentamente. Considerare analgesico alternativo se possibile.",
+        "en": "Monitor renal function closely. Consider alternative analgesic if possible."
+      },
+      "severity": "moderate"
+    },
+    {
+      "drug": {
+        "it": "Amfotericina B",
+        "en": "Amphotericin B"
+      },
+      "effect": {
+        "it": "Aumento del rischio di nefrotossicità",
+        "en": "Increased risk of nephrotoxicity"
+      },
+      "recommendation": {
+        "it": "Monitorare la funzionalità renale giornalmente. Garantire idratazione adeguata (carico con soluzione fisiologica raccomandato).",
+        "en": "Monitor renal function daily. Ensure adequate hydration (normal saline loading recommended)."
+      },
+      "severity": "critical"
+    }
+  ],
+  "clinicalNotes": {
+    "it": "**PARAMETRI DI MONITORAGGIO:**\n- Livelli trough: Prelevare immediatamente prima della dose successiva (30 min prima dell'infusione). Target: 10-20 mcg/mL (maggior parte infezioni), 15-20 mcg/mL (polmonite, endocardite, osteomielite, meningite, MRSA grave).\n- Funzionalità renale: SCr/CrCl basale, poi monitorare giornalmente in pazienti instabili o con farmaci nefrotossici concomitanti.\n- Funzione uditiva: Audiometria basale se terapia prolungata (>3 settimane) o pazienti ad alto rischio (anziani, insufficienza renale).\n\n**CONSIGLI PER LA SOMMINISTRAZIONE:**\n- Infondere in ≥60 minuti (≥90-120 min per dosi >1 g) per prevenire la Sindrome dell'Uomo Rosso.\n- Se si verifica Sindrome dell'Uomo Rosso: FERMARE l'infusione, somministrare difenidramina 25-50 mg EV, riavviare a velocità più lenta (oltre 2 ore).\n- Diluire in D5W o NS a concentrazione finale ≤5 mg/mL (max 10 mg/mL per restrizione idrica).\n- Usare linea centrale se possibile per terapia prolungata (riduce rischio di flebite).\n\n**PERLE CLINICHE:**\n- Dose di carico 25-30 mg/kg EV (max 2-3 g) per pazienti critici o infezioni gravi per raggiungere rapidamente livelli terapeutici.\n- Alternativa infusione continua: 30-40 mg/kg/die EV continuo (target livello steady-state 20-25 mcg/mL) - può ridurre il rischio di nefrotossicità.\n- Obesità: Usare peso corporeo reale (ABW) per il dosaggio, non peso ideale (IBW).",
+    "en": "**MONITORING PARAMETERS:**\n- Trough levels: Draw immediately before next dose (30 min before infusion). Target: 10-20 mcg/mL (most infections), 15-20 mcg/mL (pneumonia, endocarditis, osteomyelitis, meningitis, severe MRSA).\n- Renal function: Baseline SCr/CrCl, then monitor daily in unstable patients or with concurrent nephrotoxic drugs.\n- Auditory function: Baseline audiometry if prolonged therapy (>3 weeks) or high-risk patients (elderly, renal impairment).\n\n**ADMINISTRATION TIPS:**\n- Infuse over ≥60 minutes (≥90-120 min for doses >1 g) to prevent Red Man Syndrome.\n- If Red Man Syndrome occurs: STOP infusion, give diphenhydramine 25-50 mg IV, restart at slower rate (over 2 hours).\n- Dilute in D5W or NS to final concentration ≤5 mg/mL (max 10 mg/mL for fluid restriction).\n- Use central line if possible for prolonged therapy (reduces phlebitis risk).\n\n**PEARLS:**\n- Loading dose 25-30 mg/kg IV (max 2-3 g) for critically ill patients or severe infections to rapidly achieve therapeutic levels.\n- Continuous infusion alternative: 30-40 mg/kg/day continuous IV (target steady-state level 20-25 mcg/mL) - may reduce nephrotoxicity risk.\n- Obesity: Use actual body weight (ABW) for dosing, not ideal body weight (IBW)."
+  },
+  "references": [
+    "Rybak MJ, et al. Therapeutic monitoring of vancomycin for serious methicillin-resistant Staphylococcus aureus infections: A revised consensus guideline. Am J Health-Syst Pharm. 2020;77(11):835-864. DOI: 10.1093/ajhp/zxaa036",
+    "Trissel's Handbook on Injectable Drugs, 18th Edition, 2018. American Society of Health-System Pharmacists (ASHP).",
+    "Micromedex IV Compatibility Database, IBM Watson Health, 2024.",
+    "Liu C, et al. Clinical practice guidelines by the Infectious Diseases Society of America for the treatment of MRSA infections in adults and children. Clin Infect Dis. 2011;52(3):e18-e55. DOI: 10.1093/cid/ciq146",
+    "King Guide to Parenteral Admixtures, 2023 Q4. King Guide Publications.",
+    "Vancomycin package insert (FDA-approved labeling), Hospira/Pfizer, revised 2023."
+  ]
+}
