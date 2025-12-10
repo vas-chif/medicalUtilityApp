@@ -1,205 +1,238 @@
-# 🔧 Scripts Utility - Medical Utility Pro
+# Drug Database Scripts
 
-Collezione di script per migrazione dati, deployment e automazione.
+Scripts per conversione e gestione database compatibilità farmaci.
 
----
-
-## 📜 Script Disponibili
-
-### 1. `google-sheets-interface.gs` ⭐ AGGIORNATO v2.1 (HOTFIX)
-
-**Scopo:** Interfaccia Google Apps Script per inserimento RAPIDO compatibilità farmaci
-
-**HOTFIX v2.1 (09/11/2024):**
-- 🔧 **FIX CRITICO:** Lettura dinamica header colonne
-- ✅ Non sovrascrive più colonne FOTOSENSIBILE e VIA CENTRALE/PERIFERICA
-- ✅ Compatibilità salvate nelle colonne CORRETTE
-- ✅ Funziona con qualsiasi struttura foglio (flessibile)
-
-**Funzionalità:**
-
-✅ **Modalità BULK** - Inserisci tutte le compatibilità di 1 farmaco in una volta (10x più veloce!)  
-✅ **Ricerca searchable** - Trova farmaci velocemente con input dinamico  
-✅ **Gestione Via Somministrazione** - Dialog dedicato per Centrale/Periferica  
-✅ **Validazione automatica** - Simmetria matrice, valori validi  
-✅ **Progress tracking** - Barra progresso e statistiche  
-✅ **Export JSON** - Esporta per integrazione TypeScript
-
-**Installazione:**
+## 📁 Struttura Directory
 
 ```
-1. Apri Google Sheets:
-   https://docs.google.com/spreadsheets/d/1J08Hz65aaztX9DuuRYMTMW6yt0tDEztuDLqIv5r1K8k
-
-2. Estensioni → Apps Script
-
-3. Copia e incolla google-sheets-interface.gs
-
-4. Salva (Ctrl+S)
-
-5. Ricarica Google Sheets
-
-6. Nuovo menu "💊 Compatibilità Farmaci" apparirà!
+scripts/
+├── input/
+│   └── drugsCompatibility - compFarmaci.csv    # CSV sorgente (134 farmaci)
+├── output/
+│   ├── drugs-database.json                      # Database leggibile (1.7 MB)
+│   └── drugs-database.min.json                  # Database minificato (958 KB) ⭐
+├── csv-to-json-converter.py                     # Script conversione Python
+├── README.md                                    # Questa guida
+├── README_INTEGRAZIONE.md                       # Guida dettagliata integrazione
+├── DATABASE_FORMAT_SPECIFICATION.md             # Documentazione formato JSON
+└── CONVERSION_SUMMARY.md                        # Riepilogo conversione
 ```
 
-**Menu disponibili:**
+## 🚀 Quick Start
 
-```
-💊 Compatibilità Farmaci
-├── ⚡ Inserimento RAPIDO (Bulk)        ← 10x PIÙ VELOCE!
-├── 📝 Inserisci Compatibilità Singola
-├──────────────────────────────────
-├── 💉 Gestisci Via Somministrazione
-├──────────────────────────────────
-├── ✅ Valida Tabella
-├── 📊 Genera Matrice
-├── 📥 Esporta JSON
-├── 🔄 Importa da CSV
-└── 📖 Legenda Codici
-```
+### Prerequisiti
 
-**Documentazione completa:** [docs/GOOGLE_SHEETS_BULK_MODE_GUIDE.md](../docs/GOOGLE_SHEETS_BULK_MODE_GUIDE.md)
+- Python 3.11+
+- File CSV nella cartella `input/`
 
----
-
-### 2. `extract_compatibility_from_pdf.py`
-
-**Scopo:** Estrazione automatica compatibilità da PDF tramite OCR
-
-**Uso:**
+### Eseguire Conversione
 
 ```bash
-python3 scripts/extract_compatibility_from_pdf.py input.pdf output.xlsx
+cd /home/nyk-ai/projects/medicalUtility/scripts
+python3 csv-to-json-converter.py
 ```
 
-**Prerequisiti:**
+Output:
+```
+======================================================================
+🔄 CSV to JSON Drug Database Converter
+======================================================================
+
+📋 Lettura CSV: input/drugsCompatibility - compFarmaci.csv
+✓ Header letto: 139 colonne
+✓ Farmaci nelle colonne: 134
+✓ Farmaci nelle righe: 134
+
+✅ Database creato: output/drugs-database.json
+
+📊 Statistiche:
+   • Farmaci totali: 134
+   • Compatibilità totali: 17956
+   • Compatible: 3048
+   • Incompatible: 3544
+   • Unknown: 8692
+   • File minificato: output/drugs-database.min.json
+   • Dimensione leggibile: 1723.5 KB
+   • Dimensione minificata: 957.8 KB
+
+🔍 Validazione database...
+✅ Database validato correttamente
+
+======================================================================
+✨ Conversione completata con successo!
+======================================================================
+```
+
+## 📊 Database Output
+
+### File Generati
+
+| File | Uso | Dimensione |
+|------|-----|-----------|
+| `drugs-database.json` | Debug/Sviluppo | 1.7 MB |
+| `drugs-database.min.json` | **Produzione** ⭐ | 958 KB |
+
+### Statistiche
+
+- **134 farmaci** totali
+- **17,956 record compatibilità** (matrice 134×134)
+- **5 stati compatibilità**: Compatible, Incompatible, Conditional, Severe, Unknown
+- **31 farmaci** richiedono CVC (23.1%)
+- **4 colonne metadati**: Fotosensibile, CVC, Note concentrazione, Rischio flebite
+
+## 🔧 Features Convertitore
+
+### Parsing Intelligente
+
+- ✅ Stati compatibilità avanzati (C, I, Y, !, null)
+- ✅ Campo CVC multi-formato (CVC, CVC+C, SI, SI + C, etc.)
+- ✅ Struttura multilingua (IT/EN ready)
+- ✅ Validazione automatica
+- ✅ Generazione ID univoci
+- ✅ Ottimizzazione file (minificato per produzione)
+
+### Validazioni
+
+- [x] Campi obbligatori presenti
+- [x] ID univoci
+- [x] Stati compatibilità validi
+- [x] Struttura multilingua corretta
+- [x] Conteggi corretti
+
+## 📖 Documentazione
+
+### Guide Complete
+
+1. **[README_INTEGRAZIONE.md](./README_INTEGRAZIONE.md)** (600+ righe)
+   - Quick start completo
+   - Esempi UI Quasar
+   - Checklist integrazione
+   - Best practices
+
+2. **[DATABASE_FORMAT_SPECIFICATION.md](./DATABASE_FORMAT_SPECIFICATION.md)** (500+ righe)
+   - Schema JSON dettagliato
+   - Interfacce TypeScript
+   - Esempi codice
+   - Regole validazione
+
+3. **[CONVERSION_SUMMARY.md](./CONVERSION_SUMMARY.md)**
+   - Riepilogo conversione
+   - Statistiche complete
+   - Roadmap future
+
+## 🎯 Integrazione in App
+
+### Step 1: Copia Database
 
 ```bash
-# Ubuntu/Debian
-sudo apt-get install tesseract-ocr poppler-utils
-
-# Python packages
-pip install pytesseract pdf2image pillow pandas openpyxl
+cp output/drugs-database.min.json ../public/data/drugs-database.json
 ```
 
-**Output:**
+### Step 2: Usa Servizio TypeScript
 
-- `extracted_text.txt` - Testo grezzo OCR
-- `drug_compatibility_extracted.xlsx` - Matrice compatibilità
-- `drug_compatibility_extracted.csv` - CSV alternativo
+```typescript
+import { drugDatabaseService } from 'src/services/drug-database.service';
 
----
+// Carica database
+await drugDatabaseService.loadDatabase('/data/drugs-database.json');
 
-### 3. `export_compatibility_to_google_sheets.py`
+// Verifica compatibilità
+const result = drugDatabaseService.checkCompatibility('aciclovir', 'morfina-cloridrato');
 
-**Scopo:** Migrazione compatibilità farmaci da PostgreSQL a Google Sheets
+if (result?.status === 'incompatible-severe') {
+  alert(`🚨 ${result.warning}`);
+}
+```
 
-**Uso:**
+Vedi `README_INTEGRAZIONE.md` per guida completa.
 
+## 🔄 Aggiornare Dati
+
+### Quando Modificare CSV
+
+1. Aggiorna `input/drugsCompatibility - compFarmaci.csv`
+2. Esegui conversione:
+   ```bash
+   python3 csv-to-json-converter.py
+   ```
+3. Verifica output
+4. Copia nuovo database in app:
+   ```bash
+   cp output/drugs-database.min.json ../public/data/drugs-database.json
+   ```
+
+### Formato CSV Richiesto
+
+```csv
+PRINCIPIO ATTIVO:,FOTOSENSIBILE,NECESSITÀ DI CVC,NOTES/CONCENTRAZIONI,NOTO RISCHIO FLEBITE,FARMACO1,FARMACO2,...
+FARMACO1,,,,,null,C,I,...
+FARMACO2,,,,,I,null,Y,...
+```
+
+**Colonne richieste**:
+1. PRINCIPIO ATTIVO (nome farmaco)
+2. FOTOSENSIBILE (SI/NO)
+3. NECESSITÀ DI CVC (vari formati supportati)
+4. NOTES/CONCENTRAZIONI (testo libero)
+5. NOTO RISCHIO FLEBITE (testo libero)
+6-N. Compatibilità con altri farmaci (C/I/Y/!/null)
+
+## 🧪 Testing
+
+Test suite disponibili in:
+- `../src/services/__tests__/drug-database.service.test.ts`
+
+Esegui test:
 ```bash
-python3 scripts/export_compatibility_to_google_sheets.py
+npm run test
+# oppure
+npm run test:unit
 ```
 
-**Prerequisiti:**
+## 📝 Codici Compatibilità
 
-- PostgreSQL con database `DrugsCompatibility`
-- Python 3.8+
-- Dipendenze: `pip install psycopg2-binary pandas gspread google-auth`
+| CSV | JSON | Significato | UI |
+|-----|------|-------------|-----|
+| `C` | `compatible` | Compatibile | 🟢 Verde |
+| `I` | `incompatible` | Incompatibile | 🔴 Rosso |
+| `Y` | `compatible-conditional` | Dipende concentrazione | 🟡 Giallo |
+| `!` | `incompatible-severe` | Pericolo grave | 🔴 Rosso scuro |
+| `null` | `unknown` | Sconosciuto | ⚫ Grigio |
 
-**Opzioni:**
+## ⚠️ Note Importanti
 
-1. Export CSV (semplice, import manuale)
-2. Google Sheets API (automatico)
-3. Entrambi
+1. **Sempre usare file minificato** in produzione (`drugs-database.min.json`)
+2. **Validare sempre** le combinazioni critiche (!)
+3. **Mostrare warning** per compatibilità condizionali (Y)
+4. **Log audit** per tracciare verifiche compatibilità
+5. **Backup CSV** prima di modifiche
 
-**Documentazione completa:** [docs/DATABASE_MIGRATION_GUIDE.md](../docs/DATABASE_MIGRATION_GUIDE.md)
+## 📞 Support
+
+Per problemi o domande:
+1. Leggi `README_INTEGRAZIONE.md`
+2. Consulta `DATABASE_FORMAT_SPECIFICATION.md`
+3. Verifica `CONVERSION_SUMMARY.md`
+
+## 🛣️ Roadmap
+
+### v1.0 (Attuale) ✅
+- [x] Conversione CSV → JSON
+- [x] Stati compatibilità avanzati
+- [x] Campo CVC intelligente
+- [x] Struttura multilingua
+- [x] Validazione automatica
+- [x] Documentazione completa
+
+### v2.0 (Futuro)
+- [ ] Traduzioni inglesi complete
+- [ ] Metadati aggiuntivi (categoria, vie, dosaggi)
+- [ ] Motivazioni incompatibilità
+- [ ] Riferimenti bibliografici
+- [ ] API REST per aggiornamenti
 
 ---
 
-### 4. `deploy.sh` (root folder)
-
-**Scopo:** Deploy automatico su Firebase
-
-**Uso:**
-
-```bash
-# Development
-./deploy.sh dev
-
-# Production
-./deploy.sh prod
-```
-
-**Documentazione:** [docs/DEPLOYMENT_GUIDE.md](../docs/DEPLOYMENT_GUIDE.md)
-
----
-
-## 📦 Setup Veloce
-
-```bash
-# 1. Crea virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# 2. Installa tutte le dipendenze
-pip install -r requirements.txt
-
-# 3. Configura credentials (se usi Google Sheets API)
-# Posiziona credentials.json nella root del progetto
-```
-
----
-
-## 🚀 Workflow Consigliato
-
-### Per completare database compatibilità farmaci:
-
-```
-STEP 1: Installa Google Apps Script (5 min)
-→ Copia google-sheets-interface.gs in Google Sheets
-→ Menu "� Compatibilità Farmaci" appare
-
-STEP 2: Genera matrice (2 min)
-→ Menu → 📊 Genera Matrice
-→ Matrice NxN creata automaticamente
-
-STEP 3: (Opzionale) Estrai da PDF (30 min)
-→ python3 extract_compatibility_from_pdf.py
-→ Importa Excel generato in Google Sheets
-
-STEP 4: Completa con Bulk Mode (3-5 ore)
-→ Menu → ⚡ Inserimento RAPIDO (Bulk)
-→ Seleziona farmaco
-→ Imposta tutte compatibilità
-→ Salva
-→ Ripeti per tutti i farmaci
-
-STEP 5: Imposta vie somministrazione (10 min)
-→ Menu → 💉 Gestisci Via Somministrazione
-→ Imposta Centrale/Periferica per ogni farmaco
-→ Salva tutte
-
-STEP 6: Valida (5 min)
-→ Menu → ✅ Valida Tabella
-→ Correggi eventuali errori
-
-STEP 7: Export (2 min)
-→ Menu → 📥 Esporta JSON
-→ Copia JSON in src/data/drugs.ts
-```
-
-**Tempo totale:** 4-6 ore (distribuito in 2-3 giorni)
-
----
-
-## �🔗 Link Utili
-
-- **Google Sheets Template:** https://docs.google.com/spreadsheets/d/1J08Hz65aaztX9DuuRYMTMW6yt0tDEztuDLqIv5r1K8k/edit
-- **Vecchio Progetto:** https://github.com/vas-chif/drugsCompatibility
-- **Firebase Console:** https://console.firebase.google.com/
-- **Nurse24.it (riferimento):** https://www.nurse24.it/infermiere/utility/app-farmaci.html
-
----
-
-**Autore:** Vasile Chifeac  
-**Version:** 2.0.0
+**Version**: 1.0.0  
+**Last Update**: December 9, 2025  
+**Status**: ✅ Production Ready

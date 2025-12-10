@@ -3,16 +3,17 @@
 @file convert_sheet_to_json.py
 @description Converte CSV Google Sheets in JSON database BILINGUE (IT/EN)
 @author Medical Utility Pro
-@version 1.0.0
+@version 2.0.0
 @created 2025-12-01
+@updated 2025-12-XX (v2.0: Support for new columns NECESSITÀ DI CVC, NOTES/CONCENTRAZIONI, NOTO RISCHIO FLEBITE)
 
 USAGE:
     python scripts/convert_sheet_to_json.py --input drugs.csv --output public/data/drugs/
 
-INPUT FORMAT (CSV):
-    PRINCIPIO ATTIVO:,FOTOSENSIBILE,VIA CENTRALE / PERIFERICA,DRUG1,DRUG2,...
-    DRUG1,,,null,Y,C,I,...
-    DRUG2,,,Y,null,I,...
+INPUT FORMAT (CSV - v2.0 with new columns):
+    PRINCIPIO ATTIVO,FOTOSENSIBILE,NECESSITÀ DI CVC,NOTES/CONCENTRAZIONI,NOTO RISCHIO FLEBITE,DRUG1,DRUG2,...
+    DRUG1,,SÌ/NO,,,null,Y,C,I,...
+    DRUG2,,SÌ/NO,,,Y,null,I,...
 
 OUTPUT:
     - public/data/drugs/index.json (DrugDatabaseEntry[])
@@ -216,11 +217,54 @@ def extract_drugs_from_header(df: pd.DataFrame) -> List[Dict]:
     
     Returns:
         Lista DrugDatabaseEntry objects
+    
+    NOTE v2.0: Gestisce nuove colonne metadata:
+        - PRINCIPIO ATTIVO (col 0)
+        - FOTOSENSIBILE (col 1)
+        - NECESSITÀ DI CVC (col 2) ← NEW
+        - NOTES/CONCENTRAZIONI (col 3) ← NEW
+        - NOTO RISCHIO FLEBITE (col 4) ← NEW
+        - Drugs start from col 5+
     """
     drugs = []
     
-    # Skip prime 3 colonne metadata (PRINCIPIO ATTIVO, FOTOSENSIBILE, VIA CENTRALE)
-    drug_columns = df.columns[3:]
+    # Determina dinamicamente quante colonne metadata abbiamo
+    # Cerca la prima colonna che NON è metadata
+    special_column_names = [
+        'PRINCIPIO ATTIVO',
+        'FOTOSENSIBILE',
+        'NECESSITÀ DI CVC',
+        'NECESSITA DI CVC',  # Variante senza accento
+        'VIA CENTRALE',      # Legacy
+        'PERIFERICA',        # Legacy
+        'NOTES/CONCENTRAZIONI',
+        'NOTO RISCHIO FLEBITE',
+        'RISCHIO FLEBITE',
+    ]
+    
+    first_drug_col = 0
+    for idx, col_name in enumerate(df.columns):
+        col_normalized = str(col_name).strip().upper()
+        
+        # Check se è colonna speciale
+        is_special = any(
+            special_name in col_normalized 
+            for special_name in special_column_names
+        )
+        
+        if not is_special:
+            first_drug_col = idx
+            break
+    
+    if first_drug_col == 0:
+        # Fallback: assume prime 5 colonne (v2.0 format)
+        logger.warning("⚠️ Non trovate colonne metadata, assumo offset 5")
+        first_drug_col = 5
+    
+    logger.info(f"📍 Prima colonna farmaci: {first_drug_col} ({df.columns[first_drug_col]})")
+    
+    # Skip colonne metadata
+    drug_columns = df.columns[first_drug_col:]
     
     logger.info(f"🔍 Trovati {len(drug_columns)} farmaci nel CSV")
     
@@ -228,9 +272,53 @@ def extract_drugs_from_header(df: pd.DataFrame) -> List[Dict]:
         # Normalizza nome
         drug_id = normalize_drug_name(drug_name)
         
-        # Estrai metadata da prime 2 righe (se disponibile)
-        # Riga 0 = PRINCIPIO ATTIVO (nome farmaco)
-        # Riga 1 = metadata (fotosensibile, via somministrazione)
+        # Estrai metadata da riga corrente (drug_name è nella colonna PRINCIPIO ATTIVO)
+        # Cerca riga con questo drug_name
+        drug_row = df[df.iloc[:, 0] == drug_name]
+        
+        # Metadata defaults
+        is_photosensitive = False
+        requires_cvc = False
+        known_concentrations = ''
+        phlebitis_risk = ''
+        
+        if not drug_row.empty:
+            row_data = drug_row.iloc[0]
+            
+            # FOTOSENSIBILE (col 1)
+            if len(row_data) > 1:
+                photo_value = str(row_data.iloc[1]).strip().upper()
+                is_photosensitive = photo_value in ['SÌ', 'SI', 'YES', 'Y', 'TRUE', '1']
+            
+            # NECESSITÀ DI CVC (col 2)
+            if len(row_data) > 2:
+                cvc_value = str(row_data.iloc[2]).strip().upper()
+                requires_cvc = cvc_value in ['SÌ', 'SI', 'YES', 'Y']
+            
+            # NOTES/CONCENTRAZIONI (col 3)
+            if len(row_data) > 3:
+                known_concentrations = str(row_data.iloc[3]).strip()
+                if known_concentrations in ['nan', 'NaN', '']:
+                    known_concentrations = ''
+            
+            # NOTO RISCHIO FLEBITE (col 4)
+            if len(row_data) > 4:
+                phlebitis_risk = str(row_data.iloc[4]).strip()
+                if phlebitis_risk in ['nan', 'NaN', '']:
+                    phlebitis_risk = ''
+        
+        # Costruisci special notes
+        notes_parts = []
+        if is_photosensitive:
+            notes_parts.append('Fotosensibile')
+        if requires_cvc:
+            notes_parts.append('Richiede CVC')
+        if known_concentrations:
+            notes_parts.append(f'Concentrazioni note: {known_concentrations}')
+        if phlebitis_risk:
+            notes_parts.append(f'Rischio flebite: {phlebitis_risk}')
+        
+        special_notes_it = ' | '.join(notes_parts) if notes_parts else ''
         
         drug_entry = {
             'id': drug_id,
@@ -238,22 +326,22 @@ def extract_drugs_from_header(df: pd.DataFrame) -> List[Dict]:
             'category': get_drug_category(drug_id),
             'description': create_bilingual_text('', ''),  # VUOTO - per future info dettagliate in info/{drugId}.json
             'administrationRoute': create_bilingual_text(
-                'Endovenosa',
-                'Intravenous'
+                'CVC' if requires_cvc else 'Periferica/CVC',
+                'CVC' if requires_cvc else 'Peripheral/CVC'
             ),
             'concentration': create_bilingual_text(
-                'Vedi scheda tecnica',
-                'See technical sheet'
+                known_concentrations if known_concentrations else 'Vedi scheda tecnica',
+                known_concentrations if known_concentrations else 'See technical sheet'
             ),
-            'isPhotosensitive': False,  # TODO: Estrarre da colonna FOTOSENSIBILE
+            'isPhotosensitive': is_photosensitive,
             'specialNotes': create_bilingual_text(
-                f'Farmaco #{idx}',
-                f'Drug #{idx}'
+                special_notes_it if special_notes_it else f'Farmaco #{idx}',
+                special_notes_it if special_notes_it else f'Drug #{idx}'
             )
         }
         
         drugs.append(drug_entry)
-        logger.debug(f"  ✓ {drug_id} ({drug_name})")
+        logger.debug(f"  ✓ {drug_id} ({drug_name}) - CVC:{requires_cvc}, Foto:{is_photosensitive}")
     
     logger.info(f"✅ {len(drugs)} farmaci estratti")
     return drugs
@@ -268,15 +356,42 @@ def extract_compatibility_entries(df: pd.DataFrame) -> List[Dict]:
     
     Returns:
         Lista CompatibilityEntry objects (solo 1 direzione, simmetria garantita)
+    
+    NOTE v2.0: Usa offset dinamico per trovare prima colonna farmaci
     """
     compatibility_entries = []
     seen_pairs: Set[tuple] = set()
     
+    # Determina dinamicamente offset colonne metadata (stesso algoritmo di extract_drugs_from_header)
+    special_column_names = [
+        'PRINCIPIO ATTIVO',
+        'FOTOSENSIBILE',
+        'NECESSITÀ DI CVC',
+        'NECESSITA DI CVC',
+        'VIA CENTRALE',
+        'PERIFERICA',
+        'NOTES/CONCENTRAZIONI',
+        'NOTO RISCHIO FLEBITE',
+        'RISCHIO FLEBITE',
+    ]
+    
+    first_drug_col = 0
+    for idx, col_name in enumerate(df.columns):
+        col_normalized = str(col_name).strip().upper()
+        is_special = any(special_name in col_normalized for special_name in special_column_names)
+        if not is_special:
+            first_drug_col = idx
+            break
+    
+    if first_drug_col == 0:
+        logger.warning("⚠️ Non trovate colonne metadata per compatibilità, assumo offset 5")
+        first_drug_col = 5
+    
     # Drug columns (skip metadata)
-    drug_columns = list(df.columns[3:])
+    drug_columns = list(df.columns[first_drug_col:])
     drug_ids = [normalize_drug_name(name) for name in drug_columns]
     
-    logger.info(f"🔗 Estrazione compatibilità tra {len(drug_ids)} farmaci")
+    logger.info(f"🔗 Estrazione compatibilità tra {len(drug_ids)} farmaci (offset col {first_drug_col})")
     
     # Itera righe (ogni riga = 1 farmaco)
     for row_idx, row in df.iterrows():
@@ -294,8 +409,8 @@ def extract_compatibility_entries(df: pd.DataFrame) -> List[Dict]:
             if pair_key in seen_pairs:
                 continue
             
-            # Estrai valore compatibilità (colonna drug2, offset +3 per metadata)
-            compat_value = str(row.iloc[col_idx + 3]).strip()
+            # Estrai valore compatibilità (colonna drug2, offset dinamico per metadata)
+            compat_value = str(row.iloc[col_idx + first_drug_col]).strip()
             
             # Validazione valore
             if compat_value not in COMPATIBILITY_VALUES:

@@ -27,7 +27,9 @@
 // IMPORTS
 // ============================================================
 // import { ref, computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useDrugCompatibility } from 'src/composables/useDrugCompatibility';
+import { useDrugCompatibilityStore } from 'src/stores/drug-compatibility-store';
 
 // ============================================================
 // PROPS & EMITS
@@ -69,18 +71,20 @@ const emit = defineEmits<Emits>();
 
 /**
  * Drug compatibility composable
- * Provides: drug database, search, selection state, filtering
+ * Provides: drug database, search, filtering
  */
-const {
-  filteredDrugs,
-  selectedDrugs,
-  searchQuery,
-  isLoading,
-  addDrug,
-  removeDrug,
-  clearSelection,
-  getCategoryIcon,
-} = useDrugCompatibility();
+const { filteredDrugs, searchQuery, isLoading, getCategoryIcon } = useDrugCompatibility();
+
+/**
+ * Drug compatibility store (Pinia)
+ * Provides: selectedDrugs (sorted alphabetically), add/remove with auto-reload
+ * GARANTISCE DETERMINISMO: Ordine alfabetico → stessi farmaci = stesso risultato
+ */
+const compatibilityStore = useDrugCompatibilityStore();
+const { addDrug, removeDrug } = compatibilityStore;
+// storeToRefs per reactive destructuring di computed
+const { sortedDrugs } = storeToRefs(compatibilityStore);
+const selectedDrugs = sortedDrugs; // ComputedRef<string[]>
 
 // ============================================================
 // FUNCTIONS
@@ -88,18 +92,18 @@ const {
 
 /**
  * Handle analyze button click
- * Emits drugs-selected event with selected drugs array
+ * Emits drugs-selected event with selected drugs array (sorted)
  */
 const handleAnalyze = (): void => {
-  emit('drugs-selected', selectedDrugs.value);
+  emit('drugs-selected', selectedDrugs.value); // computed ref → usa .value
 };
 
 /**
  * Handle clear selection button click
- * Clears all selected drugs and emits selection-cleared event
+ * Clears all selected drugs via store reset and emits selection-cleared event
  */
 const handleClear = (): void => {
-  clearSelection();
+  compatibilityStore.resetStore();
   emit('selection-cleared');
 };
 </script>

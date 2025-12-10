@@ -26,6 +26,16 @@ import { ref, computed, watch } from 'vue';
 import type { MultiDrugAnalysis } from 'src/types/DrugTypes';
 import { DrugCompatibility } from 'src/types/DrugTypes';
 
+// Composables
+import { useSecureLogger } from 'src/composables/useSecureLogger';
+import { useDrugCompatibilityStore } from 'src/stores/drug-compatibility-store';
+
+// ============================================================
+// COMPOSABLES
+// ============================================================
+const { logger } = useSecureLogger();
+const compatibilityStore = useDrugCompatibilityStore();
+
 // ============================================================
 // PROPS & EMITS
 // ============================================================
@@ -45,10 +55,9 @@ interface LumenAllocation {
 
 /**
  * Component props definition
+ * NOTE: selectedDrugs rimosso - usa compatibilityStore.sortedDrugs
  */
 interface Props {
-  /** Selected drugs for analysis (from DrugSelector) */
-  selectedDrugs: string[];
   /** Compatibility analysis results (from CompatibilityResults) */
   analysisResults: MultiDrugAnalysis | null;
   /** Number of available lumens (default: 3 for standard CVC) */
@@ -87,13 +96,13 @@ const lumensCount = ref<number>(props.availableLumens);
 // ============================================================
 
 /**
- * Optimal lumen allocation using greedy algorithm
- * Recalculates when selectedDrugs or analysisResults change
+ * Optimal lumen allocation using backtracking algorithm v5
+ * Recalculates when store.sortedDrugs or analysisResults change
  * @returns Array of lumen allocations (1 per lumen needed)
  */
 const lumenAllocation = computed((): LumenAllocation[] => {
   // Guard: No drugs selected
-  if (props.selectedDrugs.length === 0) {
+  if (compatibilityStore.sortedDrugs.length === 0) {
     return [];
   }
 
@@ -102,7 +111,7 @@ const lumenAllocation = computed((): LumenAllocation[] => {
     return [];
   }
 
-  // Run greedy allocation algorithm
+  // Run backtracking allocation algorithm v5
   return optimizeLumenAllocation();
 });
 
@@ -158,102 +167,352 @@ const recommendations = computed((): string[] => {
 });
 
 // ============================================================
-// FUNCTIONS - GREEDY ALGORITHM
+// FUNCTIONS - BACKTRACKING ALGORITHM
 // ============================================================
 
 /**
- * Greedy algorithm for lumen allocation
- * Allocates drugs to minimum number of lumens respecting compatibility
+ * 🎯 ALGORITMO BACKTRACKING ITERATIVO v9 - COMPATIBILITÀ PROGRESSIVA
  *
- * ALGORITHM STEPS:
- * 1. Start with empty lumens list
- * 2. For each drug:
- *    - Try to find existing lumen where drug is compatible with ALL drugs in that lumen
- *    - If found: Add drug to that lumen
- *    - If NOT found: Create NEW lumen with this drug
- * 3. Return list of lumens
+ * STRATEGIA: Prova allocazione con N lumi disponibili, aumenta N solo se necessario
  *
- * COMPLEXITY: O(N²) where N = number of drugs
- * OPTIMALITY: Not guaranteed optimal (greedy = local best choice)
+ * ALGORITMO:
+ * 1. START con N = lumi disponibili dall'utente
+ * 2. TENTATIVO A: Alloca con compatibilità SOLO C (continuous)
+ *    - Se SUCCESSO → FINE ✅
+ *    - Se FALLITO → vai a 3
+ * 3. TENTATIVO B: Alloca con compatibilità C + Y (rubinetto)
+ *    - Se SUCCESSO → FINE ✅
+ *    - Se FALLITO → vai a 4
+ * 4. INCREMENTA N = N + 1 (richiedi lume aggiuntivo)
+ * 5. RIPETI dal punto 2 con nuovo N
  *
- * @returns Array of LumenAllocation (1 per lumen needed)
+ * VANTAGGI:
+ * - Massimizza uso lumi disponibili
+ * - Prova PRIMA solo C, POI C+Y
+ * - Aumenta lumi solo se necessario
+ * - Distribuzione bilanciata con load balancing
+ *
+ * @returns Array of LumenAllocation con allocazione ottimale
  */
 const optimizeLumenAllocation = (): LumenAllocation[] => {
-  const lumens: LumenAllocation[] = [];
+  const drugs = compatibilityStore.sortedDrugs;
+  const requestedLumens = lumensCount.value;
 
-  // Iterate through each selected drug
-  for (const drug of props.selectedDrugs) {
-    let allocated = false;
+  logger.info('[v9] START - Backtracking iterativo', {
+    drugs: drugs.length,
+    requestedLumens,
+  });
 
-    // Try to find existing lumen where this drug is compatible
-    for (const lumen of lumens) {
-      // Check if drug is compatible with ALL drugs in this lumen
-      const compatibleWithAll = lumen.drugs.every((existingDrug) =>
-        canShareLumen(drug, existingDrug),
-      );
+  // Ordina farmaci per incompatibilità (più problematici prima)
+  const sortedDrugs = sortDrugsByIncompatibility(drugs);
 
-      if (compatibleWithAll) {
-        // Add drug to this lumen
-        lumen.drugs.push(drug);
-        allocated = true;
-        break; // Stop searching, drug allocated
-      }
+  // ITERAZIONE: Prova con N lumi (partendo dai disponibili)
+  for (let numLumens = requestedLumens; numLumens <= drugs.length; numLumens++) {
+    logger.debug('[v9] Trying allocation', { numLumens });
+
+    // TENTATIVO A: Solo compatibilità C
+    const allocationC = tryAllocateWithCompatibility(sortedDrugs, numLumens, false);
+    if (allocationC) {
+      logger.info('[v9] SUCCESS with C-only', { numLumens });
+      return markDeficitLumens(allocationC, requestedLumens);
     }
 
-    // If drug couldn't be allocated to any existing lumen, create NEW lumen
-    if (!allocated) {
-      lumens.push({
-        lumenId: lumens.length + 1,
-        drugs: [drug],
-        isCompatible: true, // Single drug always compatible with itself
-      });
+    // TENTATIVO B: Compatibilità C + Y
+    const allocationCY = tryAllocateWithCompatibility(sortedDrugs, numLumens, true);
+    if (allocationCY) {
+      logger.info('[v9] SUCCESS with C+Y', { numLumens });
+      return markDeficitLumens(allocationCY, requestedLumens);
     }
+
+    logger.warn('[v9] Failed with numLumens', { numLumens });
   }
 
-  return lumens;
+  // FALLBACK: Non dovrebbe mai arrivare qui
+  logger.error('[v9] FAILED - No valid allocation found');
+  return [];
 };
 
 /**
- * Check if two drugs can share the same lumen
- * Query compatibility matrix from analysisResults
+ * Tenta allocazione con N lumi usando compatibilità specificata
  *
- * @param drugA - First drug name
- * @param drugB - Second drug name
- * @returns true if compatible (C or Y), false if incompatible (I or unknown)
+ * @param drugs - Lista farmaci ordinati per incompatibilità
+ * @param numLumens - Numero lumi da usare
+ * @param useYCompatibility - Se true, usa C+Y; se false, usa solo C
+ * @returns Allocazione se successo, null se fallito
  */
-const canShareLumen = (drugA: string, drugB: string): boolean => {
-  // Guard: No analysis results
-  if (!props.analysisResults) {
-    return false; // Assume incompatible if no data
+const tryAllocateWithCompatibility = (
+  drugs: string[],
+  numLumens: number,
+  useYCompatibility: boolean,
+): LumenAllocation[] | null => {
+  // Inizializza N lumi vuoti
+  const lumens: LumenAllocation[] = Array.from({ length: numLumens }, (_, i) => ({
+    lumenId: i + 1,
+    drugs: [],
+    isCompatible: true,
+  }));
+
+  // Prova ad allocare ogni farmaco
+  for (const drug of drugs) {
+    // Trova lumi compatibili (ordina per carico crescente = load balancing)
+    const compatibleLumens = lumens
+      .filter((lumen) => {
+        if (lumen.drugs.length === 0) return true; // Lume vuoto sempre OK
+
+        // Verifica compatibilità con TUTTI i farmaci nel lume
+        return lumen.drugs.every((existingDrug) => {
+          if (useYCompatibility) {
+            return isCompatibleY(drug, existingDrug); // C o Y
+          } else {
+            return isCompatibleC(drug, existingDrug); // Solo C
+          }
+        });
+      })
+      .sort((a, b) => a.drugs.length - b.drugs.length);
+
+    // Se nessun lume compatibile → FALLIMENTO
+    if (compatibleLumens.length === 0) {
+      return null;
+    }
+
+    // Alloca al lume con meno farmaci (load balancing)
+    compatibleLumens[0]!.drugs.push(drug);
   }
 
-  // Same drug always compatible with itself
-  if (drugA === drugB) {
+  // Rimuovi lumi vuoti
+  return lumens.filter((l) => l.drugs.length > 0);
+};
+
+/**
+ * Marca lumi oltre i disponibili come deficit
+ *
+ * @param allocation - Allocazione trovata
+ * @param requestedLumens - Numero lumi richiesti dall'utente
+ * @returns Allocazione con lumi marcati
+ */
+const markDeficitLumens = (
+  allocation: LumenAllocation[],
+  requestedLumens: number,
+): LumenAllocation[] => {
+  return allocation.map((lumen) => ({
+    ...lumen,
+    isCompatible: lumen.lumenId <= requestedLumens, // false se oltre disponibili
+  }));
+};
+
+/**
+ * Verifica se due farmaci sono C-compatibili (compatibilità diretta)
+ */
+const isCompatibleC = (drugA: string, drugB: string): boolean => {
+  if (drugA === drugB) return true;
+  const compat = compatibilityStore.getCompatibility(drugA, drugB);
+  return compat === DrugCompatibility.COMPATIBLE;
+};
+
+/**
+ * Verifica se due farmaci sono C o Y compatibili (diretta o rubinetto)
+ */
+const isCompatibleY = (drugA: string, drugB: string): boolean => {
+  if (drugA === drugB) return true;
+  const compat = compatibilityStore.getCompatibility(drugA, drugB);
+  return compat === DrugCompatibility.COMPATIBLE || compat === DrugCompatibility.COMPATIBLE_ON_TAP;
+};
+
+/**
+ * Ordina farmaci per numero di incompatibilità (decrescente)
+ * Farmaci più problematici vengono allocati prima
+ */
+const sortDrugsByIncompatibility = (drugs: string[]): string[] => {
+  return drugs
+    .map((drug) => {
+      let incompatCount = 0;
+
+      if (props.analysisResults) {
+        const result = props.analysisResults.results.find((r) => r.drug === drug);
+        if (result) {
+          incompatCount =
+            result.incompatible.length +
+            result.conflictingData.length +
+            result.noDataAvailable.length;
+        }
+      }
+
+      return { drug, incompatCount };
+    })
+    .sort((a, b) => b.incompatCount - a.incompatCount)
+    .map((item) => item.drug);
+};
+
+// ============================================================
+// DEPRECATED FUNCTIONS - Bron-Kerbosch v7 (non più usato)
+// ============================================================
+/**
+ * ⚠️ DEPRECATO - Funzioni Graph Coloring v7 non più usate
+ * Algoritmo v8 usa greedy semplice con C+Y invece di cliques
+ */
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+/**
+ * Trova cliques massimali (Bron-Kerbosch algorithm)
+ * @deprecated Sostituito da greedy v8
+ */
+const findMaximalCliques = (drugs: string[]): string[][] => {
+  const cliques: string[][] = [];
+  bronKerbosch([], drugs, [], cliques);
+  return cliques;
+};
+
+/**
+ * Bron-Kerbosch algorithm ricorsivo
+ * @deprecated Sostituito da greedy v8
+ */
+const bronKerbosch = (R: string[], P: string[], X: string[], cliques: string[][]): void => {
+  if (P.length === 0 && X.length === 0) {
+    if (R.length >= 2) {
+      cliques.push([...R]);
+    }
+    return;
+  }
+
+  const pivot = [...P, ...X][0];
+  const candidates = P.filter((v) => !areFullyCompatibleC(v, pivot!));
+
+  for (const v of candidates) {
+    const neighbors = P.filter((u) => areFullyCompatibleC(v, u));
+    bronKerbosch(
+      [...R, v],
+      neighbors,
+      X.filter((u) => areFullyCompatibleC(v, u)),
+      cliques,
+    );
+    P = P.filter((u) => u !== v);
+    X.push(v);
+  }
+};
+
+/**
+ * @deprecated Sostituito da isCompatibleC() in v8
+ */
+const areFullyCompatibleC = (drugA: string, drugB: string): boolean => {
+  if (drugA === drugB) return true;
+  const compat = compatibilityStore.getCompatibility(drugA, drugB);
+  return compat === DrugCompatibility.COMPATIBLE;
+};
+
+/**
+ * @deprecated Non più usato in v8
+ */
+const findBestLumenForGroup = (
+  group: string[],
+  lumens: LumenAllocation[],
+): LumenAllocation | null => {
+  const compatible = lumens.filter((lumen) =>
+    group.every((drug) => lumen.drugs.every((existing) => areFullyCompatibleC(drug, existing))),
+  );
+
+  if (compatible.length === 0) return null;
+
+  compatible.sort((a, b) => a.drugs.length - b.drugs.length);
+  return compatible[0] ?? null;
+};
+
+/**
+ * @deprecated Non più usato in v8
+ */
+const findBestLumenForDrug = (drug: string, lumens: LumenAllocation[]): LumenAllocation | null => {
+  // Prima prova C-compatibility
+  const compatibleC = lumens.filter((lumen) =>
+    lumen.drugs.every((existing) => areFullyCompatibleC(drug, existing)),
+  );
+
+  if (compatibleC.length > 0) {
+    compatibleC.sort((a, b) => a.drugs.length - b.drugs.length);
+    return compatibleC[0] ?? null;
+  }
+
+  const compatibleY = lumens.filter((lumen) => canAddDrugToLumen(drug, lumen));
+
+  if (compatibleY.length > 0) {
+    compatibleY.sort((a, b) => a.drugs.length - b.drugs.length);
+    return compatibleY[0] ?? null;
+  }
+
+  return null;
+};
+
+/* eslint-enable @typescript-eslint/no-unused-vars */
+
+// ============================================================
+// ACTIVE HELPER FUNCTIONS
+// ============================================================
+
+/**
+ * Helper per metadata farmaci (fotosensibilità, CVC)
+ * Database temporaneo - TODO: integrare con drugDatabaseService
+ */
+const getDrugMetadata = (drugName: string) => {
+  const metadata: Record<
+    string,
+    { photosensitive: boolean; cvcRequired: boolean; photosensitiveNote?: string; cvcNote?: string }
+  > = {
+    ADRENALINA: {
+      photosensitive: true,
+      cvcRequired: true,
+      photosensitiveNote: 'Conservare al riparo dalla luce',
+      cvcNote: 'Noto rischio flebite - richiede CVC',
+    },
+    'NORADRENALINA TARTRATO': {
+      photosensitive: true,
+      cvcRequired: true,
+      photosensitiveNote: 'Fotosensibile - proteggere dalla luce',
+      cvcNote: 'Alto rischio flebite - CVC obbligatorio',
+    },
+    FUROSEMIDE: {
+      photosensitive: true,
+      cvcRequired: false,
+      photosensitiveNote: 'Sensibile alla luce - conservare in siringa scura',
+    },
+    LINEZOLID: {
+      photosensitive: true,
+      cvcRequired: false,
+      photosensitiveNote: 'Fotosensibile - proteggere dalla luce diretta',
+    },
+    'IDROCORTISONE EMIS. SODICO': {
+      photosensitive: false,
+      cvcRequired: false,
+    },
+    'REMIFENTANIL CLORIDRATO': {
+      photosensitive: false,
+      cvcRequired: false,
+    },
+    'INSULINA UMANA': {
+      photosensitive: false,
+      cvcRequired: false,
+    },
+  };
+
+  return metadata[drugName] || { photosensitive: false, cvcRequired: false };
+};
+
+/**
+ * Verifica se farmaco può essere aggiunto a lume
+ * Usa store.getCompatibility() per check veloce
+ */
+const canAddDrugToLumen = (drug: string, lumen: LumenAllocation): boolean => {
+  // Lume vuoto → sempre OK
+  if (lumen.drugs.length === 0) {
     return true;
   }
 
-  // Query compatibility matrix (DrugA → DrugB lookup)
-  const matrixA = props.analysisResults.compatibilityMatrix[drugA];
-  if (matrixA && matrixA[drugB]) {
-    const compat = matrixA[drugB];
-    // Compatible (C) or Y-site (Y) = can share lumen with flush protocol
-    // Incompatible (I) or Conflicting (!) = cannot share lumen
+  // Verifica compatibilità con TUTTI i farmaci nel lume
+  return lumen.drugs.every((existingDrug) => {
+    const compat = compatibilityStore.getCompatibility(drug, existingDrug);
+    // Compatibile se C o Y (rubinetto)
     return (
       compat === DrugCompatibility.COMPATIBLE || compat === DrugCompatibility.COMPATIBLE_ON_TAP
     );
-  }
-
-  // Try reverse lookup (DrugB → DrugA) - matrix might be one-directional
-  const matrixB = props.analysisResults.compatibilityMatrix[drugB];
-  if (matrixB && matrixB[drugA]) {
-    const compat = matrixB[drugA];
-    return (
-      compat === DrugCompatibility.COMPATIBLE || compat === DrugCompatibility.COMPATIBLE_ON_TAP
-    );
-  }
-
-  // No data found → assume incompatible (safety first in medical context)
-  return false;
+  });
 };
 
 // ============================================================
@@ -296,6 +555,17 @@ watch(
         </div>
         <div class="text-caption text-grey-7">
           Algoritmo greedy per ottimizzazione allocazione lumi CVC/PICC
+        </div>
+
+        <!-- Legenda icone -->
+        <div class="q-mt-sm q-gutter-xs row items-center">
+          <div class="text-caption"><strong>Legenda:</strong></div>
+          <q-chip size="sm" color="orange-2" icon="light_mode">
+            <span style="color: #e65100">Fotosensibile</span>
+          </q-chip>
+          <q-chip size="sm" color="red-2" icon="place">
+            <span style="color: #c62828">CVC Richiesto</span>
+          </q-chip>
         </div>
       </q-card-section>
     </q-card>
@@ -344,7 +614,10 @@ watch(
     <!-- ============================================================ -->
     <!-- PLACEHOLDER (No drugs selected)                             -->
     <!-- ============================================================ -->
-    <q-card v-if="props.selectedDrugs.length === 0" class="bg-grey-3 q-pa-lg text-center">
+    <q-card
+      v-if="compatibilityStore.sortedDrugs.length === 0"
+      class="bg-grey-3 q-pa-lg text-center"
+    >
       <q-icon name="pending_actions" size="64px" color="grey-6" class="q-mb-md" />
       <div class="text-h6 text-grey-7 q-mb-sm">Nessun farmaco selezionato</div>
       <div class="text-body2 text-grey-6">
@@ -408,6 +681,26 @@ watch(
                 icon="medication"
               >
                 {{ drug }}
+                <q-icon
+                  v-if="getDrugMetadata(drug).photosensitive"
+                  name="light_mode"
+                  color="orange"
+                  size="sm"
+                  class="q-ml-xs"
+                >
+                  <q-tooltip>{{
+                    getDrugMetadata(drug).photosensitiveNote || 'Fotosensibile'
+                  }}</q-tooltip>
+                </q-icon>
+                <q-icon
+                  v-if="getDrugMetadata(drug).cvcRequired"
+                  name="place"
+                  color="red"
+                  size="sm"
+                  class="q-ml-xs"
+                >
+                  <q-tooltip>{{ getDrugMetadata(drug).cvcNote || 'CVC Richiesto' }}</q-tooltip>
+                </q-icon>
               </q-chip>
             </div>
             <div class="text-caption text-grey-7 q-mt-sm">

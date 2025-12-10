@@ -49,9 +49,13 @@ import DrugSelector from 'src/components/Compatibility/DrugSelector.vue';
 import CompatibilityResults from 'src/components/Compatibility/CompatibilityResults.vue';
 import LumenAllocator from 'src/components/Compatibility/LumenAllocator.vue';
 import CompatibilityDocumentation from 'src/components/Compatibility/CompatibilityDocumentation.vue';
+import DrugCompatibilityList from 'src/components/Compatibility/DrugCompatibilityList.vue';
 
 // Composable for multi-drug analysis
 import { useDrugCompatibility } from 'src/composables/useDrugCompatibility';
+
+// Pinia Store for deterministic drug compatibility
+import { useDrugCompatibilityStore } from 'src/stores/drug-compatibility-store';
 
 // Types
 import type { MultiDrugAnalysis } from 'src/types/DrugTypes';
@@ -60,16 +64,7 @@ import type { MultiDrugAnalysis } from 'src/types/DrugTypes';
 // COMPOSABLES
 // ============================================================
 const { analyzeMultipleDrugs } = useDrugCompatibility();
-
-// ============================================================
-// STATE
-// ============================================================
-
-/**
- * Selected drugs payload from DrugSelector component
- * Stores list of drug names for compatibility analysis
- */
-const selectedDrugsPayload = ref<string[]>([]);
+const compatibilityStore = useDrugCompatibilityStore();
 
 /**
  * Multi-drug compatibility analysis results
@@ -83,30 +78,28 @@ const analysisResults = ref<MultiDrugAnalysis | null>(null);
 
 /**
  * Handle drugs selected event from DrugSelector
- * Triggers multi-drug compatibility analysis
- * @param drugs Array of selected drug names
+ * Triggers multi-drug compatibility analysis using SORTED drugs from store
  */
-const handleDrugsSelected = (drugs: string[]): void => {
-  console.log('[DrugCompatibilityPage] Drugs selected:', drugs);
+const handleDrugsSelected = (): void => {
+  console.log(
+    '[DrugCompatibilityPage] Drugs selected (store sorted):',
+    compatibilityStore.sortedDrugs,
+  );
 
-  // Store selected drugs
-  selectedDrugsPayload.value = drugs;
-
-  // Trigger multi-drug analysis
-  analysisResults.value = analyzeMultipleDrugs(drugs);
+  // Trigger multi-drug analysis usando sortedDrugs (alfabetico)
+  analysisResults.value = analyzeMultipleDrugs(compatibilityStore.sortedDrugs);
 
   console.log('[DrugCompatibilityPage] Analysis completed:', analysisResults.value);
 };
 
 /**
  * Handle selection cleared event from DrugSelector
- * Resets analysis results and selected drugs
+ * Resets analysis results (selectedDrugs già resettato dallo store)
  */
 const handleSelectionCleared = (): void => {
   console.log('[DrugCompatibilityPage] Selection cleared');
 
-  // Reset state
-  selectedDrugsPayload.value = [];
+  // Reset analysis results (store già resettato)
   analysisResults.value = null;
 };
 </script>
@@ -168,25 +161,36 @@ const handleSelectionCleared = (): void => {
 
     <!-- ============================================================ -->
     <!-- MAIN LAYOUT: 2-COLUMN DESKTOP, STACKED MOBILE               -->
+    <!-- Layout Responsivo:                                           -->
+    <!-- - DESKTOP: Selezione + Compatibilità (sx) | Lumen + Results (dx) -->
+    <!-- - MOBILE: Tutto stacked (Selezione → Lumen → Compatibilità → Results) -->
     <!-- ============================================================ -->
     <div class="row q-col-gutter-md q-mb-lg">
-      <!-- LEFT COLUMN: DrugSelector (always full height) -->
+      <!-- LEFT COLUMN (DESKTOP): DrugSelector + Compatibilità -->
       <div class="col-12 col-md-6">
-        <DrugSelector
-          calculate-button-text="🔍 Analizza Compatibilità"
-          reset-button-text="🔄 Reset Selezione"
-          title="Selezione Farmaci IV"
-          @drugs-selected="handleDrugsSelected"
-          @selection-cleared="handleSelectionCleared"
-        />
+        <!-- DrugSelector -->
+        <div class="q-mb-md">
+          <DrugSelector
+            calculate-button-text="🔍 Analizza Compatibilità"
+            reset-button-text="🔄 Reset Selezione"
+            title="Selezione Farmaci IV"
+            @drugs-selected="handleDrugsSelected"
+            @selection-cleared="handleSelectionCleared"
+          />
+        </div>
+
+        <!-- Compatibilità - SOLO DESKTOP (sotto selezione farmaci) -->
+        <div class="gt-sm q-mb-md">
+          <DrugCompatibilityList :analysis-results="analysisResults" />
+        </div>
       </div>
 
-      <!-- RIGHT COLUMN: LumenAllocator + CompatibilityResults STACKED -->
+      <!-- RIGHT COLUMN (DESKTOP): LumenAllocator + CompatibilityResults -->
       <div class="col-12 col-md-6">
         <!-- LumenAllocator (top of right column) -->
+        <!-- NOTE: selectedDrugs rimosso - usa sortedDrugs da store (deterministico) -->
         <div class="q-mb-md">
           <LumenAllocator
-            :selected-drugs="selectedDrugsPayload"
             :analysis-results="analysisResults"
             :available-lumens="3"
             @allocation-completed="
@@ -200,9 +204,14 @@ const handleSelectionCleared = (): void => {
           />
         </div>
 
-        <!-- CompatibilityResults (bottom of right column) -->
-        <div>
+        <!-- CompatibilityResults (raccomandazioni) -->
+        <div class="q-mb-md">
           <CompatibilityResults :analysis-results="analysisResults" :show-recommendations="true" />
+        </div>
+
+        <!-- Compatibilità - SOLO MOBILE (sotto raccomandazioni) -->
+        <div class="lt-md">
+          <DrugCompatibilityList :analysis-results="analysisResults" />
         </div>
       </div>
     </div>

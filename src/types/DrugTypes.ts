@@ -98,6 +98,26 @@ export interface Drug {
 
   /** Note cliniche */
   clinicalNotes?: string;
+
+  /** 
+   * Fotosensibilità - Farmaco sensibile alla luce
+   * @example "SI, CONSERVARE AL RIPARO DALLA LUCE"
+   * @example "SI, PROTEGGERE DALLA LUCE DURANTE SOMMINISTRAZIONE"
+   */
+  photosensitive?: string;
+
+  /** 
+   * Richiede CVC (Catetere Venoso Centrale)
+   * Indica se il farmaco richiede CVC per rischio flebite o concentrazione
+   * @example "SI, NOTO RISCHIO FLEBITE"
+   * @example "SI, SOLO TRAMITE CATETERE CENTRALE"
+   */
+  cvcRequired?: string;
+
+  /** 
+   * Note aggiuntive su concentrazioni o precauzioni
+   */
+  concentrationNotes?: string;
 }
 
 /**

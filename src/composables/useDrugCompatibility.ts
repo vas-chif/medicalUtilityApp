@@ -75,8 +75,11 @@ import type {
   MultiDrugAnalysis,
   CompatibilityWarning,
 } from 'src/types/DrugTypes';
-import { DrugCompatibility } from 'src/types/DrugTypes';
+import { DrugCompatibility, DrugCategory } from 'src/types/DrugTypes';
 import { drugDatabase } from 'src/data/drugs';
+import { drugDatabaseService } from 'src/services/drug-database.service';
+import type { Drug as NewDrug } from 'src/types/drug-database';
+import { CompatibilityStatus } from 'src/types/drug-database';
 
 // ============================================================
 // COMPOSABLE HOOK - Drug Compatibility Analysis
@@ -91,7 +94,29 @@ export function useDrugCompatibility() {
   // ============================================================
   // STATE MANAGEMENT - Reactive drug data and selections
   // ============================================================
-  const drugs = ref<Drug[]>(drugDatabase.drugs);
+
+  // Converti i farmaci dal nuovo database al formato vecchio
+  const convertNewDrugsToOldFormat = (): Drug[] => {
+    const newDrugs = drugDatabaseService.getAllDrugs();
+    console.log('[useDrugCompatibility] Converting drugs from new database:', newDrugs.length);
+
+    return newDrugs.map(
+      (newDrug: NewDrug) =>
+        ({
+          id: newDrug.id,
+          name: newDrug.name.it, // Usa nome italiano
+          activeIngredient: newDrug.name.en, // Usa nome inglese come principio attivo
+          category: DrugCategory.OTHER, // Categoria generica per tutti i farmaci IV
+          notes: newDrug.concentrationNotes?.it,
+        }) as Drug,
+    );
+  };
+
+  // Inizializza con il vecchio database come fallback
+  const drugs = ref<Drug[]>(
+    drugDatabaseService.isLoaded() ? convertNewDrugsToOldFormat() : drugDatabase.drugs,
+  );
+
   const compatibilityMatrix = ref<CompatibilityMatrix>(
     drugDatabase.compatibilityMatrix as CompatibilityMatrix,
   );
@@ -141,18 +166,79 @@ export function useDrugCompatibility() {
    * @returns Compatibility code: 'C' (compatible), 'Y' (Y-site), 'I' (incompatible), '!' (conflicting), '' (no data)
    */
   const readCompatibility = (drug1: string, drug2: string): DrugCompatibility => {
+    console.log(`[readCompatibility] 🔍 START - Drug1: "${drug1}", Drug2: "${drug2}"`);
+
     // Se stesso farmaco
     if (drug1 === drug2) {
-      return 'C' as DrugCompatibility;
+      console.log(`[readCompatibility] ✅ Same drug, returning COMPATIBLE`);
+      return DrugCompatibility.COMPATIBLE;
     }
 
-    // Cerca nella matrice
+    // 🆕 PRIMA: Usa il nuovo servizio con 134 farmaci
+    console.log(`[readCompatibility] 🔄 Service loaded:`, drugDatabaseService.isLoaded());
+
+    if (drugDatabaseService.isLoaded()) {
+      try {
+        console.log(`[readCompatibility] 🔍 Calling checkCompatibility("${drug1}", "${drug2}")...`);
+        const result = drugDatabaseService.checkCompatibility(drug1, drug2);
+
+        console.log(`[readCompatibility] 📊 Result from service:`, result);
+
+        // Controlla se il risultato esiste
+        if (result) {
+          console.log(`[readCompatibility] ✅ Got result - Status: ${result.status}`);
+
+          // Converti il nuovo formato al vecchio usando l'enum
+          switch (result.status) {
+            case CompatibilityStatus.COMPATIBLE:
+              console.log(
+                `[readCompatibility] ✅ COMPATIBLE → Returning DrugCompatibility.COMPATIBLE`,
+              );
+              return DrugCompatibility.COMPATIBLE; // 'C'
+            case CompatibilityStatus.COMPATIBLE_CONDITIONAL:
+              console.log(
+                `[readCompatibility] ⚠️ COMPATIBLE_CONDITIONAL → Returning DrugCompatibility.COMPATIBLE_ON_TAP`,
+              );
+              return DrugCompatibility.COMPATIBLE_ON_TAP; // 'Y'
+            case CompatibilityStatus.INCOMPATIBLE:
+              console.log(
+                `[readCompatibility] ❌ INCOMPATIBLE → Returning DrugCompatibility.INCOMPATIBLE`,
+              );
+              return DrugCompatibility.INCOMPATIBLE; // 'I'
+            case CompatibilityStatus.INCOMPATIBLE_SEVERE:
+              // ⚠️ INCOMPATIBLE_SEVERE = dati contrastanti che indicano INCOMPATIBILITÀ
+              // Trattato come INCOMPATIBLE (NON come CONFLICTING_DATA)
+              console.log(
+                `[readCompatibility] 🚨 INCOMPATIBLE_SEVERE → Returning DrugCompatibility.INCOMPATIBLE (NOT CONFLICTING_DATA)`,
+              );
+              return DrugCompatibility.INCOMPATIBLE; // 'I' (NON '!')
+            case CompatibilityStatus.UNKNOWN:
+            default:
+              console.log(`[readCompatibility] ❓ UNKNOWN → Returning DrugCompatibility.NO_DATA`);
+              return DrugCompatibility.NO_DATA; // ''
+          }
+        } else {
+          console.warn(`[readCompatibility] ⚠️ Result is NULL - drugs not found in database`);
+        }
+      } catch (error) {
+        console.error('[readCompatibility] ❌ Error with new service:', error);
+        // Continua con fallback
+      }
+    } else {
+      console.warn(`[readCompatibility] ⚠️ Service NOT loaded, using fallback`);
+    }
+
+    // FALLBACK: Vecchio database (solo per test/sviluppo)
+    console.log(`[readCompatibility] 🔄 Checking fallback matrix for "${drug1}" vs "${drug2}"`);
     if (compatibilityMatrix.value[drug1]?.[drug2]) {
-      return compatibilityMatrix.value[drug1][drug2] as DrugCompatibility;
+      const fallbackResult = compatibilityMatrix.value[drug1][drug2] as DrugCompatibility;
+      console.log(`[readCompatibility] 📊 Fallback result:`, fallbackResult);
+      return fallbackResult;
     }
 
     // Nessun dato disponibile
-    return '' as DrugCompatibility;
+    console.warn(`[readCompatibility] ❌ NO DATA FOUND - Returning DrugCompatibility.NO_DATA`);
+    return DrugCompatibility.NO_DATA;
   };
 
   /**
@@ -214,10 +300,43 @@ export function useDrugCompatibility() {
     const warnings: CompatibilityWarning[] = [];
     const recommendations: string[] = [];
 
+    // Costruisci matrice di compatibilità dai risultati analizzati
+    const newCompatibilityMatrix: CompatibilityMatrix = {};
+
     // Analizza ogni farmaco
     for (const drug of drugsList) {
       const result = checkDrugCompatibility(drug, drugsList);
       results.push(result);
+
+      // Popola la matrice di compatibilità per questo farmaco
+      if (!newCompatibilityMatrix[drug]) {
+        newCompatibilityMatrix[drug] = {};
+      }
+
+      // Aggiungi tutti i farmaci compatibili
+      for (const compatDrug of result.compatible) {
+        newCompatibilityMatrix[drug][compatDrug] = DrugCompatibility.COMPATIBLE;
+      }
+
+      // Aggiungi farmaci compatibili al rubinetto (Y-site)
+      for (const tapDrug of result.compatibleOnTap) {
+        newCompatibilityMatrix[drug][tapDrug] = DrugCompatibility.COMPATIBLE_ON_TAP;
+      }
+
+      // Aggiungi farmaci incompatibili
+      for (const incompDrug of result.incompatible) {
+        newCompatibilityMatrix[drug][incompDrug] = DrugCompatibility.INCOMPATIBLE;
+      }
+
+      // Aggiungi farmaci con dati contrastanti
+      for (const conflictDrug of result.conflictingData) {
+        newCompatibilityMatrix[drug][conflictDrug] = DrugCompatibility.CONFLICTING_DATA;
+      }
+
+      // Aggiungi farmaci senza dati
+      for (const noDataDrug of result.noDataAvailable) {
+        newCompatibilityMatrix[drug][noDataDrug] = DrugCompatibility.NO_DATA;
+      }
 
       // Genera warnings critici
       if (result.incompatible.length > 0) {
@@ -276,7 +395,7 @@ export function useDrugCompatibility() {
 
     return {
       drugs: drugsList,
-      compatibilityMatrix: compatibilityMatrix.value,
+      compatibilityMatrix: newCompatibilityMatrix, // USA LA NUOVA MATRICE COSTRUITA DAI RISULTATI
       results,
       warnings,
       recommendations,

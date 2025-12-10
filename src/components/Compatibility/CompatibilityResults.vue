@@ -24,7 +24,6 @@
  */
 
 // IMPORTS
-import { computed } from 'vue';
 import type { MultiDrugAnalysis } from 'src/types/DrugTypes';
 
 // PROPS INTERFACE
@@ -40,42 +39,6 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 // NO EMITS (pure display component)
-
-/**
- * Filter critical warnings (type='critical')
- * Example: Incompatible drugs (I), Precipitation risk
- */
-const criticalWarnings = computed(() => {
-  if (!props.analysisResults) return [];
-  return props.analysisResults.warnings.filter((w) => w.type === 'critical');
-});
-
-/**
- * Filter normal warnings (type='warning')
- * Example: Y-site only (Y), Light-sensitive drugs
- */
-const normalWarnings = computed(() => {
-  if (!props.analysisResults) return [];
-  return props.analysisResults.warnings.filter((w) => w.type === 'warning');
-});
-
-/**
- * Filter info messages (type='info')
- * Example: Compatible drugs (C), Same solution compatible
- */
-const infoWarnings = computed(() => {
-  if (!props.analysisResults) return [];
-  return props.analysisResults.warnings.filter((w) => w.type === 'info');
-});
-
-/**
- * Format drug list as comma-separated string
- * @param drugs - Array of drug names
- * @returns Formatted string: "Drug A, Drug B, Drug C"
- */
-const formatDrugList = (drugs: string[]): string => {
-  return drugs.join(', ');
-};
 </script>
 
 <template>
@@ -95,7 +58,9 @@ const formatDrugList = (drugs: string[]): string => {
     <!-- RESULTS DISPLAY (Analysis completed)                        -->
     <!-- ============================================================ -->
     <div v-else>
-      <!-- CRITICAL WARNINGS (Incompatible drugs) -->
+      <!--
+        SEZIONI WARNINGS RIMOSSE - Informazioni già presenti nella lista dettagliata sopra
+
       <q-banner v-if="criticalWarnings.length > 0" class="bg-negative text-white q-mb-md" rounded>
         <template #avatar>
           <q-icon name="warning" size="32px" />
@@ -109,7 +74,6 @@ const formatDrugList = (drugs: string[]): string => {
         </div>
       </q-banner>
 
-      <!-- NORMAL WARNINGS (Y-site only) -->
       <q-banner v-if="normalWarnings.length > 0" class="bg-warning text-grey-9 q-mb-md" rounded>
         <template #avatar>
           <q-icon name="info" size="32px" />
@@ -123,7 +87,6 @@ const formatDrugList = (drugs: string[]): string => {
         </div>
       </q-banner>
 
-      <!-- INFO MESSAGES (Compatible drugs) -->
       <q-banner v-if="infoWarnings.length > 0" class="bg-info text-white q-mb-md" rounded>
         <template #avatar>
           <q-icon name="check_circle" size="32px" />
@@ -136,6 +99,7 @@ const formatDrugList = (drugs: string[]): string => {
           </div>
         </div>
       </q-banner>
+      -->
 
       <!-- RECOMMENDATIONS (if enabled) -->
       <q-card
