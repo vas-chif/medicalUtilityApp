@@ -128,10 +128,11 @@ const handleFluidBalanceCalculated = (payload: { balance: number; status: string
     <q-card>
       <q-tabs
         v-model="activeTab"
-        align="justify"
-        narrow-indicator
+        class="text-grey"
         active-color="primary"
         indicator-color="primary"
+        align="justify"
+        narrow-indicator
       >
         <q-tab name="egfr" icon="science" label="eGFR (MDRD/CKD-EPI)" />
         <q-tab name="crcl" icon="monitor_weight" label="Creatinine Clearance" />

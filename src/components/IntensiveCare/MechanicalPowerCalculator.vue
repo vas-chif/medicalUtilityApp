@@ -5,68 +5,90 @@
  * @description Componente calcolatore Mechanical Power (estratto da MechanicalPowerPage)
  * @author Vasile Chifeac
  * @created 2025-01-06
- * @modified 2025-01-XX (Expanded medical documentation per CODING_STANDARDS.md)
+ * @modified 2025-12-11 (Added i18n integration + scientific references)
  *
  * Mechanical Power Calculator
  * - Energia trasferita dal ventilatore al polmone (predittore VILI)
- * @reference Gattinoni et al. (2016) Intensive Care Medicine 42(10):1567-1575
- * @reference Encyclopedia of Respiratory Medicine (Second Edition), Volume 5, 2022
+ *
+ * @references
+ * - Gattinoni L et al. (2016) Intensive Care Med 42(10):1567-1575. DOI: 10.1007/s00134-016-4505-2
+ * - Serpa Neto A et al. (2018) Crit Care 22(1):267. DOI: 10.1186/s13054-018-2247-y
+ * - Cressoni M et al. (2016) Anesthesiology 124(5):1100-1108. DOI: 10.1097/ALN.0000000000001056
  */
 
-import { ref, computed } from 'vue';
-import { useResetForm } from 'src/composables/useResetForm';
+import { ref, computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useSecureLogger } from 'src/composables/useSecureLogger';
+import { usePersistedMechanicalPower } from 'src/composables/usePersistedCalculator';
+// import { useCalculatorStore } from 'src/stores/calculator-store';
+import { useSavedCalculations } from 'src/composables/useSavedCalculations';
+import SavedCalculations from 'src/components/SavedCalculations.vue';
 
 // ============================================================
-// TYPES & INTERFACES
+// I18N & LOGGER
 // ============================================================
+const { t } = useI18n({ useScope: 'global' });
+const { logger } = useSecureLogger();
+// const calculatorStore = useCalculatorStore();
+
+// ============================================================
+// SAVED CALCULATIONS
+// ============================================================
+const { savedCalculations, addSavedCalculation, removeSavedCalculation, createSavedCalculation } =
+  useSavedCalculations('mp');
+
+// ============================================================
+// PERSISTED STATE (localStorage)
+// ============================================================
+const mp = usePersistedMechanicalPower();
+
+// Input values (linked to localStorage)
+const rr = mp.rr.value; // Respiratory Rate (breaths/min)
+const picco = mp.picco.value; // Peak Pressure (cmH2O)
+const plateau = mp.plateau.value; // Plateau Pressure (cmH2O)
+const peep = mp.peep.value; // PEEP (cmH2O)
+
 /**
- * @interface MPFormData
- * @description Dati del form per il calcolo del Mechanical Power
+ * VTe special case: string for auto-fraction (0.xxx)
+ * Persists as number, displays as formatted string
  */
-interface MPFormData {
-  RR: number | null; // Frequenza Respiratoria (atti/min)
-  VTe: number | null; // Volume Tidal Espiratorio (litri)
-  Picco: number | null; // Pressione di Picco (cmH2O)
-  Plateau: number | null; // Pressione di Plateau (cmH2O)
-  PeeP: number | null; // PEEP (cmH2O)
-}
+const vte = ref<string>(
+  mp.vte.value.value !== null && mp.vte.value.value > 0 ? mp.vte.value.value.toString() : '0.',
+);
 
-// ============================================================
-// STATE
-// ============================================================
-const initialFormData: MPFormData = {
-  RR: null,
-  VTe: null,
-  Picco: null,
-  Plateau: null,
-  PeeP: null,
-};
+// Watch VTe to sync with localStorage
+watch(vte, (newValue) => {
+  const numericValue = parseFloat(newValue) || 0;
+  mp.vte.value.value = numericValue;
+});
 
-const formData = ref<MPFormData>({ ...initialFormData });
-const result = ref<number>(0);
+// Result (persisted)
+const mechanicalPower = mp.result.value;
+const showResult = ref(false);
+const errorMessage = ref<string>('');
 
-const { resetForm } = useResetForm(formData, result, initialFormData);
+// Save dialog
+const showSaveDialog = ref(false);
+const patientInitials = ref('');
 
 // ============================================================
 // COMPUTED
 // ============================================================
 /**
- * @computed isFormValid
- * @description Verifica che tutti i campi siano compilati con valori validi
- * @returns {boolean} true se form valido
+ * Validates all inputs for calculation
  */
 const isFormValid = computed(() => {
+  const vteValue = parseFloat(vte.value) || 0;
   return (
-    formData.value.RR !== null &&
-    formData.value.RR > 0 &&
-    formData.value.VTe !== null &&
-    formData.value.VTe > 0 &&
-    formData.value.Picco !== null &&
-    formData.value.Picco > 0 &&
-    formData.value.Plateau !== null &&
-    formData.value.Plateau > 0 &&
-    formData.value.PeeP !== null &&
-    formData.value.PeeP >= 0
+    rr.value !== null &&
+    rr.value > 0 &&
+    vteValue > 0 &&
+    picco.value !== null &&
+    picco.value > 0 &&
+    plateau.value !== null &&
+    plateau.value > 0 &&
+    peep.value !== null &&
+    peep.value >= 0
   );
 });
 
@@ -74,44 +96,205 @@ const isFormValid = computed(() => {
 // FUNCTIONS
 // ============================================================
 /**
- * @function calculateMP
- * @description Calcola il Mechanical Power secondo formula di Gattinoni et al. (2016)
- * @formula MP = 0.098 × RR × VTe × (Picco - 0.5 × ΔP)
- * @returns {void}
+ * Handles VTe input with auto-fractioning
+ * Example: user types "345" → becomes "0.345"
  */
-const calculateMP = (): void => {
-  if (!isFormValid.value) return;
+function handleVteInput(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  let value = input.value.replace(/[^0-9]/g, ''); // Remove non-digits
 
-  const { RR, VTe, Picco, Plateau, PeeP } = formData.value;
+  if (value.length > 3) {
+    value = value.slice(0, 3);
+  }
 
-  // Driving Pressure (ΔP)
-  const drivingPressure = Plateau! - PeeP!;
+  if (value.length === 0) {
+    vte.value = '0.';
+  } else {
+    vte.value = '0.' + value;
+  }
 
-  // Formula Gattinoni: MP = 0.098 × RR × VTe × (Picco - 0.5 × ΔP)
-  result.value = 0.098 * RR! * VTe! * (Picco! - 0.5 * drivingPressure);
-};
+  input.value = vte.value;
+}
+
+/**
+ * Gets VTe numeric value for calculation
+ */
+function getVteValue(): number {
+  return parseFloat(vte.value) || 0;
+}
+
+/**
+ * Validates all input parameters
+ */
+function validateInputs(): boolean {
+  errorMessage.value = '';
+
+  // Check all fields filled
+  if (rr.value === null || picco.value === null || plateau.value === null || peep.value === null) {
+    errorMessage.value = t('errors.missingParameters');
+    return false;
+  }
+
+  const vteValue = getVteValue();
+  if (rr.value < 0 || vteValue <= 0 || picco.value < 0 || plateau.value < 0 || peep.value < 0) {
+    errorMessage.value = t('validation.noNegativeNumbers');
+    logger.warn('⚠️ Negative value detected', {
+      rr: rr.value,
+      vte: vteValue,
+      picco: picco.value,
+      plateau: plateau.value,
+      peep: peep.value,
+    });
+    return false;
+  }
+
+  if (rr.value === 0 || vteValue === 0 || picco.value === 0 || plateau.value === 0) {
+    errorMessage.value = t('validation.mustBePositive');
+    return false;
+  }
+
+  // Physiological ranges
+  if (rr.value > 99) {
+    errorMessage.value = `${t('validation.outOfRange')}: RR max 99 ${t('calculators.mechanicalPower.rrUnit')}`;
+    return false;
+  }
+
+  if (vteValue > 2) {
+    errorMessage.value = `${t('validation.outOfRange')}: VTe > 2L`;
+    return false;
+  }
+
+  if (picco.value > 99 || plateau.value > 99 || peep.value > 99) {
+    errorMessage.value = `${t('validation.outOfRange')}: Pressure max 99 cmH₂O`;
+    return false;
+  }
+
+  // Optional physiological validations
+  // Uncomment and implement calculatorStore if needed for physiological validations
+  // Example physiological checks (currently disabled):
+  // - Plateau pressure should be less than peak pressure
+  // - PEEP should be less than plateau pressure
+
+  return true;
+}
+
+/**
+ * Calculates mechanical power using standard formula
+ * MP = 0.098 × RR × VTe × (Picco - 0.5 × (Plateau - PEEP))
+ */
+function calculateMP(): void {
+  const vteNumeric = getVteValue();
+  logger.debug('🔍 MP calculation started', {
+    rr: rr.value,
+    vte: vteNumeric,
+    picco: picco.value,
+    plateau: plateau.value,
+    peep: peep.value,
+  });
+
+  if (!validateInputs()) {
+    logger.warn('⚠️ MP validation failed', { error: errorMessage.value });
+    showResult.value = false;
+    return;
+  }
+
+  const rrValue = rr.value!;
+  const vteValue = vteNumeric;
+  const piccoValue = picco.value!;
+  const plateauValue = plateau.value!;
+  const peepValue = peep.value!;
+
+  const mp = 0.098 * rrValue * vteValue * (piccoValue - 0.5 * (plateauValue - peepValue));
+  mechanicalPower.value = Math.round(mp * 100) / 100;
+  showResult.value = true;
+  errorMessage.value = '';
+
+  const status =
+    mechanicalPower.value < 12 ? 'NORMAL' : mechanicalPower.value <= 15 ? 'WARNING' : 'CRITICAL';
+  logger.info(`✅ MP calculation completed - Status: ${status}`, {
+    result: mechanicalPower.value,
+    status,
+    inputs: {
+      rr: rrValue,
+      vte: vteValue,
+      picco: piccoValue,
+      plateau: plateauValue,
+      peep: peepValue,
+    },
+  });
+
+  if (status === 'CRITICAL') {
+    logger.warn('🚨 CRITICAL MP value (>15)!', { mp: mechanicalPower.value });
+  }
+}
+
+/**
+ * Opens save dialog
+ */
+function saveCalculation(): void {
+  if (!showResult.value || mechanicalPower.value === 0) {
+    logger.warn('⚠️ Save attempted without valid result');
+    return;
+  }
+  showSaveDialog.value = true;
+  logger.info('💾 Save dialog opened');
+}
+
+/**
+ * Confirms and saves calculation
+ */
+function confirmSave(): void {
+  const trimmed = patientInitials.value.trim();
+
+  if (trimmed.length === 0) {
+    logger.warn('⚠️ Empty patient initials');
+    return;
+  }
+
+  const calculation = createSavedCalculation(trimmed, mechanicalPower.value ?? 0);
+  addSavedCalculation(calculation);
+
+  showSaveDialog.value = false;
+  patientInitials.value = '';
+
+  logger.info(`✅ Calculation saved: ${calculation.initials} - ${calculation.result} J/min`);
+}
+
+/**
+ * Resets all fields and clears localStorage
+ */
+function resetForm(): void {
+  logger.info('🔄 MP Calculator full reset (localStorage cleared)');
+
+  mp.resetAll();
+  vte.value = '0.';
+  showResult.value = false;
+  errorMessage.value = '';
+}
 
 /**
  * @function getInterpretation
- * @description Restituisce interpretazione clinica basata su thresholds VILI
- * @returns {string} Interpretazione testuale
+ * @description Returns MP interpretation based on thresholds
+ * @returns {string} Interpretation text
  */
 const getInterpretation = (): string => {
-  if (result.value === 0) return 'Inserire i parametri';
-  if (result.value < 17) return 'Ventilazione Protettiva';
-  if (result.value <= 22) return 'Zona di Attenzione - Ottimizzare';
-  return 'Alto Rischio VILI - Intervento Urgente';
+  const mp = mechanicalPower.value ?? 0;
+  if (mp === 0) return t('mp.results.noCalculation');
+  if (mp < 12) return t('mp.results.safe');
+  if (mp <= 17) return t('mp.results.attention');
+  return t('mp.results.dangerous');
 };
 
 /**
  * @function getInterpretationColor
- * @description Restituisce colore Quasar per interpretazione
- * @returns {string} Nome colore Quasar
+ * @description Returns Quasar color for interpretation
+ * @returns {string} Quasar color name
  */
 const getInterpretationColor = (): string => {
-  if (result.value === 0) return 'grey';
-  if (result.value < 17) return 'green';
-  if (result.value <= 22) return 'orange';
+  const mp = mechanicalPower.value ?? 0;
+  if (mp === 0) return 'grey';
+  if (mp < 12) return 'green';
+  if (mp <= 17) return 'orange';
   return 'red';
 };
 </script>
@@ -124,30 +307,28 @@ const getInterpretationColor = (): string => {
         <q-icon name="warning" color="orange" />
       </template>
       <div class="text-body2">
-        <strong>Mechanical Power (MP):</strong> Energia totale per minuto erogata dal ventilatore al
-        parenchima polmonare. Integra pressione, volume, flusso e frequenza respiratoria in un unico
-        parametro predittivo di <strong>VILI (Ventilator-Induced Lung Injury)</strong>. Target:
-        &lt;17 J/min per ventilazione protettiva.
+        <strong>{{ t('mp.banner.title') }}</strong> {{ t('mp.banner.description') }}
       </div>
     </q-banner>
 
-    <div class="row q-gutter-md">
-      <!-- Pannello Input -->
+    <div class="row justify-center q-gutter-md">
+      <!-- Pannello Input - Centrato -->
       <div class="col-12 col-md-5">
         <q-card flat bordered>
           <q-card-section>
             <div class="text-subtitle2 text-weight-bold q-mb-md">
               <q-icon name="edit" class="q-mr-xs" />
-              Parametri Ventilatori
+              {{ t('mp.titles.ventilatorParameters') }}
             </div>
 
             <!-- RR -->
             <q-input
-              v-model.number="formData.RR"
+              v-model.number="rr"
               type="number"
-              label="RR (Frequenza Respiratoria)"
-              suffix="atti/min"
+              :label="t('mp.parameters.rr.label')"
+              :suffix="t('mp.parameters.rr.unit')"
               outlined
+              dense
               class="q-mb-sm"
             >
               <template v-slot:prepend>
@@ -157,11 +338,13 @@ const getInterpretationColor = (): string => {
 
             <!-- VTe -->
             <q-input
-              v-model.number="formData.VTe"
-              type="number"
-              step="0.01"
-              label="VTe (Volume Tidal Espiratorio)"
-              suffix="litri"
+              v-model="vte"
+              @input="handleVteInput"
+              inputmode="numeric"
+              :label="t('mp.parameters.vte.label')"
+              :suffix="t('mp.parameters.vte.unit')"
+              outlined
+              dense
               class="q-mb-sm"
             >
               <template v-slot:prepend>
@@ -171,10 +354,12 @@ const getInterpretationColor = (): string => {
 
             <!-- P.Picco -->
             <q-input
-              v-model.number="formData.Picco"
+              v-model.number="picco"
               type="number"
-              label="P.Picco (Pressione di Picco)"
+              :label="t('mp.parameters.picco.label')"
+              :suffix="t('mp.parameters.picco.unit')"
               outlined
+              dense
               class="q-mb-sm"
             >
               <template v-slot:prepend>
@@ -184,10 +369,12 @@ const getInterpretationColor = (): string => {
 
             <!-- P.Plateau -->
             <q-input
-              v-model.number="formData.Plateau"
+              v-model.number="plateau"
               type="number"
-              suffix="cmH2O"
+              :label="t('mp.parameters.plateau.label')"
+              :suffix="t('mp.parameters.plateau.unit')"
               outlined
+              dense
               class="q-mb-sm"
             >
               <template v-slot:prepend>
@@ -197,10 +384,12 @@ const getInterpretationColor = (): string => {
 
             <!-- PEEP -->
             <q-input
-              v-model.number="formData.PeeP"
-              label="PEEP (Pressione Fine Espirazione)"
-              suffix="cmH2O"
+              v-model.number="peep"
+              type="number"
+              :label="t('mp.parameters.peep.label')"
+              :suffix="t('mp.parameters.peep.unit')"
               outlined
+              dense
               class="q-mb-md"
             >
               <template v-slot:prepend>
@@ -208,100 +397,122 @@ const getInterpretationColor = (): string => {
               </template>
             </q-input>
 
-            <!-- Bottoni -->
-            <q-btn
-              @click="calculateMP"
-              color="primary"
-              size="md"
-              class="full-width q-mb-xs"
-              icon="calculate"
-              :disable="!isFormValid"
-            >
-              Calcola MP
-            </q-btn>
+            <!-- Error Banner -->
+            <q-banner v-if="errorMessage" dense rounded class="bg-negative text-white q-mb-md">
+              <template v-slot:avatar>
+                <q-icon name="warning" color="white" />
+              </template>
+              {{ errorMessage }}
+            </q-banner>
 
-            <q-btn
-              @click="resetForm"
-              color="negative"
-              size="sm"
-              class="full-width"
-              icon="refresh"
-              outline
-            >
-              Reset
-            </q-btn>
+            <!-- Bottoni -->
+            <div class="row no-wrap q-gutter-xs justify-center">
+              <q-btn
+                @click="calculateMP"
+                color="primary"
+                :size="$q.screen.xs ? 'xs' : 'md'"
+                class="full-width q-pa-xs"
+                icon="calculate"
+                :disable="!isFormValid"
+              >
+                {{ t('mp.actions.calculate') }}
+              </q-btn>
+              <q-space />
+              <q-btn
+                @click="saveCalculation"
+                color="positive"
+                :size="$q.screen.xs ? 'xs' : 'md'"
+                class="full-width q-pa-xs"
+                icon="save"
+                :disable="!showResult || mechanicalPower === 0"
+                outline
+              >
+                {{ t('mp.actions.save') }}
+              </q-btn>
+              <q-space />
+              <q-btn
+                @click="resetForm"
+                color="negative"
+                :size="$q.screen.xs ? 'xs' : 'md'"
+                class="full-width q-pa-xs"
+                icon="refresh"
+                outline
+              >
+                {{ t('mp.actions.reset') }}
+              </q-btn>
+            </div>
           </q-card-section>
         </q-card>
       </div>
+    </div>
 
-      <!-- Pannello Risultati -->
-      <div class="col-12 col-md-6">
+    <!-- Pannello Risultati - Full Width sotto parametri -->
+    <div class="row q-mt-md">
+      <div class="col-12">
         <q-card flat bordered>
           <q-card-section>
             <div class="text-subtitle2 text-weight-bold q-mb-md">
               <q-icon name="speed" class="q-mr-xs" />
-              Risultati
+              {{ t('mp.titles.results') }}
             </div>
 
             <!-- Risultato -->
-            <div class="text-center q-mb-md">
-              <div class="text-h4 text-primary">
-                {{ result.toFixed(2) }}
+            <div v-if="showResult" class="text-center q-mb-md">
+              <div class="text-h3 text-primary">
+                {{ mechanicalPower.toFixed(2) }}
               </div>
-              <div class="text-caption text-grey-7">J/min (Joule per minuto)</div>
+              <div class="text-h6 text-grey-7">{{ t('mp.results.unit') }}</div>
             </div>
 
             <!-- Interpretazione -->
-            <div class="q-mb-sm">
+            <div v-if="showResult" class="q-mb-sm row justify-center">
               <q-chip
                 :color="getInterpretationColor()"
                 text-color="white"
-                class="full-width text-center"
+                class="text-h6 q-pa-xs"
+                style="min-width: 300px"
               >
                 {{ getInterpretation() }}
               </q-chip>
             </div>
 
+            <!-- Saved Calculations Component -->
+            <SavedCalculations
+              calculator-type="mp"
+              :calculations="savedCalculations"
+              @remove="removeSavedCalculation"
+            />
+
             <!-- 📊 Definizione e Significato Clinico -->
             <q-expansion-item
               icon="info"
-              label="1️⃣ Definizione e Significato Clinico del Mechanical Power"
+              :label="t('mp.definition.title')"
               class="q-mt-md"
               header-class="bg-blue-1 text-blue-9"
             >
-              <q-card class="q-pa-md">
+              <q-card class="q-pa-none">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
-                  Cos'è il Mechanical Power e Perché è Importante
+                  {{ t('mp.definition.mainTitle') }}
                 </div>
 
                 <q-list>
                   <q-item>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        Definizione Fisica del Mechanical Power (MP)
+                        {{ t('mp.definition.physicalDef.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        Il <strong>Mechanical Power</strong> rappresenta l'energia trasferita dal
-                        ventilatore meccanico al sistema respiratorio del paziente per unità di
-                        tempo, espressa in <strong>Joule al minuto (J/min)</strong>. Dal punto di
-                        vista fisico, il MP quantifica il lavoro respiratorio totale eseguito dal
-                        ventilatore, integrando in un singolo parametro multipli componenti della
-                        ventilazione meccanica: volume corrente (VT), frequenza respiratoria (RR),
-                        pressione delle vie aeree (picco/plateau), driving pressure (ΔP), PEEP e
-                        flusso inspiratorio.
+                        <div v-html="t('mp.definition.physicalDef.text')"></div>
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs text-grey-7">
-                        Formula semplificata: <strong>MP = 0.098 × RR × VT × (Ppeak - ½ΔP)</strong>,
-                        dove 0.098 è il fattore di conversione da L×cmH₂O/min a J/min. Questa
-                        formulazione rappresenta un'approssimazione del lavoro meccanico basata su
-                        parametri facilmente accessibili al letto del paziente.
+                        <div v-html="t('mp.definition.physicalDef.formula')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
 
                 <div class="text-body2 text-weight-bold q-mb-xs q-mt-md">
-                  📌 Significato Clinico Fondamentale:
+                  {{ t('mp.definition.clinicalSignificance.title') }}
                 </div>
                 <q-list>
                   <q-item>
@@ -310,20 +521,12 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        1️⃣ Predittore Unificato di VILI (Ventilator-Induced Lung Injury)
+                        {{ t('mp.definition.clinicalSignificance.viliPredictor.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        Il MP integra i 4 meccanismi patogenetici del danno polmonare da
-                        ventilatore: <strong>(1) Volutrauma</strong> (VT elevato → sovradistensione
-                        alveolare), <strong>(2) Barotrauma</strong> (Ppeak/Pplateau eccessive →
-                        rottura alveoli), <strong>(3) Atelectrauma</strong> (ciclico
-                        reclutamento/de-reclutamento alveoli con PEEP insufficiente → shear stress),
-                        <strong>(4) Biotrauma</strong>
-                        (rilascio citokine pro-infiammatorie IL-1β, IL-6, TNF-α → SIRS sistemica).
-                        Studi sperimentali su modelli animali (Gattinoni et al., Intensive Care Med
-                        2016) hanno dimostrato che il MP correla meglio con mortalità e danno
-                        istologico polmonare rispetto a singoli parametri isolati (es. VT o ΔP da
-                        soli).
+                        <div
+                          v-html="t('mp.definition.clinicalSignificance.viliPredictor.text')"
+                        ></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -334,18 +537,12 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        2️⃣ Valore Prognostico in ARDS e Insufficienza Respiratoria Acuta
+                        {{ t('mp.definition.clinicalSignificance.prognosticValue.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        In pazienti con ARDS (Acute Respiratory Distress Syndrome), MP elevato
-                        (&gt;17-22 J/min) è associato a:
-                        <strong>↑mortalità a 28-90 giorni</strong> (hazard ratio ~1.8-2.5),
-                        <strong>↑durata ventilazione meccanica</strong> (+40-60% giorni
-                        ventilatore), <strong>↑incidenza insufficienza multi-organo (MOF)</strong>.
-                        Studi osservazionali su &gt;1000 pazienti ARDS hanno identificato MP come
-                        predittore indipendente di outcome peggiore, anche dopo aggiustamento per
-                        gravità malattia (APACHE II, SOFA score), età, P/F ratio. Threshold critico:
-                        MP &gt;22 J/min associato a mortalità &gt;50% in ARDS severa.
+                        <div
+                          v-html="t('mp.definition.clinicalSignificance.prognosticValue.text')"
+                        ></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -356,18 +553,12 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        3️⃣ Guida per Ottimizzazione Strategia Ventilatoria Personalizzata
+                        {{ t('mp.definition.clinicalSignificance.optimization.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        Il MP permette di bilanciare obiettivi ventilatori competitivi: (a)
-                        ossigenazione adeguata (PaO₂ &gt;60 mmHg, SatO₂ &gt;90%), (b) rimozione CO₂
-                        (PaCO₂ 35-45 mmHg o ipercapnia permissiva pH &gt;7.20), (c) minimizzazione
-                        danno polmonare iatrogeno (MP &lt;17 J/min target). In pratica: se MP
-                        elevato, ridurre VT (target 4-6 ml/kg peso corporeo predetto PBW), ridurre
-                        RR tollerando ipercapnia moderata, ottimizzare PEEP per minimizzare
-                        atelectrauma senza sovradistensione, considerare interventi rescue (prona,
-                        ECMO). Monitoraggio MP real-time al letto paziente guida aggiustamenti
-                        incrementali parametri ventilatore.
+                        <div
+                          v-html="t('mp.definition.clinicalSignificance.optimization.text')"
+                        ></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -378,16 +569,10 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        4️⃣ Comparazione Modalità Ventilatorie e Settings
+                        {{ t('mp.definition.clinicalSignificance.comparison.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        MP facilita confronto oggettivo tra diverse strategie ventilatorie: volume
-                        control (VC) vs pressure control (PC), diverse combinazioni VT/RR/PEEP per
-                        stesso paziente. Esempio pratico: paziente ARDS con VT 6 ml/kg, RR 25, PEEP
-                        10, Pplat 28 → MP ~20 J/min. Prova riduzione RR 20 con tolleranza ipercapnia
-                        → MP ~16 J/min → strategia preferibile se PaCO₂/pH tollerabili. Permette
-                        individualizzazione basata su risposta fisiologica paziente-specifica
-                        piuttosto che protocolli rigidi "one-size-fits-all".
+                        <div v-html="t('mp.definition.clinicalSignificance.comparison.text')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -398,17 +583,10 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        5️⃣ Correlazione con Biomarker Infiammatori e Danno Alveolare
+                        {{ t('mp.definition.clinicalSignificance.biomarkers.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        Elevato MP correla con marker di danno polmonare in aspirato broncoalveolare
-                        (BAL) e plasma: ↑IL-6, ↑IL-8, ↑TNF-α (citokine pro-infiammatorie), ↑proteina
-                        C-reattiva (PCR), ↑procollagene tipo III (fibrosi polmonare precoce),
-                        ↑Receptor for Advanced Glycation End products (RAGE - marker danno
-                        epiteliale alveolare). Studi traslazionali: riduzione MP da 25→15 J/min in
-                        24h → ↓50-60% IL-6 plasma, ↓30% PCR. Suggerisce che ottimizzazione MP non
-                        solo previene danno meccanico ma riduce risposta infiammatoria sistemica
-                        (biotrauma).
+                        <div v-html="t('mp.definition.clinicalSignificance.biomarkers.text')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -419,15 +597,7 @@ const getInterpretationColor = (): string => {
                     <q-icon name="lightbulb" color="blue" />
                   </template>
                   <div class="text-caption">
-                    <strong>Concetto Chiave - "Baby Lung" in ARDS:</strong> In ARDS, il polmone
-                    funzionalmente ventilabile si riduce a dimensioni simili a polmone neonatale
-                    (~200-500 ml vs ~5000 ml normale adulto) per collasso/consolidamento aree
-                    dipendenti e flooding alveolare. Ventilazione con VT "normale" (8-10 ml/kg) in
-                    questo "baby lung" residuo → stress/strain eccessivi, MP molto elevato (30-40
-                    J/min), danno accelerato. Strategia protettiva: VT ridotto (4-6 ml/kg PBW)
-                    distribuito su polmone di dimensioni ridotte → normalizzazione MP, protezione
-                    danno. Razionale fisiopatologico MP = quantificare energia trasferita al polmone
-                    "realmente ventilato", non al polmone anatomico totale.
+                    <div v-html="t('mp.definition.keyConcept.text')"></div>
                   </div>
                 </q-banner>
               </q-card>
@@ -436,70 +606,49 @@ const getInterpretationColor = (): string => {
             <!-- 🔬 Fisiologia e Meccanismi di Danno Polmonare (VILI) -->
             <q-expansion-item
               icon="science"
-              label="2️⃣ Fisiologia e Meccanismi di Danno Polmonare (VILI)"
+              :label="t('mp.physiology.title')"
               class="q-mt-md"
               header-class="bg-green-1 text-green-9"
             >
               <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
-                  Meccanica Polmonare e Patogenesi del VILI
+                  {{ t('mp.physiology.mainTitle') }}
                 </div>
 
                 <div class="text-body2 text-weight-bold q-mb-xs">
-                  🫁 Meccanica Respiratoria Normale vs ARDS:
+                  {{ t('mp.physiology.mechanicsTitle') }}
                 </div>
                 <q-list class="q-mb-md">
                   <q-item>
                     <q-item-section>
                       <q-item-label caption>
-                        <strong>Polmone Sano:</strong> Compliance polmonare normale Crs ~50-100
-                        ml/cmH₂O. Volume corrente fisiologico 6-8 ml/kg distribuito uniformemente su
-                        ~300 milioni di alveoli. Driving pressure fisiologico ΔP = VT/Crs ~5-10
-                        cmH₂O. Energia elastica immagazzinata durante insufflazione è rilasciata
-                        passivamente durante espirazione. Pressione transpolmonare (Ptp = Palv -
-                        Ppleurica) mantiene apertura alveolare, prevenendo collasso end-espiratorio.
+                        <div v-html="t('mp.physiology.healthyLung')"></div>
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>ARDS:</strong> Compliance severamente ridotta Crs ~20-40 ml/cmH₂O
-                        (↓50-70% vs normale) per edema interstiziale/alveolare, collasso alveolare,
-                        consolidamento. Distribuzione disomogenea areazione: zone dorsali dipendenti
-                        collassate/consolidate (non-aerate), zone ventrali non-dipendenti aerate ma
-                        a rischio sovradistensione. Per stesso VT, driving pressure molto aumentato
-                        ΔP = VT/Crs ~15-25 cmH₂O → stress/strain eccessivi su "baby lung" residuo.
-                        Necessità di alte pressioni (Ppeak 30-40 cmH₂O) per raggiungere
-                        ossigenazione minimale.
+                        <div v-html="t('mp.physiology.ardsLung')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
 
                 <div class="text-body2 text-weight-bold q-mb-xs text-red-9">
-                  ⚠️ 4 Meccanismi Patogenetici del VILI:
+                  {{ t('mp.physiology.viliMechanismsTitle') }}
                 </div>
 
                 <q-list bordered class="q-mb-md">
                   <q-item class="bg-red-1">
                     <q-item-section>
                       <q-item-label class="text-weight-bold text-red-9">
-                        1️⃣ VOLUTRAUMA - Sovradistensione Alveolare
+                        {{ t('mp.physiology.volutrauma.title') }}
+                      </q-item-label>
+                      <q-item-label caption>
+                        <div v-html="t('mp.physiology.volutrauma.text')"></div>
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Meccanismo:</strong> Volume corrente eccessivo (VT &gt;8-10 ml/kg) o
-                        pressione plateau elevata (Pplateau &gt;30 cmH₂O) → distensione alveolare
-                        oltre capacità elastica → strain &gt;2.0 (deformazione relativa: strain =
-                        VT/FRC). A livello cellulare: stiramento membrana alveolo-capillare →
-                        rottura giunzioni tight tra cellule epiteliali (pneumociti tipo I-II) →
-                        increased permeabilità → edema alveolare → ulteriore riduzione compliance →
-                        circolo vizioso.
+                        <div v-html="t('mp.physiology.volutrauma.mechanicalStrain')"></div>
                       </q-item-label>
-                      <q-item-label caption class="q-mt-xs text-weight-medium">
-                        <strong>Evidenze sperimentali:</strong> Studio landmark Dreyfuss & Saumon
-                        (1998): ratti ventilati con alte pressioni ma bassi volumi (torace bendato)
-                        → NO danno polmonare. Ratti con alti volumi ma basse pressioni (torace
-                        aperto) → danno severo. Conclusione: il volume (strain), non la pressione
-                        (stress) da solo, è determinante primario del danno. In ARDS, "baby lung"
-                        riceve tutto il VT → strain locale molto elevato anche con VT "normale" per
-                        peso corporeo totale.
+                      <q-item-label caption class="q-mt-xs">
+                        <div v-html="t('mp.physiology.volutrauma.clinicalTarget')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -507,23 +656,16 @@ const getInterpretationColor = (): string => {
                   <q-item class="bg-orange-1 q-mt-sm">
                     <q-item-section>
                       <q-item-label class="text-weight-bold text-orange-9">
-                        2️⃣ BAROTRAUMA - Danno da Pressione Eccessiva
+                        {{ t('mp.physiology.barotrauma.title') }}
+                      </q-item-label>
+                      <q-item-label caption>
+                        <div v-html="t('mp.physiology.barotrauma.text')"></div>
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Meccanismo:</strong> Pressioni di picco molto elevate (Ppeak
-                        &gt;35-40 cmH₂O) o driving pressure eccessivo (ΔP &gt;15 cmH₂O) → gradiente
-                        pressorio trans-alveolare → shear stress interfaccia aria-liquido → rottura
-                        fisica parete alveolare → pneumotorax, pneumomediastino, enfisema
-                        sottocutaneo. Driving pressure (ΔP = Pplateau - PEEP) riflette "stress
-                        elastico" applicato al polmone, normalizzato per compliance: ΔP = VT/Crs.
+                        <div v-html="t('mp.physiology.barotrauma.drivingPressure')"></div>
                       </q-item-label>
-                      <q-item-label caption class="q-mt-xs text-weight-medium">
-                        <strong>Evidenze cliniche:</strong> Studio Amato et al. (NEJM 2015) su 3562
-                        pazienti ARDS: driving pressure identificato come predittore più forte di
-                        mortalità, superiore a VT o PEEP isolati. ↑1 cmH₂O driving pressure → ↑6%
-                        rischio relativo mortalità. Threshold critico: ΔP &gt;15 cmH₂O associato a
-                        mortalità &gt;50%. Razionale: ΔP riflette simultaneamente VT (numeratore) e
-                        compliance (denominatore), integrando gravità danno polmonare.
+                      <q-item-label caption class="q-mt-xs">
+                        <div v-html="t('mp.physiology.barotrauma.clinicalTarget')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -531,25 +673,16 @@ const getInterpretationColor = (): string => {
                   <q-item class="bg-purple-1 q-mt-sm">
                     <q-item-section>
                       <q-item-label class="text-weight-bold text-purple-9">
-                        3️⃣ ATELECTRAUMA - Danno da Reclutamento Ciclico
+                        {{ t('mp.physiology.atelectrauma.title') }}
+                      </q-item-label>
+                      <q-item-label caption>
+                        <div v-html="t('mp.physiology.atelectrauma.text')"></div>
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Meccanismo:</strong> PEEP insufficiente → collasso alveoli a fine
-                        espirazione (atelectasia ciclica) → riapertura forzata durante insufflazione
-                        successiva → shear stress da reclutamento/de-reclutamento ripetuto ogni
-                        ciclo respiratorio (~12000-20000 cicli/die). Forze di taglio (shear) a
-                        livello bronchioli terminali e alveoli instabili → distacco cellule
-                        epiteliali, denudamento membrana basale, innesco cascata infiammatoria
-                        locale.
+                        <div v-html="t('mp.physiology.atelectrauma.peepRole')"></div>
                       </q-item-label>
-                      <q-item-label caption class="q-mt-xs text-weight-medium">
-                        <strong>Evidenze sperimentali:</strong> Modelli ex-vivo polmone isolato
-                        (Muscedere et al., Am J Respir Crit Care Med 1994): ventilazione con PEEP
-                        zero vs PEEP ottimale. PEEP zero + VT 10 ml/kg → danno istologico severo
-                        (membrane ialine, infiltrati neutrofili, edema) in 20 minuti. PEEP ottimale
-                        (10 cmH₂O) + stesso VT → danno minimo. Conclusione: PEEP previene
-                        atelectrauma mantenendo reclutamento alveolare stabile. PEEP ottimale deve
-                        bilanciare: prevenire collasso (↑PEEP) vs evitare sovradistensione (↓PEEP).
+                      <q-item-label caption class="q-mt-xs">
+                        <div v-html="t('mp.physiology.atelectrauma.clinicalTarget')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -557,55 +690,30 @@ const getInterpretationColor = (): string => {
                   <q-item class="bg-amber-2 q-mt-sm">
                     <q-item-section>
                       <q-item-label class="text-weight-bold text-amber-9">
-                        4️⃣ BIOTRAUMA - Risposta Infiammatoria Sistemica
+                        {{ t('mp.physiology.biotrauma.title') }}
+                      </q-item-label>
+                      <q-item-label caption>
+                        <div v-html="t('mp.physiology.biotrauma.text')"></div>
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Meccanismo:</strong> Danno meccanico ripetuto
-                        (volu/baro/atelectrauma) → attivazione cellule epiteliali alveolari e
-                        macrofagi residenti → rilascio citokine pro-infiammatorie:
-                        <strong>IL-1β, IL-6, IL-8, TNF-α</strong>. Citokine diffondono in circolo
-                        sistemico → SIRS (Systemic Inflammatory Response Syndrome) → danno organi
-                        distanti: insufficienza renale acuta (AKI), encefalopatia, disfunzione
-                        epatica → sindrome da insufficienza multi-organo (MOF). Pathway molecolare:
-                        mechanotransduction → mechanosensitive ion channels (Piezo1, TRPV4) →
-                        attivazione NF-κB → trascrizione geni pro-infiammatori.
+                        <div v-html="t('mp.physiology.biotrauma.mechanotransduction')"></div>
                       </q-item-label>
-                      <q-item-label caption class="q-mt-xs text-weight-medium">
-                        <strong>Evidenze traslazionali:</strong> Trial ARDS Network (ARMA, NEJM
-                        2000): VT alto 12 ml/kg vs VT basso 6 ml/kg. Gruppo VT alto: ↑plasma IL-6
-                        (+200-300% picco giorno 1-3), ↑incidenza MOF (+30%), ↑mortalità (+22%
-                        assoluto). Gruppo VT basso: citokine significativamente ridotte, meno
-                        fallimento organi, ↓mortalità da 40% → 31%. Dimostrazione che strategia
-                        ventilatoria protettiva (low VT) riduce non solo danno polmonare locale ma
-                        anche risposta infiammatoria sistemica.
+                      <q-item-label caption class="q-mt-xs">
+                        <div v-html="t('mp.physiology.biotrauma.clinicalTarget')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
 
                 <div class="text-body2 text-weight-bold q-mb-xs">
-                  ⚡ Mechanical Power come Parametro Unificante VILI:
+                  {{ t('mp.physiology.unifyingParameterTitle') }}
                 </div>
                 <q-banner class="bg-indigo-1 text-indigo-9">
                   <template v-slot:avatar>
                     <q-icon name="calculate" color="indigo" />
                   </template>
                   <div class="text-caption">
-                    <strong>Razionale Fisiopatologico del MP:</strong> I 4 meccanismi VILI
-                    (volutrauma, barotrauma, atelectrauma, biotrauma) sono interconnessi e NON
-                    indipendenti. Un singolo parametro (es. VT, Pplateau, PEEP) non cattura
-                    complessità del danno. Il Mechanical Power integra tutti i determinanti
-                    dell'energia trasferita al polmone:
-                    <strong>MP ∝ VT × RR × Pressione × Flusso</strong>. Concettualmente: MP
-                    rappresenta "dose totale di energia" somministrata al polmone per unità tempo.
-                    Studi su modelli animali (Cressoni et al., Intensive Care Med 2016): MP
-                    &gt;12-15 J/min → danno istologico dose-dipendente (edema, atelettasia,
-                    infiammazione). MP &lt;10 J/min → polmone preservato anche con ventilazione
-                    prolungata (72-96h). Threshold MP critico varia con compliance polmonare: in
-                    ARDS severa (Crs ~20 ml/cmH₂O) MP &gt;17 J/min già dannoso, mentre in polmone
-                    normale (Crs ~60 ml/cmH₂O) tollerato MP ~25-30 J/min senza danno. Implicazione:
-                    MP deve essere normalizzato per dimensioni polmone funzionante (MP/PBW o MP/Crs)
-                    per comparazioni accurate.
+                    <div v-html="t('mp.physiology.unifyingParameterText')"></div>
                   </div>
                 </q-banner>
               </q-card>
@@ -614,17 +722,17 @@ const getInterpretationColor = (): string => {
             <!-- 📏 Come si Misura il Mechanical Power -->
             <q-expansion-item
               icon="straighten"
-              label="3️⃣ Come si Misura il Mechanical Power"
+              :label="t('mp.measurement.title')"
               class="q-mt-md"
               header-class="bg-amber-1 text-amber-9"
             >
               <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
-                  Metodi di Misurazione e Parametri Necessari
+                  {{ t('mp.measurement.mainTitle') }}
                 </div>
 
                 <div class="text-body2 text-weight-bold q-mb-xs">
-                  📋 Parametri Ventilatori Richiesti per Calcolo MP:
+                  {{ t('mp.measurement.intro') }}
                 </div>
                 <q-list class="q-mb-md">
                   <q-item>
@@ -633,17 +741,13 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        1️⃣ Frequenza Respiratoria (RR) - Respiratory Rate
+                        {{ t('mp.measurement.rr.title') }}
                       </q-item-label>
-                      <q-item-label caption class="q-mt-xs">
-                        <strong>Misurazione:</strong> Numero atti respiratori al minuto. Lettura
-                        diretta dal display ventilatore (RR totale = RR impostata + eventuali atti
-                        spontanei in modalità assistita). <strong>Unità:</strong> atti/min (bpm -
-                        breaths per minute). <strong>Range tipico:</strong> 10-35 atti/min.
-                        <strong>Implicazioni MP:</strong> RR è moltiplicatore diretto del MP (MP ∝
-                        RR). Aumento RR 20→30 (+50%) → aumento MP +50% a parità altri parametri.
-                        Strategia riduzione MP: tollerare ipercapnia permissiva (PaCO₂ 50-60 mmHg,
-                        pH &gt;7.20-7.25) per ridurre RR.
+                      <q-item-label caption>
+                        <div v-html="t('mp.measurement.rr.definition')"></div>
+                        <div v-html="t('mp.measurement.rr.measurement')" class="q-mt-xs"></div>
+                        <div v-html="t('mp.measurement.rr.normalRange')" class="q-mt-xs"></div>
+                        <div v-html="t('mp.measurement.rr.clinicalNote')" class="q-mt-xs"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -654,19 +758,13 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        2️⃣ Volume Corrente Espiratorio (VTe) - Tidal Volume Exhaled
+                        {{ t('mp.measurement.vt.title') }}
                       </q-item-label>
-                      <q-item-label caption class="q-mt-xs">
-                        <strong>Misurazione:</strong> Volume espirato misurato al sensore di flusso
-                        espiratorio del ventilatore. Preferire VTe rispetto a VTi (inspiratorio) per
-                        evitare sovrastima da compliance circuito/compressione gas.
-                        <strong>Unità:</strong> Litri (L) o millilitri (mL). Normalizzazione: VT/PBW
-                        (ml/kg peso corporeo predetto). <strong>PBW maschio:</strong> 50 +
-                        0.91×(altezza_cm - 152.4). <strong>PBW femmina:</strong> 45.5 +
-                        0.91×(altezza_cm - 152.4). <strong>Target protettivo ARDS:</strong> 4-6
-                        ml/kg PBW. <strong>Implicazioni MP:</strong> VT è componente principale MP
-                        (MP ∝ VT). Riduzione VT 8→6 ml/kg (-25%) → ↓MP ~25%. Trade-off: VT troppo
-                        basso → ipercapnia severa, necessità ↑RR che aumenta MP.
+                      <q-item-label caption>
+                        <div v-html="t('mp.measurement.vt.definition')"></div>
+                        <div v-html="t('mp.measurement.vt.measurement')" class="q-mt-xs"></div>
+                        <div v-html="t('mp.measurement.vt.normalRange')" class="q-mt-xs"></div>
+                        <div v-html="t('mp.measurement.vt.clinicalNote')" class="q-mt-xs"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -677,18 +775,13 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        3️⃣ Pressione di Picco (Ppeak) - Peak Inspiratory Pressure
+                        {{ t('mp.measurement.ppeak.title') }}
                       </q-item-label>
-                      <q-item-label caption class="q-mt-xs">
-                        <strong>Misurazione:</strong> Pressione massima raggiunta nelle vie aeree
-                        durante insufflazione, misurata a fine inspirazione. Riflette: resistenza
-                        vie aeree + compliance polmonare + flusso inspiratorio.
-                        <strong>Unità:</strong> cmH₂O. <strong>Range tipico:</strong> 15-35 cmH₂O
-                        (normale 15-25, ARDS 20-35). <strong>Componenti Ppeak:</strong> Ppeak =
-                        Pplateau (pressione elastica polmonare) + Presist (pressione resistiva vie
-                        aeree = Flow × Resistance). <strong>Implicazioni MP:</strong> Formula
-                        semplificata MP utilizza Ppeak come proxy del lavoro totale inspiratorio
-                        (elastico + resistivo). Ppeak elevato contribuisce a MP alto.
+                      <q-item-label caption>
+                        <div v-html="t('mp.measurement.ppeak.definition')"></div>
+                        <div v-html="t('mp.measurement.ppeak.measurement')" class="q-mt-xs"></div>
+                        <div v-html="t('mp.measurement.ppeak.normalRange')" class="q-mt-xs"></div>
+                        <div v-html="t('mp.measurement.ppeak.clinicalNote')" class="q-mt-xs"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -699,20 +792,22 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        4️⃣ Pressione di Plateau (Pplateau) - End-Inspiratory Plateau Pressure
+                        {{ t('mp.measurement.pplateau.title') }}
                       </q-item-label>
-                      <q-item-label caption class="q-mt-xs">
-                        <strong>Misurazione:</strong> Manovra di pausa inspiratoria (inspiratory
-                        hold 0.3-0.5 sec) → azzeramento flusso → equalizzazione pressione vie aeree
-                        con pressione alveolare. Riflette solo componente elastica (no resistenze).
-                        <strong>Unità:</strong> cmH₂O. <strong>Target protettivo:</strong> Pplateau
-                        &lt;30 cmH₂O (raccomandazione ARDS Network).
-                        <strong>Calcolo Compliance Statica:</strong> Crs = VT/(Pplateau - PEEP).
-                        <strong>Driving Pressure:</strong> ΔP = Pplateau - PEEP (predittore potente
-                        mortalità ARDS, target &lt;15 cmH₂O).
-                        <strong>Implicazioni MP:</strong> Formula completa MP integra Pplateau e
-                        Ppeak per separare componente elastica da resistiva. Formula semplificata:
-                        MP ≈ 0.098 × RR × VT × (Ppeak - 0.5×ΔP).
+                      <q-item-label caption>
+                        <div v-html="t('mp.measurement.pplateau.definition')"></div>
+                        <div
+                          v-html="t('mp.measurement.pplateau.measurement')"
+                          class="q-mt-xs"
+                        ></div>
+                        <div
+                          v-html="t('mp.measurement.pplateau.normalRange')"
+                          class="q-mt-xs"
+                        ></div>
+                        <div
+                          v-html="t('mp.measurement.pplateau.clinicalNote')"
+                          class="q-mt-xs"
+                        ></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -723,27 +818,20 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        5️⃣ PEEP (Positive End-Expiratory Pressure)
+                        {{ t('mp.measurement.peep.title') }}
                       </q-item-label>
-                      <q-item-label caption class="q-mt-xs">
-                        <strong>Misurazione:</strong> Pressione positiva mantenuta a fine
-                        espirazione, impostata sul ventilatore. <strong>Unità:</strong> cmH₂O.
-                        <strong>Range tipico:</strong> 5-20 cmH₂O (ARDS lieve 5-10, moderata 10-15,
-                        severa 15-20). <strong>Funzioni fisiologiche:</strong> (1) Prevenire
-                        collasso alveolare end-espiratorio (↓atelectrauma), (2) Reclutamento alveoli
-                        collassati (↑FRC), (3) ↑ossigenazione (P/F ratio), (4) ↑compliance polmonare
-                        (spostamento su curva pressione-volume). <strong>Effetti su MP:</strong>
-                        PEEP ottimale → ↑compliance → ↓driving pressure → ↓MP. PEEP troppo basso →
-                        ↓compliance per atelectasia → ↑ΔP → ↑MP. PEEP troppo alto → sovradistensione
-                        → ↓compliance → ↑ΔP → ↑MP. Obiettivo: PEEP ottimale minimizza driving
-                        pressure e MP.
+                      <q-item-label caption>
+                        <div v-html="t('mp.measurement.peep.definition')"></div>
+                        <div v-html="t('mp.measurement.peep.measurement')" class="q-mt-xs"></div>
+                        <div v-html="t('mp.measurement.peep.normalRange')" class="q-mt-xs"></div>
+                        <div v-html="t('mp.measurement.peep.clinicalNote')" class="q-mt-xs"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
 
                 <div class="text-body2 text-weight-bold q-mb-xs q-mt-md">
-                  🖥️ Metodi di Acquisizione Dati dal Ventilatore:
+                  {{ t('mp.measurement.methods.title') }}
                 </div>
                 <q-list bordered class="q-mb-md bg-grey-1">
                   <q-item>
@@ -752,18 +840,10 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        Lettura Diretta Display Ventilatore (Metodo Standard)
+                        {{ t('mp.measurement.methods.direct.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        Tutti i parametri necessari (RR, VTe, Ppeak, Pplateau, PEEP) sono
-                        visualizzati in tempo reale sul monitor del ventilatore meccanico moderno
-                        (Servo-i, Hamilton, Dräger, Maquet, ecc.). <strong>Procedura:</strong> (1)
-                        Verificare modalità ventilatoria (VC, PC, SIMV, ecc.), (2) Annotare RR
-                        totale, VTe medio (ultimi 3-5 atti), Ppeak, PEEP, (3) Eseguire manovra pausa
-                        inspiratoria per misurare Pplateau (button "Insp Hold"), (4) Calcolare MP
-                        con formula. <strong>Frequenza misurazione:</strong> Ogni modifica parametri
-                        ventilatori, ogni 4-6h in paziente stabile ARDS, ogni 1-2h in fase acuta
-                        instabile.
+                        <div v-html="t('mp.measurement.methods.direct.text')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -774,16 +854,10 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        Calcolo Automatico Integrato Ventilatore (Software Avanzato)
+                        {{ t('mp.measurement.methods.automatic.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        Ventilatori di ultima generazione (Hamilton G5/S1, Servo-u, Dräger Evita
-                        V800) integrano calcolo automatico MP visualizzato real-time su schermo.
-                        <strong>Vantaggio:</strong> Calcolo continuo breath-by-breath con formula
-                        completa (include componente resistiva PEEP-dipendente, inspiratory flow,
-                        forma d'onda). <strong>Limiti:</strong> Formula proprietaria varia tra
-                        produttori (Gattinoni vs Becher vs altri), valori non sempre comparabili.
-                        Necessità standardizzazione equazione MP in futuri consensus internazionali.
+                        <div v-html="t('mp.measurement.methods.automatic.text')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -794,19 +868,10 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-medium">
-                        Integrazione con Sistemi Informatici Clinici (EMR/PDMS)
+                        {{ t('mp.measurement.methods.integration.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        In ICU moderne con Patient Data Management Systems (PDMS - es. MetaVision,
-                        IntelliSpace Critical Care, Centricity), dati ventilatori acquisiti
-                        automaticamente via interfaccia HL7/protocolli proprietari.
-                        <strong>Applicazioni:</strong> (1) Trend MP nel tempo (grafico 24-48-72h),
-                        (2) Alert automatici se MP &gt;threshold critico, (3) Decision support
-                        systems per suggerire ottimizzazioni parametri, (4) Database ricerca per
-                        analisi retrospettive MP-outcome.
-                        <strong>Big Data Potential:</strong> Machine learning su grandi dataset MP +
-                        parametri clinici → predizione personalizzata rischio VILI, identificazione
-                        PEEP/VT ottimali paziente-specifici.
+                        <div v-html="t('mp.measurement.methods.integration.text')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -817,25 +882,16 @@ const getInterpretationColor = (): string => {
                     <q-icon name="warning" color="amber-9" />
                   </template>
                   <div class="text-caption">
-                    <strong>Considerazioni Pratiche e Limitazioni Misurazione MP:</strong> (1)
-                    <strong>Variabilità breath-to-breath:</strong> In modalità ventilatorie
-                    assistite (PSV, SIMV) con triggering paziente, RR e VT variano notevolmente.
-                    Calcolare MP su media 5-10 atti respiratori. (2)
-                    <strong>Effetto PEEP intrinseco (PEEPi):</strong> In pazienti BPCO/asma con air
-                    trapping, PEEP totale = PEEP estrinseco impostato + PEEPi non misurato →
-                    sottostima driving pressure reale → sottostima MP. Necessità misurare PEEPi con
-                    manovra pausa espiratoria. (3) <strong>Compliance parete toracica:</strong> In
-                    obesità severa, ascite massiva, addome acuto, alta pressione addominale riduce
-                    compliance toracica → alta Pplateau NON da danno polmonare ma da compressione
-                    esterna → sovrastima MP "polmonare". Soluzione: misurare pressione esofagea
-                    (Pes) con sonda dedicata → pressione transpolmonare Ptp = Palv - Pes → calcolo
-                    MP normalizzato per polmone separato da parete toracica. (4)
-                    <strong>Formula semplificata vs completa:</strong>
-                    Formula in questo calcolatore (0.098 × RR × VT × (Ppeak - 0.5ΔP)) è
-                    approssimazione. Formula completa Gattinoni integra flusso inspiratorio, forma
-                    d'onda pressione, resistenze via breath-by-breath analysis. Differenza ~10-20%
-                    tra formule. Per decisioni cliniche critiche (es. candidatura ECMO), preferire
-                    calcolo completo o valore automatico da ventilatore avanzato.
+                    <strong>{{ t('mp.measurement.practicalConsiderations.title') }}</strong> (1)
+                    <div
+                      v-html="t('mp.measurement.practicalConsiderations.breathVariability')"
+                    ></div>
+                    (2)
+                    <div v-html="t('mp.measurement.practicalConsiderations.peepIntrinsic')"></div>
+                    (3)
+                    <div v-html="t('mp.measurement.practicalConsiderations.chestWall')"></div>
+                    (4)
+                    <div v-html="t('mp.measurement.practicalConsiderations.formulaAccuracy')"></div>
                   </div>
                 </q-banner>
               </q-card>
@@ -844,7 +900,7 @@ const getInterpretationColor = (): string => {
             <!-- 🎯 Interpretazione Clinica Dettagliata -->
             <q-expansion-item
               icon="warning"
-              label="5️⃣ Interpretazione Clinica Dettagliata"
+              :label="t('mp.interpretation.title')"
               default-opened
               class="q-mt-md"
               header-class="bg-orange-1 text-orange-9"
@@ -855,13 +911,20 @@ const getInterpretationColor = (): string => {
                     <q-icon color="green" name="check_circle" size="xs" />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label caption>
-                      <strong>&lt; 17 J/min</strong> - Ventilazione Protettiva
+                    <q-item-label>
+                      <div v-html="t('mp.interpretation.greenZone.title')"></div>
                     </q-item-label>
-                    <q-item-label caption class="text-grey-7">
-                      Strategia ventilatoria ottimale. Continuare monitoraggio compliance dinamica,
-                      EGA (PaO₂/FiO₂, PaCO₂), e valutazione clinica del paziente. Energia trasferita
-                      al polmone è minima, riducendo stress meccanico e biotrauma.
+                    <q-item-label caption>
+                      <div v-html="t('mp.interpretation.greenZone.risk')" class="q-mt-xs"></div>
+                      <div
+                        v-html="t('mp.interpretation.greenZone.mortality')"
+                        class="q-mt-xs"
+                      ></div>
+                      <div v-html="t('mp.interpretation.greenZone.meaning')" class="q-mt-xs"></div>
+                      <div
+                        v-html="t('mp.interpretation.greenZone.clinicalAction')"
+                        class="q-mt-xs"
+                      ></div>
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -871,14 +934,20 @@ const getInterpretationColor = (): string => {
                     <q-icon color="orange" name="warning" size="xs" />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label caption>
-                      <strong>17-22 J/min</strong> - Zona di Attenzione (Ottimizzazione Necessaria)
+                    <q-item-label>
+                      <div v-html="t('mp.interpretation.orangeZone.title')"></div>
                     </q-item-label>
-                    <q-item-label caption class="text-grey-7">
-                      Rischio intermedio di VILI. <strong>Azioni</strong>: Ridurre RR se tollerata
-                      ipercapnia permissiva (pH &gt;7.20), limitare driving pressure (ΔP = Pplateau
-                      - PEEP) a &lt;15 cmH₂O, rivalutare PEEP ottimale con recruiting maneuvers o
-                      EIT. Monitorare marcatori infiammatori se disponibili.
+                    <q-item-label caption>
+                      <div v-html="t('mp.interpretation.orangeZone.risk')" class="q-mt-xs"></div>
+                      <div
+                        v-html="t('mp.interpretation.orangeZone.mortality')"
+                        class="q-mt-xs"
+                      ></div>
+                      <div v-html="t('mp.interpretation.orangeZone.meaning')" class="q-mt-xs"></div>
+                      <div
+                        v-html="t('mp.interpretation.orangeZone.clinicalAction')"
+                        class="q-mt-xs"
+                      ></div>
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -888,433 +957,34 @@ const getInterpretationColor = (): string => {
                     <q-icon color="red" name="dangerous" size="xs" />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label caption>
-                      <strong>&gt; 22 J/min</strong> - Alto Rischio VILI (Intervento Urgente)
+                    <q-item-label>
+                      <div v-html="t('mp.interpretation.redZone.title')"></div>
                     </q-item-label>
-                    <q-item-label caption class="text-grey-7">
-                      <strong>URGENTE</strong>: Energia eccessiva trasferita al polmone, alto
-                      rischio di barotrauma, volutrauma, atelectrauma e biotrauma.
-                      <strong>Interventi immediati</strong>: Ridurre VT a 4-6 ml/kg PBW (peso
-                      ideale), abbassare RR tollerando ipercapnia (target pH &gt;7.15), rivalutare
-                      PEEP, considerare posizione prona (PP) se P/F &lt;150, valutare ECMO se ARDS
-                      severa persistente.
+                    <q-item-label caption>
+                      <div v-html="t('mp.interpretation.redZone.risk')" class="q-mt-xs"></div>
+                      <div v-html="t('mp.interpretation.redZone.mortality')" class="q-mt-xs"></div>
+                      <div v-html="t('mp.interpretation.redZone.meaning')" class="q-mt-xs"></div>
+                      <div
+                        v-html="t('mp.interpretation.redZone.clinicalAction')"
+                        class="q-mt-xs"
+                      ></div>
                     </q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
             </q-expansion-item>
 
-            <!-- Definizione e Significato Clinico -->
-            <q-expansion-item
-              icon="school"
-              label="Definizione e Significato Clinico"
-              class="q-mt-md"
-              header-class="bg-orange-2 text-orange-10"
-            >
-              <q-card class="q-pa-sm">
-                <div class="text-body2 text-weight-bold q-mb-sm">Cos'è il Mechanical Power?</div>
-                <div class="text-caption text-grey-8 q-mb-sm">
-                  Il <strong>Mechanical Power (MP)</strong> rappresenta l'<strong
-                    >energia totale per minuto</strong
-                  >
-                  trasferita dal ventilatore meccanico al sistema respiratorio del paziente. È
-                  espresso in
-                  <strong>Joule per minuto (J/min)</strong> e integra in un unico parametro tutti i
-                  componenti della ventilazione che contribuiscono al danno polmonare:
-                </div>
-
-                <q-list class="q-pl-md">
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="chevron_right" color="primary" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Pressione</strong>: Pressione di picco, plateau, driving pressure
-                        (ΔP)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="chevron_right" color="primary" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Volume</strong>: Volume tidal (VT), capacità residua funzionale
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="chevron_right" color="primary" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Flusso</strong>: Velocità di insufflazione, resistenze delle vie
-                        aeree
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="chevron_right" color="primary" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Frequenza respiratoria (RR)</strong>: Numero di cicli al minuto
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-
-                <q-separator class="q-my-sm" />
-
-                <div class="text-body2 text-weight-bold q-mb-sm">Perché è importante il MP?</div>
-                <div class="text-caption text-grey-8">
-                  I parametri tradizionali (Pplateau, VT, PEEP) valutano
-                  <strong>componenti isolati</strong> della ventilazione. Il MP è un
-                  <strong>parametro integrativo</strong> che riflette l'<strong
-                    >energia globale</strong
-                  >
-                  trasferita al parenchima polmonare in ogni minuto di ventilazione meccanica.
-                  Maggiore è l'energia trasferita, maggiore è il rischio di
-                  <strong>VILI (Ventilator-Induced Lung Injury)</strong> attraverso quattro
-                  meccanismi principali:
-                </div>
-
-                <q-list class="q-pl-md q-mt-sm">
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="warning" color="orange" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Barotrauma</strong>: Lesioni da alte pressioni (pneumotorace,
-                        pneumomediastino)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="warning" color="orange" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Volutrauma</strong>: Sovradistensione alveolare da volumi eccessivi
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="warning" color="orange" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Atelectrauma</strong>: Stress da ciclico reclutamento/dereclutamento
-                        alveolare
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="warning" color="orange" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Biotrauma</strong>: Rilascio di mediatori infiammatori (citokine
-                        IL-6, IL-8, TNF-α)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Ventilazione Protettiva vs Dannosa -->
-            <q-expansion-item
-              icon="compare_arrows"
-              label="Ventilazione Protettiva vs Ventilazione Dannosa"
-              class="q-mt-md"
-              header-class="bg-orange-2 text-orange-10"
-            >
-              <q-card class="q-pa-sm">
-                <div class="text-body2 text-weight-bold text-positive q-mb-sm">
-                  ✅ Ventilazione Protettiva (MP &lt;17 J/min)
-                </div>
-                <div class="text-caption text-grey-8 q-mb-xs">
-                  Strategia che minimizza l'energia trasferita al polmone riducendo il rischio di
-                  VILI:
-                </div>
-                <q-list class="q-pl-md">
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="check_circle" color="positive" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Volume Tidal basso</strong>: 4-6 ml/kg PBW (peso corporeo ideale)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="check_circle" color="positive" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Driving Pressure limitata</strong>: ΔP (Pplateau - PEEP) &lt;15
-                        cmH₂O
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="check_circle" color="positive" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Pressione di Plateau</strong>: &lt;30 cmH₂O (ideale &lt;28 cmH₂O)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="check_circle" color="positive" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>PEEP ottimale</strong>: Bilanciato per reclutamento alveolare senza
-                        sovradistensione
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="check_circle" color="positive" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Ipercapnia permissiva</strong>: Tollerare PaCO₂ elevata (pH
-                        &gt;7.20) per ridurre VT/RR
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-
-                <q-separator class="q-my-sm" />
-
-                <div class="text-body2 text-weight-bold text-negative q-mb-sm">
-                  ❌ Ventilazione Dannosa (MP &gt;22 J/min)
-                </div>
-                <div class="text-caption text-grey-8 q-mb-xs">
-                  Trasferimento eccessivo di energia che aumenta drammaticamente il rischio di VILI:
-                </div>
-                <q-list class="q-pl-md">
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="dangerous" color="negative" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Volume Tidal elevato</strong>: &gt;8 ml/kg PBW (sovradistensione
-                        alveolare)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="dangerous" color="negative" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Driving Pressure eccessiva</strong>: ΔP &gt;15 cmH₂O (stress
-                        meccanico intenso)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="dangerous" color="negative" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Frequenza respiratoria alta</strong>: &gt;35-40 atti/min senza
-                        indicazione clinica
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="dangerous" color="negative" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>PEEP inadeguata</strong>: Troppo bassa (atelectrauma) o troppo alta
-                        (sovradistensione)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="dangerous" color="negative" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Risposta infiammatoria</strong>: Aumento citokine pro-infiammatorie,
-                        MODS (sindrome disfunzione multiorgano)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-
-                <q-separator class="q-my-sm" />
-
-                <div class="text-caption text-grey-7">
-                  <strong>💡 Concetto Chiave</strong>: Mentre parametri come Pplateau o ΔP valutano
-                  singoli aspetti, il MP integra <strong>dinamicamente</strong> tutti i fattori che
-                  contribuiscono al danno. Due pazienti con stesso Pplateau possono avere MP diversi
-                  a seconda di RR, VT, e pattern respiratorio.
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Come si Calcola il Mechanical Power -->
-            <q-expansion-item
-              icon="calculate"
-              label="Come si Calcola il Mechanical Power"
-              class="q-mt-md"
-              header-class="bg-cyan-2 text-cyan-10"
-            >
-              <q-card class="q-pa-sm">
-                <div class="text-body2 text-weight-bold q-mb-sm">
-                  Origine della Formula di Gattinoni
-                </div>
-                <div class="text-caption text-grey-8 q-mb-sm">
-                  Il Mechanical Power deriva dall'<strong>equazione del moto respiratorio</strong>,
-                  che descrive le forze necessarie per muovere aria dentro e fuori dai polmoni
-                  durante la ventilazione meccanica:
-                </div>
-
-                <div class="bg-white q-pa-xs q-mb-sm">
-                  <div class="text-caption text-grey-8 text-center">
-                    <strong>P(t) = E × V(t) + R × Flow(t) + P₀</strong>
-                  </div>
-                </div>
-
-                <div class="text-caption text-grey-8 q-mb-xs">Dove:</div>
-                <q-list class="q-pl-md q-mb-sm">
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="chevron_right" color="primary" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>P(t)</strong> = Pressione istantanea nelle vie aeree
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="chevron_right" color="primary" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>E</strong> = Elastanza del sistema respiratorio (inverso della
-                        compliance)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="chevron_right" color="primary" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>V(t)</strong> = Volume istantaneo
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="chevron_right" color="primary" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>R</strong> = Resistenza delle vie aeree
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="chevron_right" color="primary" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>Flow(t)</strong> = Flusso istantaneo
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="chevron_right" color="primary" size="xs" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label caption class="text-grey-8">
-                        <strong>P₀</strong> = Pressione basale (PEEP)
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-
-                <div class="text-caption text-grey-8 q-mb-sm">
-                  <strong>Gattinoni et al. (2016)</strong> hanno integrato questa equazione su un
-                  intero ciclo respiratorio e moltiplicato per la frequenza respiratoria per
-                  ottenere l'<strong>energia per minuto</strong>. La formula semplificata risultante
-                  è:
-                </div>
-
-                <div class="bg-white q-pa-sm q-mb-sm">
-                  <div class="text-body2 text-grey-8 text-center">
-                    <strong
-                      >MP = 0.098 × RR × VT<sub>e</sub> × (P<sub>picco</sub> - 0.5 × ΔP)</strong
-                    >
-                  </div>
-                </div>
-
-                <div class="text-caption text-grey-8 q-mb-sm">
-                  Dove <strong>ΔP = P<sub>plateau</sub> - PEEP</strong> (driving pressure).
-                </div>
-
-                <q-separator class="q-my-sm" />
-
-                <div class="text-body2 text-weight-bold q-mb-sm">Perché il coefficiente 0.098?</div>
-                <div class="text-caption text-grey-8">
-                  Il coefficiente <strong>0.098</strong> deriva dalla conversione delle unità di
-                  misura. L'energia è calcolata come <strong>Lavoro = Pressione × Volume</strong>.
-                  Per convertire da cmH₂O × litri a Joule (J), si usa il fattore di conversione
-                  0.098:
-                </div>
-                <div class="bg-white q-pa-xs q-my-xs">
-                  <div class="text-caption text-grey-8 text-center">
-                    1 cmH₂O × 1 litro = 0.098 Joule
-                  </div>
-                </div>
-                <div class="text-caption text-grey-8">
-                  Moltiplicando per RR (cicli/min) si ottiene l'energia totale per minuto (J/min).
-                </div>
-              </q-card>
-            </q-expansion-item>
-
             <!-- 🧮 Formula Dettagliata -->
             <q-expansion-item
               icon="functions"
-              label="4️⃣ Formula Dettagliata e Componenti"
+              :label="t('mp.formula.title')"
               class="q-mt-md"
               header-class="bg-cyan-1 text-cyan-9"
             >
               <q-card class="q-pa-sm">
-                <div class="text-body2 text-weight-bold q-mb-sm text-center">Formula Completa</div>
+                <div class="text-body2 text-weight-bold q-mb-sm text-center">
+                  {{ t('mp.formula.headerTitle') }}
+                </div>
 
                 <div class="bg-primary text-white q-pa-sm q-mb-sm">
                   <div class="text-body1 text-center">
@@ -1323,7 +993,7 @@ const getInterpretationColor = (): string => {
                 </div>
 
                 <div class="text-caption text-grey-8 q-mb-sm">
-                  <strong>Breakdown dei componenti:</strong>
+                  <strong>{{ t('mp.formula.breakdownTitle') }}</strong>
                 </div>
 
                 <q-list class="q-mb-sm">
@@ -1333,9 +1003,8 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Frequenza Respiratoria</strong> (atti/min): Numero di cicli
-                        respiratori al minuto. Maggiore RR = maggiore energia cumulativa trasferita
-                        nell'unità di tempo.
+                        <strong>{{ t('mp.formula.rr.title') }}</strong>
+                        {{ t('mp.formula.rr.text') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1346,24 +1015,20 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Volume Tidal Espiratorio</strong> (litri): Volume di aria
-                        mobilizzato per ogni atto. Maggiore VT = maggiore distensione alveolare e
-                        stress meccanico.
+                        <strong>{{ t('mp.formula.vte.title') }}</strong>
+                        {{ t('mp.formula.vte.text') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item>
                     <q-item-section avatar>
-                      <q-chip size="sm" color="orange" text-color="white"
-                        >P<sub>picco</sub></q-chip
-                      >
+                      <q-chip size="sm" color="orange" text-color="white">P<sub>picco</sub></q-chip>
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Pressione di Picco</strong> (cmH₂O): Pressione massima raggiunta
-                        durante insufflazione. Include componente elastica + resistiva del sistema
-                        respiratorio.
+                        <strong>{{ t('mp.formula.ppeak.title') }}</strong>
+                        <div v-html="t('mp.formula.ppeak.text')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1374,9 +1039,8 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Driving Pressure</strong> (cmH₂O): ΔP = P<sub>plateau</sub> - PEEP.
-                        Rappresenta la pressione necessaria per distendere gli alveoli. È il
-                        parametro più correlato a mortalità in ARDS (Amato et al., NEJM 2015).
+                        <strong>{{ t('mp.formula.deltaPressure.title') }}</strong>
+                        <div v-html="t('mp.formula.deltaPressure.text')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1387,8 +1051,8 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Coefficiente di conversione</strong>: Converte cmH₂O × litri in
-                        Joule (J).
+                        <strong>{{ t('mp.formula.coefficient.title') }}</strong
+                        >{{ t('mp.formula.coefficient.text') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1396,64 +1060,71 @@ const getInterpretationColor = (): string => {
 
                 <q-separator class="q-my-sm" />
 
-                <div class="text-body2 text-weight-bold q-mb-sm">Esempio Pratico di Calcolo</div>
+                <div class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('mp.formula.exampleTitle') }}
+                </div>
 
                 <div class="bg-white q-pa-sm q-mb-xs">
                   <div class="text-caption text-grey-8">
-                    <strong>Paziente con ARDS moderata</strong>:
+                    <strong>{{ t('mp.formula.exampleScenario') }}</strong>
                   </div>
                   <q-list class="q-pl-md">
                     <q-item>
                       <q-item-section>
-                        <q-item-label caption>RR = 25 atti/min</q-item-label>
+                        <q-item-label caption>{{ t('mp.formula.exampleParams.rr') }}</q-item-label>
                       </q-item-section>
                     </q-item>
                     <q-item>
                       <q-item-section>
                         <q-item-label caption
-                          >VTe = 0.40 litri (400 ml, ~6 ml/kg per 70 kg)</q-item-label
-                        >
+                          ><div v-html="t('mp.formula.exampleParams.vte')"></div
+                        ></q-item-label>
                       </q-item-section>
                     </q-item>
                     <q-item>
                       <q-item-section>
-                        <q-item-label caption>P<sub>picco</sub> = 30 cmH₂O</q-item-label>
+                        <q-item-label caption
+                          ><div v-html="t('mp.formula.exampleParams.ppeak')"></div
+                        ></q-item-label>
                       </q-item-section>
                     </q-item>
                     <q-item>
                       <q-item-section>
-                        <q-item-label caption>P<sub>plateau</sub> = 26 cmH₂O</q-item-label>
+                        <q-item-label caption
+                          ><div v-html="t('mp.formula.exampleParams.pplateau')"></div
+                        ></q-item-label>
                       </q-item-section>
                     </q-item>
                     <q-item>
                       <q-item-section>
-                        <q-item-label caption>PEEP = 12 cmH₂O</q-item-label>
+                        <q-item-label caption>{{
+                          t('mp.formula.exampleParams.peep')
+                        }}</q-item-label>
                       </q-item-section>
                     </q-item>
                   </q-list>
 
                   <div class="text-caption text-grey-8 q-mt-xs">
-                    <strong>Step 1</strong>: Calcolare ΔP = 26 - 12 = <strong>14 cmH₂O</strong>
+                    <strong>Step 1</strong>:
+                    <div v-html="t('mp.formula.exampleSteps.step1')"></div>
                   </div>
                   <div class="text-caption text-grey-8">
-                    <strong>Step 2</strong>: MP = 0.098 × 25 × 0.40 × (30 - 0.5 × 14)
+                    <strong>Step 2</strong>: {{ t('mp.formula.exampleSteps.step2') }}
                   </div>
                   <div class="text-caption text-grey-8">
-                    <strong>Step 3</strong>: MP = 0.098 × 25 × 0.40 × (30 - 7)
+                    <strong>Step 3</strong>: {{ t('mp.formula.exampleSteps.step3') }}
                   </div>
                   <div class="text-caption text-grey-8">
-                    <strong>Step 4</strong>: MP = 0.098 × 25 × 0.40 × 23
+                    <strong>Step 4</strong>: {{ t('mp.formula.exampleSteps.step4') }}
                   </div>
                   <div class="text-caption text-grey-8 text-weight-bold">
-                    <strong>Risultato</strong>: MP = <strong>22.54 J/min</strong> →
-                    <span class="text-negative">Alto rischio VILI</span>
+                    <strong>Risultato</strong>:
+                    <div v-html="t('mp.formula.exampleSteps.result')"></div>
                   </div>
                 </div>
 
                 <div class="text-caption text-grey-7 q-mt-sm">
-                  <strong>💡 Azione Clinica</strong>: Questo paziente è sopra la soglia di
-                  sicurezza. Ridurre RR a 20 atti/min (tollerando ipercapnia permissiva) ridurrebbe
-                  MP a ~18 J/min, entrando nella zona di attenzione.
+                  <div v-html="t('mp.formula.exampleAction')"></div>
                 </div>
               </q-card>
             </q-expansion-item>
@@ -1461,31 +1132,160 @@ const getInterpretationColor = (): string => {
             <!-- 🔬 Analisi Dettagliata e Applicazioni Cliniche -->
             <q-expansion-item
               icon="science"
-              label="6️⃣ Analisi Dettagliata e Applicazioni Cliniche"
+              :label="t('mp.applications.title')"
               class="q-mt-md"
               header-class="bg-purple-1 text-purple-9"
             >
               <q-card class="q-pa-sm">
                 <div class="text-body2 text-weight-bold q-mb-sm">
-                  🏥 Utilizzo Clinico del Mechanical Power
+                  {{ t('mp.applications.clinicalUseTitle') }}
+                </div>
+                <q-separator class="q-my-md" />
+
+                <!-- Ventilazione Protettiva vs Dannosa -->
+                <div class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('mp.applications.protectiveVsHarmfulTitle') }}
+                </div>
+
+                <div class="text-body2 text-weight-bold text-positive q-mb-sm">
+                  {{ t('mp.applications.protective.title') }}
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  {{ t('mp.applications.protective.intro') }}
+                </div>
+                <q-list class="q-pl-md">
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-icon name="check_circle" color="positive" size="xs" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label caption class="text-grey-8">
+                        <div v-html="t('mp.applications.protective.tidalVolume')"></div>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-icon name="check_circle" color="positive" size="xs" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label caption class="text-grey-8">
+                        <div v-html="t('mp.applications.protective.drivingPressure')"></div>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-icon name="check_circle" color="positive" size="xs" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label caption class="text-grey-8">
+                        <div v-html="t('mp.applications.protective.plateauPressure')"></div>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-icon name="check_circle" color="positive" size="xs" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label caption class="text-grey-8">
+                        <div v-html="t('mp.applications.protective.peepOptimal')"></div>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-icon name="check_circle" color="positive" size="xs" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label caption class="text-grey-8">
+                        <div v-html="t('mp.applications.protective.permissiveHypercapnia')"></div>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+
+                <q-separator class="q-my-sm" />
+
+                <div class="text-body2 text-weight-bold text-negative q-mb-sm">
+                  {{ t('mp.applications.harmful.title') }}
+                </div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  {{ t('mp.applications.harmful.intro') }}
+                </div>
+                <q-list class="q-pl-md">
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-icon name="dangerous" color="negative" size="xs" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label caption class="text-grey-8">
+                        <div v-html="t('mp.applications.harmful.tidalVolumeHigh')"></div>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-icon name="dangerous" color="negative" size="xs" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label caption class="text-grey-8">
+                        <div v-html="t('mp.applications.harmful.drivingPressureHigh')"></div>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-icon name="dangerous" color="negative" size="xs" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label caption class="text-grey-8">
+                        <div v-html="t('mp.applications.harmful.respiratoryRateHigh')"></div>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-icon name="dangerous" color="negative" size="xs" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label caption class="text-grey-8">
+                        <div v-html="t('mp.applications.harmful.peepInadequate')"></div>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-icon name="dangerous" color="negative" size="xs" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label caption class="text-grey-8">
+                        <div v-html="t('mp.applications.harmful.inflammatoryResponse')"></div>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+
+                <q-separator class="q-my-sm" />
+
+                <div class="text-caption text-grey-7">
+                  <div v-html="t('mp.applications.keyConcept')"></div>
                 </div>
 
                 <!-- ARDS/ALI -->
                 <div class="text-body2 text-weight-bold text-primary q-mb-xs">
-                  1️⃣ ARDS/ALI (Acute Respiratory Distress Syndrome)
+                  {{ t('mp.applications.ards.title') }}
                 </div>
                 <div class="text-caption text-grey-8 q-mb-xs">
-                  <strong>Contesto</strong>: ARDS è caratterizzata da edema polmonare non
-                  cardiogeno, ridotta compliance, e <strong>"baby lung"</strong> (solo piccola
-                  porzione di polmone aerato). La ventilazione meccanica è salvavita ma può
-                  peggiorare il danno se mal gestita.
+                  <div v-html="t('mp.applications.ards.context')"></div>
                 </div>
                 <div class="text-caption text-grey-8 q-mb-xs">
-                  <strong>Target MP</strong>: <strong>&lt;17 J/min</strong> associato a ridotta
-                  mortalità in studi osservazionali (Gattinoni et al. 2016, Intensive Care
-                  Medicine).
+                  <div v-html="t('mp.applications.ards.targetMP')"></div>
                 </div>
-                <div class="text-caption text-grey-8 q-mb-xs"><strong>Strategia</strong>:</div>
+                <div class="text-caption text-grey-8 q-mb-xs">
+                  <div v-html="t('mp.applications.ards.strategyTitle')"></div>
+                </div>
                 <q-list class="q-pl-md q-mb-sm">
                   <q-item>
                     <q-item-section avatar>
@@ -1493,7 +1293,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        VT: 4-6 ml/kg PBW (peso corporeo ideale, non reale)
+                        {{ t('mp.applications.ards.vt') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1503,7 +1303,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        Pplateau &lt;30 cmH₂O (ideale &lt;28)
+                        {{ t('mp.applications.ards.pplateau') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1513,7 +1313,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        ΔP &lt;15 cmH₂O (predittore di mortalità)
+                        {{ t('mp.applications.ards.drivingPressure') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1523,7 +1323,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        Ipercapnia permissiva (pH &gt;7.20, PaCO₂ fino a 60-70 mmHg se tollerata)
+                        {{ t('mp.applications.ards.hypercapnia') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1533,7 +1333,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        PEEP ottimale con table ARDSnet o recruiting maneuvers
+                        {{ t('mp.applications.ards.peep') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1543,15 +1343,13 @@ const getInterpretationColor = (): string => {
 
                 <!-- Svezzamento -->
                 <div class="text-body2 text-weight-bold text-primary q-mb-xs">
-                  2️⃣ Svezzamento dalla Ventilazione Meccanica
+                  {{ t('mp.applications.weaning.title') }}
                 </div>
                 <div class="text-caption text-grey-8 q-mb-xs">
-                  <strong>Contesto</strong>: Lo svezzamento è il processo di transizione dalla
-                  ventilazione meccanica alla respirazione spontanea. Una riduzione progressiva del
-                  MP indica miglioramento della meccanica respiratoria.
+                  <div v-html="t('mp.applications.weaning.context')"></div>
                 </div>
                 <div class="text-caption text-grey-8 q-mb-xs">
-                  <strong>Indicatori positivi</strong>:
+                  <div v-html="t('mp.applications.weaning.indicatorsTitle')"></div>
                 </div>
                 <q-list class="q-pl-md q-mb-sm">
                   <q-item>
@@ -1560,7 +1358,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        Riduzione MP da &gt;20 a &lt;15 J/min nel corso di 48-72h
+                        {{ t('mp.applications.weaning.mpReduction') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1570,7 +1368,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        Riduzione RR spontanea con trial a pressione di supporto (PSV)
+                        {{ t('mp.applications.weaning.rrReduction') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1580,29 +1378,26 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        Miglioramento compliance (riduzione ΔP per stesso VT)
+                        {{ t('mp.applications.weaning.complianceImprovement') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
                 <div class="text-caption text-grey-8 q-mb-sm">
-                  <strong>Protocollo</strong>: Trial di respirazione spontanea (SBT) con T-piece o
-                  PSV 5-7 cmH₂O. Se paziente mantiene RR &lt;35, SpO₂ &gt;90%, FC stabile, senza
-                  distress → estubazione.
+                  <div v-html="t('mp.applications.weaning.protocol')"></div>
                 </div>
 
                 <q-separator class="q-my-sm" />
 
                 <!-- Monitoraggio Continuo -->
                 <div class="text-body2 text-weight-bold text-primary q-mb-xs">
-                  3️⃣ Monitoraggio Continuo in Terapia Intensiva
+                  {{ t('mp.applications.monitoring.title') }}
                 </div>
                 <div class="text-caption text-grey-8 q-mb-xs">
-                  Il MP è un parametro dinamico che dovrebbe essere calcolato ad ogni modifica dei
-                  settaggi ventilatori o deterioramento clinico del paziente.
+                  {{ t('mp.applications.monitoring.intro') }}
                 </div>
                 <div class="text-caption text-grey-8 q-mb-xs">
-                  <strong>Quando ricalcolare MP</strong>:
+                  <div v-html="t('mp.applications.monitoring.whenTitle')"></div>
                 </div>
                 <q-list class="q-pl-md q-mb-sm">
                   <q-item>
@@ -1611,7 +1406,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        Dopo ogni modifica di RR, VT, PEEP, modalità ventilatoria
+                        {{ t('mp.applications.monitoring.afterChanges') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1621,7 +1416,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        Peggioramento ossigenazione (P/F ratio ↓, SpO₂ ↓)
+                        {{ t('mp.applications.monitoring.oxygenation') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1631,7 +1426,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        Aumento pressioni vie aeree (resistenze ↑, compliance ↓)
+                        {{ t('mp.applications.monitoring.pressures') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1641,25 +1436,23 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        Prima e dopo recruiting maneuvers o posizione prona
+                        {{ t('mp.applications.monitoring.maneuvers') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
                 <div class="text-caption text-grey-8 q-mb-sm">
-                  <strong>Integrazione</strong>: MP dovrebbe essere monitorato insieme a EGA
-                  (emogasanalisi), compliance dinamica/statica, EtCO₂, indici ossigenazione (P/F
-                  ratio, SpO₂/FiO₂).
+                  <div v-html="t('mp.applications.monitoring.integration')"></div>
                 </div>
 
                 <q-separator class="q-my-sm" />
 
                 <!-- Limitazioni -->
                 <div class="text-body2 text-weight-bold text-negative q-mb-xs">
-                  ⚠️ Limitazioni del Mechanical Power
+                  {{ t('mp.applications.limitations.title') }}
                 </div>
                 <div class="text-caption text-grey-8 q-mb-xs">
-                  Nonostante sia un parametro promettente, il MP ha alcune limitazioni importanti:
+                  {{ t('mp.applications.limitations.intro') }}
                 </div>
                 <q-list class="q-pl-md q-mb-sm">
                   <q-item>
@@ -1668,9 +1461,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Non normalizzato per volume polmonare aerato</strong>: In ARDS, solo
-                        una frazione del polmone è ventilabile ("baby lung"). Due pazienti con
-                        stesso MP ma diverso volume polmonare aerato hanno stress specifico diverso.
+                        <div v-html="t('mp.applications.limitations.notNormalized')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1680,8 +1471,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Assume linearità pressione-volume</strong>: La relazione P-V è in
-                        realtà non lineare, con zone di collasso, zona lineare, e sovradistensione.
+                        <div v-html="t('mp.applications.limitations.linearityAssumption')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1691,9 +1481,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Non considera eterogeneità regionale</strong>: Non tiene conto di
-                        aree collassate vs iperaerate nello stesso polmone (importante in ARDS
-                        disomogenea).
+                        <div v-html="t('mp.applications.limitations.regionalHeterogeneity')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1703,25 +1491,22 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Thresholds empirici</strong>: I cut-off di 17 e 22 J/min derivano da
-                        studi osservazionali, non RCT. Potrebbero variare per popolazione,
-                        patologia, età.
+                        <div v-html="t('mp.applications.limitations.empiricalThresholds')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
 
                 <div class="text-caption text-grey-7">
-                  <strong>🔬 Prospettive Future</strong>: Tomografia ad impedenza elettrica (EIT)
-                  può stimare il volume polmonare aerato, permettendo di normalizzare MP per
-                  ottenere <strong>Specific Mechanical Power</strong> (MP/volume aerato), più
-                  preciso nella predizione di VILI.
+                  <div v-html="t('mp.applications.futurePerspectives')"></div>
                 </div>
 
                 <q-separator class="q-my-sm" />
 
                 <!-- Riferimenti -->
-                <div class="text-body2 text-weight-bold q-mb-xs">📚 Riferimenti Scientifici</div>
+                <div class="text-body2 text-weight-bold q-mb-xs">
+                  {{ t('mp.applications.scientificReferences.title') }}
+                </div>
                 <q-list class="q-pl-md">
                   <q-item>
                     <q-item-section avatar>
@@ -1729,10 +1514,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Gattinoni L, et al.</strong> (2016). "Ventilator-related causes of
-                        lung injury: the mechanical power."
-                        <em>Intensive Care Medicine</em> 42(10):1567-1575.
-                        <span class="text-blue">DOI: 10.1007/s00134-016-4505-2</span>
+                        <div v-html="t('mp.applications.scientificReferences.gattinoni')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1742,9 +1524,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Amato MB, et al.</strong> (2015). "Driving pressure and survival in
-                        the acute respiratory distress syndrome."
-                        <em>New England Journal of Medicine</em> 372(8):747-755.
+                        <div v-html="t('mp.applications.scientificReferences.amato')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1754,9 +1534,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Encyclopedia of Respiratory Medicine</strong> (2022), Second
-                        Edition, Volume 5. Chapter: "Ventilator-Associated Lung Injury (VALI)."
-                        Elsevier.
+                        <div v-html="t('mp.applications.scientificReferences.encyclopedia1')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1766,9 +1544,7 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption class="text-grey-8">
-                        <strong>Garfield B, Patel BV</strong>. "Mechanical Power" in
-                        <em>Encyclopedia of Respiratory Medicine</em> (2022). Discusses dynamic
-                        exposure to ventilatory variables and VALI mechanisms.
+                        <div v-html="t('mp.applications.scientificReferences.encyclopedia2')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1779,13 +1555,13 @@ const getInterpretationColor = (): string => {
             <!-- ⚠️ Valori di Riferimento e Alert Critici -->
             <q-expansion-item
               icon="warning"
-              label="7️⃣ Valori di Riferimento e Alert Critici"
+              :label="t('mp.referenceValues.title')"
               class="q-mt-md"
               header-class="bg-red-1 text-red-9"
             >
               <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
-                  Threshold di Mechanical Power e Stratificazione del Rischio VILI
+                  {{ t('mp.referenceValues.mainTitle') }}
                 </div>
 
                 <q-list bordered class="q-mb-md">
@@ -1795,19 +1571,13 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold text-green-9">
-                        MP &lt; 12 J/min - ZONA SICURA (Protective Ventilation)
+                        {{ t('mp.referenceValues.greenZone.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Significato:</strong> Ventilazione protettiva ottimale. Energia
-                        trasferita al polmone è minima. Rischio VILI molto basso anche in ARDS
-                        severa. Evidenze da modelli animali: MP &lt;12 J/min → assenza danno
-                        istologico polmonare anche con ventilazione prolungata 72-96h.
+                        <div v-html="t('mp.referenceValues.greenZone.meaning')"></div>
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs text-weight-medium text-green-10">
-                        <strong>Azione:</strong> Mantenere strategia ventilatoria corrente.
-                        Monitoraggio standard parametri ventilatori ogni 4-6h. Focus su
-                        ossigenazione (PaO₂/FiO₂, SatO₂) e ventilazione (PaCO₂, pH). Considerare
-                        trial weaning se condizioni cliniche migliorano.
+                        <div v-html="t('mp.referenceValues.greenZone.action')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1818,19 +1588,13 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold text-blue-9">
-                        MP 12-17 J/min - ZONA ACCETTABILE (Low-Moderate Risk)
+                        {{ t('mp.referenceValues.blueZone.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Significato:</strong> Rischio VILI basso-moderato. Strategia
-                        ventilatoria ancora protettiva ma vicino a threshold critico. In pazienti
-                        ARDS moderata, MP in questo range è spesso inevitabile per mantenere
-                        ossigenazione/ventilazione adeguate.
+                        <div v-html="t('mp.referenceValues.blueZone.meaning')"></div>
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs text-weight-medium text-blue-10">
-                        <strong>Azione:</strong> Monitoraggio frequente (ogni 2-4h). Valutare
-                        possibilità ottimizzazione: ridurre VT se tollerata ipercapnia, ridurre RR,
-                        ottimizzare PEEP con recruiting maneuvers o EIT. Bilancio rischio-beneficio:
-                        evitare riduzione eccessiva VT/RR che causa ipossia/ipercapnia severa.
+                        <div v-html="t('mp.referenceValues.blueZone.action')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1841,23 +1605,13 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold text-orange-9">
-                        ⚠️ MP 17-22 J/min - ZONA ATTENZIONE (High Risk - Ottimizzazione Urgente)
+                        {{ t('mp.referenceValues.orangeZone.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Significato:</strong> Rischio VILI elevato. Mortalità aumenta
-                        progressivamente con MP in questo range. Studi osservazionali ARDS: MP 17-22
-                        J/min → mortalità ~40-50% a 28 giorni. Danno polmonare accelerato se
-                        mantenuto &gt;24-48h.
+                        <div v-html="t('mp.referenceValues.orangeZone.meaning')"></div>
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs text-weight-medium text-orange-10">
-                        <strong>Azione URGENTE:</strong> (1) Ridurre VT a 4-5 ml/kg PBW (minimo
-                        tollerato), (2) Ridurre RR tollerando ipercapnia permissiva (target pH
-                        &gt;7.15-7.20, PaCO₂ fino a 60-70 mmHg se necessario), (3) Ottimizzare PEEP:
-                        se driving pressure alto (ΔP &gt;15 cmH₂O) → ridurre PEEP; se P/F basso
-                        &lt;150 → incrementare PEEP con recruiting, (4) Valutare posizione prona se
-                        P/F &lt;150 mmHg (riduce MP e migliora P/F in 70% casi), (5) Considerare
-                        paralisi muscolare se asincronie paziente-ventilatore (riduce MP ~10-20%),
-                        (6) Monitoraggio ogni 1-2h con target riduzione MP &lt;17 J/min entro 6-12h.
+                        <div v-html="t('mp.referenceValues.orangeZone.action')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1868,75 +1622,45 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold text-red-9">
-                        🚨 MP &gt; 22 J/min - ZONA CRITICA (Very High Risk - Intervento Emergenza)
+                        {{ t('mp.referenceValues.redZone.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Significato:</strong> Rischio VILI molto elevato, danno polmonare
-                        catastrofico imminente. Mortalità &gt;50-60% in ARDS severa con MP
-                        persistente &gt;22 J/min. Biotrauma sistemico con MOF (insufficienza
-                        multi-organo). Indicatore prognostico sfavorevole forte.
+                        <div v-html="t('mp.referenceValues.redZone.meaning')"></div>
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs text-weight-medium text-red-10">
-                        <strong>Azione EMERGENZA IMMEDIATA:</strong> (1) Implementare TUTTE misure
-                        zona arancione con massima aggressività, (2)
-                        <strong>Posizione prona obbligatoria</strong> se P/F &lt;150 mmHg
-                        (16-18h/die, riduce mortalità ~40% in ARDS severa + riduce MP ~15-25%), (3)
-                        Blocco neuromuscolare continuo 24-48h (cisatracurio 15 mg/h) per abolire
-                        asincronie e drive respiratorio (riduce MP significativamente), (4)
-                        <strong>ECMO veno-venoso</strong> (VV-ECMO): considerare URGENTE se (a) ARDS
-                        severa refrattaria P/F &lt;80 mmHg con FiO₂ 100%, PEEP ≥10, (b) MP &gt;25
-                        J/min nonostante tutte ottimizzazioni, (c) ipercapnia severa pH &lt;7.15 con
-                        RR già minimo tollerato. ECMO permette "ultra-protective" ventilation: VT
-                        2-4 ml/kg, RR 5-10, MP &lt;10 J/min → rest polmonare totale, (5)
-                        Trasferimento URGENTE centro ECMO se non disponibile in loco, (6)
-                        Rivalutazione continua ogni 30-60 minuti, target riduzione MP &lt;17 J/min
-                        entro 2-4h con qualunque mezzo necessario.
+                        <div v-html="t('mp.referenceValues.redZone.action')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
 
                 <div class="text-body2 text-weight-bold q-mb-xs q-mt-md">
-                  🎯 Correzione MP per Compliance Polmonare (MP Normalizzato):
+                  {{ t('mp.referenceValues.normalization.title') }}
                 </div>
                 <q-banner class="bg-indigo-1 text-indigo-9 q-mb-md">
                   <template v-slot:avatar>
                     <q-icon name="calculate" color="indigo" />
                   </template>
                   <div class="text-caption">
-                    <strong>Mechanical Power Specifico (MP/Crs):</strong> MP assoluto non considera
-                    dimensioni polmone funzionante. Polmone normale Crs ~60 ml/cmH₂O tollera MP ~25
-                    J/min. ARDS severa Crs ~20 ml/cmH₂O → MP &gt;15 J/min già dannoso.
-                    <strong>Soluzione:</strong> Normalizzare MP per compliance →
-                    <strong>MP/Crs (J/min per ml/cmH₂O)</strong> o per peso corporeo predetto →
-                    <strong>MP/kg PBW</strong>. Threshold critici normalizzati: MP/Crs &gt;0.8-1.0
-                    J·min⁻¹·ml⁻¹·cmH₂O⁻¹ → alto rischio VILI. MP/kg &gt;0.3-0.4 J/min/kg → zona
-                    attenzione. Utilizzo raccomandato in research e centri avanzati per comparazioni
-                    accurate pazienti diversi.
+                    <div v-html="t('mp.referenceValues.normalization.text')"></div>
                   </div>
                 </q-banner>
 
                 <div class="text-body2 text-weight-bold q-mb-xs">
-                  📊 Evidenze Scientifiche Threshold MP:
+                  {{ t('mp.referenceValues.scientificEvidence.title') }}
                 </div>
                 <q-list class="bg-grey-1">
                   <q-item>
                     <q-item-section>
                       <q-item-label caption>
-                        <strong>Studio Serpa Neto et al. (Intensive Care Med 2018):</strong> Analisi
-                        8207 pazienti ventilati. MP medio 21.4 J/min associato a mortalità 45% vs MP
-                        13.2 J/min mortalità 25%. Ogni ↑4 J/min MP → ↑20% rischio relativo
-                        mortalità. Threshold protettivo identificato &lt;17 J/min.
+                        <div v-html="t('mp.referenceValues.scientificEvidence.serpa')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-item>
                     <q-item-section>
                       <q-item-label caption>
-                        <strong>Studio Coppola et al. (Am J Respir Crit Care Med 2020):</strong> 422
-                        pazienti COVID-19 ARDS. MP &gt;17 J/min → ↑mortalità ICU (OR 2.8,
-                        p&lt;0.001), ↑durata ventilazione (+8.5 giorni), ↑incidenza MOF (+35%). MP
-                        predittore indipendente outcome dopo aggiustamento età, SOFA, P/F ratio.
+                        <div v-html="t('mp.referenceValues.scientificEvidence.coppola')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1947,13 +1671,13 @@ const getInterpretationColor = (): string => {
             <!-- 📚 Documentazione Medica Scientifica -->
             <q-expansion-item
               icon="menu_book"
-              label="8️⃣ Documentazione Medica Scientifica e Linee Guida"
+              :label="t('mp.documentation.title')"
               class="q-mt-md"
               header-class="bg-indigo-1 text-indigo-9"
             >
               <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
-                  Linee Guida Internazionali e Raccomandazioni Evidence-Based
+                  {{ t('mp.documentation.mainTitle') }}
                 </div>
 
                 <q-list>
@@ -1963,19 +1687,13 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        ARDS Network Protocol - Low Tidal Volume Ventilation (2000)
+                        {{ t('mp.documentation.ardsNetwork.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Studio ARMA (NEJM 2000):</strong> Landmark trial 861 pazienti ARDS.
-                        VT 6 ml/kg PBW vs 12 ml/kg. Gruppo low VT: ↓mortalità 31% vs 40% (p=0.007,
-                        NNT=11), ↓giorni ventilazione, ↓MOF. Driving pressure medio gruppo
-                        protettivo ~13 cmH₂O, MP stimato ~15-17 J/min.
-                        <strong>Raccomandazioni:</strong> VT 4-6 ml/kg PBW, Pplateau &lt;30 cmH₂O,
-                        tollerare ipercapnia permissiva pH &gt;7.15-7.20. Gold standard ventilazione
-                        protettiva mondiale.
+                        <div v-html="t('mp.documentation.ardsNetwork.study')"></div>
                       </q-item-label>
                       <q-item-label caption class="text-grey-7 q-mt-xs">
-                        PMID: 10793162 - The Acute Respiratory Distress Syndrome Network
+                        {{ t('mp.documentation.ardsNetwork.pmid') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1986,19 +1704,13 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        Driving Pressure Limiting Strategy (NEJM 2015 - Amato et al.)
+                        {{ t('mp.documentation.drivingPressure.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Meta-analisi 3562 pazienti ARDS:</strong> Driving pressure (ΔP =
-                        Pplateau - PEEP) predittore più forte mortalità, superiore a VT o PEEP
-                        isolati. ↑1 cmH₂O ΔP → ↑6% rischio morte. Threshold: ΔP &lt;15 cmH₂O target
-                        protettivo, ΔP &gt;15 associato mortalità &gt;50%.
-                        <strong>Implicazioni MP:</strong> ΔP è componente diretto MP (MP ∝ ΔP).
-                        Ridurre ΔP riducendo VT o ottimizzando PEEP → riduzione MP simultanea.
-                        Raccomandazione: monitorare ΔP insieme a MP per doppia verifica protezione.
+                        <div v-html="t('mp.documentation.drivingPressure.study')"></div>
                       </q-item-label>
                       <q-item-label caption class="text-grey-7 q-mt-xs">
-                        PMID: 25693014 - New England Journal of Medicine
+                        {{ t('mp.documentation.drivingPressure.pmid') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -2009,19 +1721,13 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        PROSEVA Trial - Prone Positioning in Severe ARDS (NEJM 2013)
+                        {{ t('mp.documentation.proseva.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>466 pazienti ARDS severa (P/F &lt;150):</strong> Prona precoce
-                        (16h/die) vs supina. Gruppo prona: ↓mortalità 16% vs 33% (HR 0.39,
-                        p&lt;0.001, NNT=6). Meccanismo: prona → redistribuzione tensione polmonare
-                        più omogenea → ↓driving pressure ~2-4 cmH₂O → ↓MP ~15-25% → protezione VILI.
-                        <strong>Raccomandazione strong:</strong> Prona obbligatoria in ARDS severa
-                        P/F &lt;150 con PEEP ≥5, FiO₂ ≥0.6. Durata: 16-18h/die, ripetere giorni
-                        consecutivi finché P/F migliora.
+                        <div v-html="t('mp.documentation.proseva.study')"></div>
                       </q-item-label>
                       <q-item-label caption class="text-grey-7 q-mt-xs">
-                        PMID: 23688302 - PROSEVA Study Group
+                        {{ t('mp.documentation.proseva.pmid') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -2032,20 +1738,13 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        EOLIA Trial - ECMO for Severe ARDS (NEJM 2018)
+                        {{ t('mp.documentation.eolia.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>249 pazienti ARDS molto severa:</strong> ECMO precoce vs
-                        ventilazione convenzionale. ECMO permette ultra-low VT (2-4 ml/kg), RR
-                        minima (5-10), MP drasticamente ridotto (&lt;10 J/min). Trial interrotto
-                        precocemente per trend mortalità favorevole ECMO 35% vs 46% (p=0.09
-                        non-significativo, ma analisi Bayesiana suggerisce beneficio).
-                        <strong>Criteri ECMO considerazione:</strong> P/F &lt;80 mmHg FiO₂ 100% +
-                        PEEP ≥10, pH &lt;7.15 da ipercapnia refrattaria, MP &gt;22-25 J/min
-                        nonostante ottimizzazioni, barotrauma (pneumotorace resistente drenaggio).
+                        <div v-html="t('mp.documentation.eolia.study')"></div>
                       </q-item-label>
                       <q-item-label caption class="text-grey-7 q-mt-xs">
-                        PMID: 29791822 - EOLIA Trial Group
+                        {{ t('mp.documentation.eolia.pmid') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -2056,19 +1755,13 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        Surviving Sepsis Campaign Guidelines 2021 - ARDS Management
+                        {{ t('mp.documentation.survivingSepsis.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Raccomandazioni consensus internazionale:</strong> (1) Low VT
-                        ventilation 4-8 ml/kg PBW in tutti ARDS (raccomandazione FORTE), (2)
-                        Pplateau &lt;30 cmH₂O (FORTE), (3) Prona in ARDS severa P/F &lt;150 (FORTE),
-                        (4) Driving pressure &lt;15 cmH₂O quando possibile (DEBOLE), (5) PEEP più
-                        alta in strategie "open lung" vs PEEP bassa (DEBOLE - controversia).
-                        Mechanical Power NON ancora incluso in guidelines ufficiali ma citato come
-                        "emerging parameter" per monitoraggio VILI risk.
+                        <div v-html="t('mp.documentation.survivingSepsis.recommendations')"></div>
                       </q-item-label>
                       <q-item-label caption class="text-grey-7 q-mt-xs">
-                        Critical Care Medicine 2021 - SCCM/ESICM Guidelines
+                        {{ t('mp.documentation.survivingSepsis.source') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -2079,16 +1772,8 @@ const getInterpretationColor = (): string => {
                     <q-icon name="info" color="amber-9" />
                   </template>
                   <div class="text-caption">
-                    <strong>Stato Attuale Linee Guida Mechanical Power:</strong> MP è parametro
-                    relativamente nuovo (concetto formalizzato 2016 Gattinoni). Non ancora incluso
-                    in linee guida ufficiali ARDS Network, Surviving Sepsis, ERS/ATS come
-                    raccomandazione formale. Evidenze crescenti da studi osservazionali e
-                    meta-analisi supportano utilità clinica. Consensus experts raccomanda:
-                    monitorare MP insieme a parametri tradizionali (VT, Pplateau, ΔP, PEEP), target
-                    MP &lt;17 J/min in ARDS moderata-severa, integrare MP in decision-making
-                    ventilatorio. Trials prospettici randomizzati controllati (RCT) ongoing per
-                    validare MP-guided ventilation strategy vs standard care. Probabile inclusione
-                    MP in future guidelines 2024-2025.
+                    <strong>{{ t('mp.documentation.currentStatus.title') }}</strong>
+                    {{ t('mp.documentation.currentStatus.text') }}
                   </div>
                 </q-banner>
               </q-card>
@@ -2097,13 +1782,13 @@ const getInterpretationColor = (): string => {
             <!-- 📖 Riferimenti Scientifici e Bibliografia -->
             <q-expansion-item
               icon="import_contacts"
-              label="9️⃣ Riferimenti Scientifici e Bibliografia Peer-Reviewed"
+              :label="t('mp.bibliography.title')"
               class="q-mt-md"
               header-class="bg-teal-1 text-teal-9"
             >
               <q-card class="q-pa-md">
                 <div class="text-body2 text-weight-bold q-mb-md text-primary">
-                  Letteratura Scientifica Fondamentale e Risorse Autorevoli
+                  {{ t('mp.bibliography.mainTitle') }}
                 </div>
 
                 <q-list>
@@ -2113,21 +1798,15 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        Gattinoni L, Tonetti T, Cressoni M, et al. "Ventilator-related causes of
-                        lung injury: the mechanical power" (2016)
+                        {{ t('mp.bibliography.gattinoni.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Intensive Care Medicine</strong> 42(10):1567-1575 - DOI:
-                        10.1007/s00134-016-4505-2
+                        <div v-html="t('mp.bibliography.gattinoni.journal')"></div>
+                        <br />
+                        <div v-html="t('mp.bibliography.gattinoni.links')"></div>
                       </q-item-label>
                       <q-item-label caption class="text-grey-8 q-mt-xs">
-                        <strong>Studio fondamentale</strong> che ha introdotto concetto di
-                        Mechanical Power come parametro unificante VILI. Derivazione formula
-                        completa MP integrando VT, RR, Ppeak, Pplateau, PEEP, flusso, resistenze.
-                        Esperimenti su modelli animali: MP threshold ~12-15 J/min separa
-                        ventilazione protettiva da dannosa. Proposta: MP superiore a singoli
-                        parametri isolati (VT, pressure) per predire danno polmonare. Articolo più
-                        citato in letteratura MP (>1500 citazioni Google Scholar).
+                        <div v-html="t('mp.bibliography.gattinoni.description')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -2138,20 +1817,15 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        Serpa Neto A, Deliberato RO, Johnson AEW, et al. "Mechanical power of
-                        ventilation is associated with mortality in critically ill patients" (2018)
+                        {{ t('mp.bibliography.serpa.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Intensive Care Medicine</strong> 44(11):1914-1922 - PMID: 30284021
+                        <div v-html="t('mp.bibliography.serpa.journal')"></div>
+                        <br />
+                        <div v-html="t('mp.bibliography.serpa.links')"></div>
                       </q-item-label>
                       <q-item-label caption class="text-grey-8 q-mt-xs">
-                        <strong>Grande studio osservazionale retrospettivo:</strong> 8207 pazienti
-                        ventilati database MIMIC-III (Beth Israel Hospital Boston). MP medio
-                        21.4±9.6 J/min, mortalità ospedaliera 35.7%. Associazione dose-dipendente
-                        MP-mortalità: ogni ↑4 J/min → ↑20% odds morte. MP predittore indipendente
-                        dopo aggiustamento età, SOFA, APACHE II, Charlson. Receiver Operating
-                        Characteristic (ROC) AUC 0.68 per mortalità. Conferma clinica predittività
-                        MP in large cohort umano.
+                        <div v-html="t('mp.bibliography.serpa.description')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -2162,19 +1836,15 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        Coppola S, Caccioppola A, Froio S, et al. "Effect of mechanical power on
-                        intensive care mortality in ARDS patients" (2020)
+                        {{ t('mp.bibliography.coppola.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Critical Care</strong> 24(1):246 - PMID: 32414448
+                        <div v-html="t('mp.bibliography.coppola.journal')"></div>
+                        <br />
+                        <div v-html="t('mp.bibliography.coppola.links')"></div>
                       </q-item-label>
                       <q-item-label caption class="text-grey-8 q-mt-xs">
-                        <strong>Coorte prospettica 150 pazienti ARDS:</strong> MP &gt;17 J/min
-                        associato a ↑mortalità ICU (hazard ratio 2.23, 95%CI 1.16-4.29, p=0.016).
-                        Stratificazione rischio: MP &lt;12 J/min mortalità 15%, MP 12-17 mortalità
-                        28%, MP &gt;17 mortalità 48%. MP normalizzato per compliance (MP/Crs)
-                        predittore ancora migliore (HR 2.89). Suggerisce threshold MP devono essere
-                        aggiustati per compliance polmonare paziente-specifica.
+                        <div v-html="t('mp.bibliography.coppola.description')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -2185,20 +1855,15 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        Zhang Z, Zheng B, Liu N, et al. "Mechanical power normalized to predicted
-                        body weight as a predictor of mortality in patients with acute respiratory
-                        distress syndrome" (2019)
+                        {{ t('mp.bibliography.zhang.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>Intensive Care Medicine</strong> 45(6):856-864 - PMID: 31016328
+                        <div v-html="t('mp.bibliography.zhang.journal')"></div>
+                        <br />
+                        <div v-html="t('mp.bibliography.zhang.links')"></div>
                       </q-item-label>
                       <q-item-label caption class="text-grey-8 q-mt-xs">
-                        <strong>Studio validazione 3630 pazienti ARDS:</strong> MP normalizzato per
-                        peso corporeo predetto (MP/kg PBW) migliore predittore vs MP assoluto.
-                        Threshold MP/kg &gt;0.32 J/min/kg associato ↑mortalità 28-giorni (OR 1.84,
-                        p&lt;0.001). Importanza normalizzazione: paziente piccolo 50 kg vs grande 90
-                        kg tollerano MP differenti. Raccomandazione: sempre calcolare MP/kg per
-                        comparazioni accurate.
+                        <div v-html="t('mp.bibliography.zhang.description')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -2209,21 +1874,15 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        Acute Respiratory Distress Syndrome Network. "Ventilation with lower tidal
-                        volumes as compared with traditional tidal volumes for acute lung injury and
-                        ARDS" (2000)
+                        {{ t('mp.bibliography.arma.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        <strong>New England Journal of Medicine</strong> 342(18):1301-1308 - PMID:
-                        10793162
+                        <div v-html="t('mp.bibliography.arma.journal')"></div>
+                        <br />
+                        <div v-html="t('mp.bibliography.arma.links')"></div>
                       </q-item-label>
                       <q-item-label caption class="text-grey-8 q-mt-xs">
-                        <strong>Trial ARMA landmark:</strong> 861 pazienti ARDS randomizzati VT 6
-                        ml/kg vs 12 ml/kg. Gruppo low VT: mortalità 31% vs 39.8% controllo
-                        (p=0.007), ↓giorni ventilazione 12 vs 15, ↓MOF. Retrospettivamente: gruppo
-                        protettivo MP stimato ~15 J/min vs ~28 J/min gruppo dannoso. Prima evidenza
-                        indiretta che riduzione MP (via ↓VT) migliora outcome. Foundation moderna
-                        ventilazione protettiva.
+                        <div v-html="t('mp.bibliography.arma.description')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -2234,19 +1893,14 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        Encyclopedia of Respiratory Medicine, Second Edition (2022) - Volume 5
+                        {{ t('mp.bibliography.encyclopedia.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        Capitolo: "Mechanical Power" - Autori: Garfield B, Patel BV
+                        {{ t('mp.bibliography.encyclopedia.subtitle') }}<br />
+                        <div v-html="t('mp.bibliography.encyclopedia.link')"></div>
                       </q-item-label>
                       <q-item-label caption class="text-grey-8 q-mt-xs">
-                        <strong>Trattazione enciclopedica completa:</strong> Storia concetto MP,
-                        derivazione matematica formula, evidenze sperimentali animali, studi clinici
-                        umani, applicazioni pratiche ICU, limitazioni e controversie attuali.
-                        Include discussione varianti formula MP (Gattinoni vs Becher vs altri), MP
-                        normalizzato (MP/Crs, MP/PBW), integrazione con altri parametri (driving
-                        pressure, strain). Risorsa autorevole per approfondimento teorico-pratico
-                        MP.
+                        <div v-html="t('mp.bibliography.encyclopedia.description')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -2257,19 +1911,14 @@ const getInterpretationColor = (): string => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label class="text-weight-bold">
-                        MSD Manuals - Professional Version: Acute Respiratory Distress Syndrome
-                        (ARDS)
+                        {{ t('mp.bibliography.msd.title') }}
                       </q-item-label>
                       <q-item-label caption class="q-mt-xs">
-                        Sezione: "Management of ARDS - Mechanical Ventilation Strategies"
+                        {{ t('mp.bibliography.msd.subtitle') }}<br />
+                        <div v-html="t('mp.bibliography.msd.link')"></div>
                       </q-item-label>
                       <q-item-label caption class="text-grey-8 q-mt-xs">
-                        <strong>Manuale clinico pratico:</strong> Raccomandazioni evidence-based
-                        ventilazione ARDS. Include: low VT strategy, Pplateau limits, driving
-                        pressure monitoring, PEEP optimization, rescue therapies (prona, ECMO).
-                        Recente aggiornamento 2023 menziona MP come "emerging parameter for
-                        ventilator-induced lung injury assessment, promising but needs more
-                        prospective validation". Utile per quick reference bedside.
+                        <div v-html="t('mp.bibliography.msd.description')"></div>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -2280,16 +1929,8 @@ const getInterpretationColor = (): string => {
                     <q-icon name="verified" color="indigo" />
                   </template>
                   <div class="text-caption">
-                    <strong>Nota sulla Qualità delle Fonti:</strong> Tutti i riferimenti sono
-                    pubblicazioni peer-reviewed su riviste alto impact factor (Intensive Care Med
-                    IF~24, NEJM IF~158, Critical Care IF~19) o risorse autorevoli (MSD Manuals,
-                    Encyclopedia Respiratory Medicine Elsevier). Livelli evidenza: RCT (ARMA,
-                    PROSEVA, EOLIA) - massima evidenza livello 1A, studi osservazionali prospettici
-                    (Coppola) - livello 2B, meta-analisi/database (Serpa Neto, Zhang) - livello 1B.
-                    MP concetto supportato da solida base scientifica ma ancora in fase validazione
-                    per inclusione guidelines ufficiali. Monitoraggio MP raccomandato da experts
-                    come parte "bundle" ventilazione protettiva insieme a VT, Pplateau, ΔP
-                    tradizionali.
+                    <strong>{{ t('mp.bibliography.sourceQuality.title') }}</strong>
+                    {{ t('mp.bibliography.sourceQuality.text') }}
                   </div>
                 </q-banner>
               </q-card>
@@ -2298,5 +1939,54 @@ const getInterpretationColor = (): string => {
         </q-card>
       </div>
     </div>
+
+    <!-- Save Calculation Dialog -->
+    <q-dialog v-model="showSaveDialog">
+      <q-card style="min-width: 350px">
+        <q-card-section>
+          <div class="text-h6">{{ t('mp.saved.title') }}</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input
+            v-model="patientInitials"
+            :label="t('mp.saved.patientInitials')"
+            outlined
+            dense
+            autofocus
+            @keyup.enter="confirmSave"
+          />
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat :label="t('mp.actions.cancel')" color="primary" v-close-popup />
+          <q-btn
+            flat
+            :label="t('mp.actions.save')"
+            color="primary"
+            @click="confirmSave"
+            :disable="patientInitials.trim().length === 0"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
+
+<style scoped lang="scss">
+// Responsive font sizes for Results section on desktop
+@media (min-width: 1024px) {
+  .text-h3 {
+    font-size: 4rem !important;
+  }
+
+  .text-h6 {
+    font-size: 1.5rem !important;
+  }
+
+  .q-chip.text-h6 {
+    font-size: 1.25rem !important;
+    padding: 16px 24px !important;
+  }
+}
+</style>

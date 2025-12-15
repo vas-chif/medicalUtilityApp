@@ -39,11 +39,17 @@
 // IMPORTS
 // ============================================================
 import { ref } from 'vue';
+import { useSecureLogger } from 'src/composables/useSecureLogger';
 
 // Components
 import DosageCalculator from 'src/components/Pharmacology/DosageCalculator.vue';
 import DrugDilution from 'src/components/Pharmacology/DrugDilution.vue';
 import InfusionRate from 'src/components/Pharmacology/InfusionRate.vue';
+
+// ============================================================
+// COMPOSABLES
+// ============================================================
+const { logger } = useSecureLogger();
 
 // ============================================================
 // STATE
@@ -64,7 +70,7 @@ const handleDosageCalculated = (payload: {
   dailyDose: number;
   drugName: string;
 }) => {
-  console.log('[Pharmacology Page] Dosage calculated:', payload);
+  logger.info('Dosage calculated', payload);
   // Future: Add analytics tracking, Firebase logging, etc.
 };
 
@@ -76,7 +82,7 @@ const handleDilutionCalculated = (payload: {
   volumeToWithdraw: number;
   dilutionRatio: string;
 }) => {
-  console.log('[Pharmacology Page] Dilution calculated:', payload);
+  logger.info('Dilution calculated', payload);
 };
 
 /**
@@ -88,7 +94,7 @@ const handleInfusionCalculated = (payload: {
   flowRate: number;
   direction: string;
 }) => {
-  console.log('[Pharmacology Page] Infusion rate calculated:', payload);
+  logger.info('Infusion rate calculated', payload);
 };
 </script>
 
@@ -109,9 +115,10 @@ const handleInfusionCalculated = (payload: {
     <q-card>
       <q-tabs
         v-model="activeTab"
-        class="text-primary"
+        class="text-grey"
+        active-color="primary"
         indicator-color="primary"
-        align="left"
+        align="justify"
         narrow-indicator
       >
         <q-tab name="dosage" icon="calculate" label="Dosage" />
