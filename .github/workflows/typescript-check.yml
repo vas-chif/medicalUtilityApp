@@ -1,0 +1,46 @@
+# 🔷 TypeScript Check - Type Safety Validation
+#
+# TRIGGER: Pull Request su branch main
+# PURPOSE: Validate TypeScript type safety and compilation
+# REQUIRED: Branch protection rule for merging to main
+
+name: TypeScript Check
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  typescript:
+    name: Run TypeScript Check
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      # Step 3: Install dependencies
+      - name: 📦 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # Step 4: Run TypeScript type checking
+      - name: 🔷 Run TypeScript Check
+        run: npx vue-tsc --noEmit
+        continue-on-error: false
+
+      # Step 5: Success message
+      - name: ✅ TypeScript check passed
+        if: success()
+        run: echo "✅ TypeScript validation successful - no type errors found"

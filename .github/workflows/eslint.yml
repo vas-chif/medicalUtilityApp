@@ -1,0 +1,46 @@
+# 🔍 ESLint - Code Quality Check
+#
+# TRIGGER: Pull Request su branch main
+# PURPOSE: Validate code quality and style consistency
+# REQUIRED: Branch protection rule for merging to main
+
+name: ESLint
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  eslint:
+    name: Run ESLint
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      # Step 3: Install dependencies
+      - name: 📦 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # Step 4: Run ESLint
+      - name: 🔍 Run ESLint
+        run: yarn lint
+        continue-on-error: false
+
+      # Step 5: Success message
+      - name: ✅ ESLint passed
+        if: success()
+        run: echo "✅ ESLint validation successful - code quality standards met"
