@@ -442,7 +442,7 @@ const resetInfusionForm = () => {
               suffix="kg"
               outlined
               class="q-mb-md"
-              :rules="[(val) => (val > 0 && val <= 500) || 'Peso tra 1-500 kg']"
+              :rules="[(val: number) => (val > 0 && val <= 500) || 'Peso tra 1-500 kg']"
             >
               <template v-slot:prepend>
                 <q-icon name="fitness_center" color="blue" />
@@ -459,7 +459,7 @@ const resetInfusionForm = () => {
               outlined
               class="q-mb-md"
               hint="Concentrazione farmaco nella sacca/siringa"
-              :rules="[(val) => val > 0 || 'Concentrazione deve essere > 0']"
+              :rules="[(val: number) => val > 0 || 'Concentrazione deve essere > 0']"
             >
               <template v-slot:prepend>
                 <q-icon name="science" color="purple" />
@@ -494,7 +494,7 @@ const resetInfusionForm = () => {
                 :suffix="infusionForm.doseUnit"
                 outlined
                 class="q-mb-md"
-                :rules="[(val) => val > 0 || 'Dose deve essere > 0']"
+                :rules="[(val: number) => val > 0 || 'Dose deve essere > 0']"
               >
                 <template v-slot:prepend>
                   <q-icon name="medication" color="red" />
@@ -527,7 +527,7 @@ const resetInfusionForm = () => {
                 suffix="mL/h"
                 outlined
                 class="q-mb-md"
-                :rules="[(val) => val > 0 || 'Flow rate deve essere > 0']"
+                :rules="[(val: number) => val > 0 || 'Flow rate deve essere > 0']"
               >
                 <template v-slot:prepend>
                   <q-icon name="speed" color="orange" />

@@ -16,7 +16,7 @@ const router = useRouter();
 const route = useRoute();
 
 // i18n
-const { locale } = useI18n();
+const { locale } = useI18n({ useScope: 'global' });
 
 // State
 const leftDrawerOpen = ref(false);
@@ -48,25 +48,25 @@ onMounted(() => {
  * Switch application language
  * @param lang - Language code ('it-IT' or 'en-US')
  */
-// const switchLanguage = (lang: 'it-IT' | 'en-US'): void => {
-//   currentLanguage.value = lang;
-//   locale.value = lang;
-//   localStorage.setItem('user-language', lang);
-// };
+const switchLanguage = (lang: 'it-IT' | 'en-US'): void => {
+  currentLanguage.value = lang;
+  locale.value = lang;
+  localStorage.setItem('user-language', lang);
+};
 
 /**
  * Get flag icon for current language
  */
-// const getLanguageFlag = computed(() => {
-//   return currentLanguage.value === 'it-IT' ? '🇮🇹' : '🇺🇸';
-// });
+const getLanguageFlag = computed(() => {
+  return currentLanguage.value === 'it-IT' ? '🇮🇹' : '🇺🇸';
+});
 
 /**
  * Get language label
  */
-// const getLanguageLabel = computed(() => {
-//   return currentLanguage.value === 'it-IT' ? 'Italiano' : 'English';
-// });
+const getLanguageLabel = computed(() => {
+  return currentLanguage.value === 'it-IT' ? 'Italiano' : 'English';
+});
 
 // ============================================================
 // MENU CONFIGURATION
@@ -119,14 +119,6 @@ const menuSections: MenuSection[] = [
         icon: 'medication',
         iconColor: 'red-6',
         route: '/pharmacology',
-      },
-      {
-        id: 'apgar-score',
-        title: 'APGAR Score',
-        caption: 'Valutazione neonatale',
-        icon: 'child_care',
-        iconColor: 'pink-6',
-        route: '/apgar-score',
       },
       {
         id: 'drug-compatibility',
@@ -338,7 +330,7 @@ const navigateTo = async (path: string) => {
         <q-space />
 
         <!-- Language Selector -->
-        <!-- <q-btn-dropdown
+        <q-btn-dropdown
           flat
           dense
           :label="getLanguageFlag"
@@ -374,7 +366,7 @@ const navigateTo = async (path: string) => {
               </q-item-section>
             </q-item>
           </q-list>
-        </q-btn-dropdown> -->
+        </q-btn-dropdown>
 
         <div class="text-subtitle2 text-white-7">v{{ appVersion }}</div>
       </q-toolbar>

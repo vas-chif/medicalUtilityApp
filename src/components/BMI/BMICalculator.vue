@@ -26,7 +26,17 @@
 // IMPORTS
 // ============================================================
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useResetForm } from 'src/composables/useResetForm';
+// import { useSecureLogger } from 'src/composables/useSecureLogger';
+// import { useSmartEnvironment } from 'src/composables/useSmartEnvironment';
+
+// ============================================================
+// COMPOSABLES
+// ============================================================
+const { t } = useI18n();
+// const { logger } = useSecureLogger();
+// const { isDev: isDevelopment } = useSmartEnvironment();
 
 // ============================================================
 // TYPES & INTERFACES
@@ -89,10 +99,10 @@ const initialResult: BMIResult = {
 const formData = ref<BMIFormData>({ ...initialFormData });
 const result = ref<BMIResult>({ ...initialResult });
 
-const genderOptions = [
-  { label: 'Maschio', value: 'male' },
-  { label: 'Femmina', value: 'female' },
-];
+const genderOptions = computed(() => [
+  { label: t('bmi.form.genderOptions.male'), value: 'male' },
+  { label: t('bmi.form.genderOptions.female'), value: 'female' },
+]);
 
 // ============================================================
 // COMPOSABLES
@@ -169,12 +179,12 @@ const calculateBMI = () => {
  * Get WHO BMI classification
  */
 const getBMIClassification = (bmi: number): { category: string; color: string } => {
-  if (bmi < 18.5) return { category: 'Sottopeso', color: 'blue' };
-  if (bmi <= 24.9) return { category: 'Normopeso', color: 'green' };
-  if (bmi <= 29.9) return { category: 'Sovrappeso', color: 'orange' };
-  if (bmi <= 34.9) return { category: 'Obesità Grado I', color: 'red' };
-  if (bmi <= 39.9) return { category: 'Obesità Grado II', color: 'deep-orange' };
-  return { category: 'Obesità Grado III', color: 'purple' };
+  if (bmi < 18.5) return { category: t('bmi.results.categories.underweight'), color: 'blue' };
+  if (bmi <= 24.9) return { category: t('bmi.results.categories.normal'), color: 'green' };
+  if (bmi <= 29.9) return { category: t('bmi.results.categories.overweight'), color: 'orange' };
+  if (bmi <= 34.9) return { category: t('bmi.results.categories.obese1'), color: 'red' };
+  if (bmi <= 39.9) return { category: t('bmi.results.categories.obese2'), color: 'deep-orange' };
+  return { category: t('bmi.results.categories.obese3'), color: 'purple' };
 };
 
 /**
@@ -190,44 +200,6 @@ const getBMIPosition = (): number => {
   if (bmi <= 40) return 80 + ((bmi - 35) / 5) * 15;
   return 95;
 };
-
-/**
- * Get clinical notes based on BMI and age
- */
-const getClinicalNotes = (): string => {
-  const bmi = result.value.bmi;
-  const age = formData.value.age;
-
-  let notes = '';
-
-  if (bmi < 18.5) {
-    notes =
-      'Il sottopeso può indicare malnutrizione o problemi di salute. Si consiglia valutazione medica.';
-  } else if (bmi <= 24.9) {
-    notes =
-      'BMI nella norma. Mantenere uno stile di vita sano con alimentazione equilibrata e attività fisica regolare.';
-  } else if (bmi <= 29.9) {
-    notes =
-      'Sovrappeso aumenta il rischio di malattie cardiovascolari e diabete. Considerare riduzione del peso.';
-  } else if (bmi <= 34.9) {
-    notes =
-      'Obesità moderata. Forte raccomandazione per perdita di peso sotto supervisione medica.';
-  } else if (bmi <= 39.9) {
-    notes = 'Obesità severa. Necessaria valutazione medica specialistica e intervento strutturato.';
-  } else {
-    notes =
-      'Obesità estrema. Rischio molto elevato per la salute. Urgente consulto medico specialistico.';
-  }
-
-  // Aggiungi note specifiche per età
-  if (age && age >= 65) {
-    notes += ' Nota: negli anziani, valori BMI leggermente superiori possono essere protettivi.';
-  } else if (age && age < 18) {
-    notes += ' Nota: per i minori utilizzare percentili BMI specifici per età e sesso.';
-  }
-
-  return notes;
-};
 </script>
 
 <template>
@@ -239,21 +211,21 @@ const getClinicalNotes = (): string => {
     <div class="col-12 col-md-5">
       <q-card class="q-pa-md">
         <q-card-section>
-          <h6 class="text-h6 q-ma-none q-mb-md">📊 Parametri Antropometrici</h6>
+          <h6 class="text-h6 q-ma-none q-mb-md">{{ t('bmi.subtitle') }}</h6>
 
           <!-- Peso -->
           <q-input
             v-model.number="formData.weight"
             type="number"
             step="0.1"
-            label="Peso"
-            suffix="kg"
+            :label="t('bmi.form.weightLabel')"
+            :suffix="t('bmi.form.weightSuffix')"
             outlined
             class="q-mb-md"
-            :rules="[(val) => (val > 0 && val <= 500) || 'Peso tra 1-500 kg']"
+            :rules="[(val) => (val > 0 && val <= 500) || t('bmi.form.weightRule')]"
           >
             <template v-slot:prepend>
-              <q-icon name="fitness_center" color="blue" />
+              <q-icon :name="t('bmi.form.weightIcon')" color="blue" />
             </template>
           </q-input>
 
@@ -261,14 +233,14 @@ const getClinicalNotes = (): string => {
           <q-input
             v-model.number="formData.height"
             type="number"
-            label="Altezza"
-            suffix="cm"
+            :label="t('bmi.form.heightLabel')"
+            :suffix="t('bmi.form.heightSuffix')"
             outlined
             class="q-mb-md"
-            :rules="[(val) => (val > 0 && val <= 300) || 'Altezza tra 1-300 cm']"
+            :rules="[(val) => (val > 0 && val <= 300) || t('bmi.form.heightRule')]"
           >
             <template v-slot:prepend>
-              <q-icon name="height" color="green" />
+              <q-icon :name="t('bmi.form.heightIcon')" color="green" />
             </template>
           </q-input>
 
@@ -276,14 +248,14 @@ const getClinicalNotes = (): string => {
           <q-input
             v-model.number="formData.age"
             type="number"
-            label="Età (opzionale)"
-            suffix="anni"
+            :label="t('bmi.form.ageLabel')"
+            :suffix="t('bmi.form.ageSuffix')"
             outlined
             class="q-mb-md"
-            :rules="[(val) => !val || (val > 0 && val <= 120) || 'Età tra 1-120 anni']"
+            :rules="[(val) => !val || (val > 0 && val <= 120) || t('bmi.form.ageRule')]"
           >
             <template v-slot:prepend>
-              <q-icon name="cake" color="orange" />
+              <q-icon :name="t('bmi.form.ageIcon')" color="orange" />
             </template>
           </q-input>
 
@@ -291,14 +263,14 @@ const getClinicalNotes = (): string => {
           <q-select
             v-model="formData.gender"
             :options="genderOptions"
-            label="Sesso (opzionale)"
+            :label="t('bmi.form.genderLabel')"
             outlined
             class="q-mb-md"
             emit-value
             map-options
           >
             <template v-slot:prepend>
-              <q-icon name="person" color="purple" />
+              <q-icon :name="t('bmi.form.genderIcon')" color="purple" />
             </template>
           </q-select>
 
@@ -311,7 +283,7 @@ const getClinicalNotes = (): string => {
             icon="calculate"
             :disable="!isFormValid"
           >
-            Calcola BMI
+            {{ t('bmi.buttons.calculate') }}
           </q-btn>
           <q-btn
             @click="resetForm"
@@ -321,7 +293,7 @@ const getClinicalNotes = (): string => {
             icon="refresh"
             outline
           >
-            Reset Dati
+            {{ t('bmi.buttons.reset') }}
           </q-btn>
         </q-card-section>
       </q-card>
@@ -331,7 +303,7 @@ const getClinicalNotes = (): string => {
     <div class="col-12 col-md-6">
       <q-card class="q-pa-md">
         <q-card-section>
-          <h6 class="text-h6 q-ma-none q-mb-md">📋 Risultati</h6>
+          <h6 class="text-h6 q-ma-none q-mb-md">{{ t('bmi.results.title') }}</h6>
 
           <!-- Risultato Principale -->
           <div class="text-center q-mb-lg">
@@ -339,7 +311,7 @@ const getClinicalNotes = (): string => {
               {{ result.bmi.toFixed(1) }}
             </div>
             <div class="text-subtitle1 text-grey-7">
-              <strong>kg/m²</strong> (Indice di Massa Corporea)
+              <strong>{{ t('bmi.results.bmiValue') }}</strong> ({{ t('bmi.results.bmiSubtitle') }})
             </div>
           </div>
 
@@ -347,7 +319,7 @@ const getClinicalNotes = (): string => {
           <q-separator class="q-mb-md" />
 
           <div class="q-mb-md">
-            <div class="text-h6 q-mb-sm">🎯 Classificazione WHO:</div>
+            <div class="text-h6 q-mb-sm">{{ t('bmi.results.classification') }}</div>
             <q-chip :color="result.color" text-color="white" class="text-weight-bold" size="lg">
               {{ result.category }}
             </q-chip>
@@ -355,377 +327,318 @@ const getClinicalNotes = (): string => {
 
           <!-- Grafico Visuale BMI -->
           <div class="q-mb-lg" v-if="result.bmi > 0">
-            <div class="text-subtitle2 q-mb-sm">📊 Posizione nella Scala BMI:</div>
+            <div class="text-subtitle2 q-mb-sm">{{ t('bmi.results.scaleTitle') }}</div>
             <div class="bmi-scale">
               <div class="bmi-bar">
                 <div class="bmi-indicator" :style="{ left: getBMIPosition() + '%' }"></div>
               </div>
               <div class="bmi-labels row justify-between q-mt-sm">
-                <span class="text-caption">15</span>
-                <span class="text-caption">18.5</span>
-                <span class="text-caption">25</span>
-                <span class="text-caption">30</span>
-                <span class="text-caption">35</span>
-                <span class="text-caption">40+</span>
+                <span class="text-caption">{{ t('bmi.results.scaleLabels.underweight') }}</span>
+                <span class="text-caption">{{ t('bmi.results.scaleLabels.normal1') }}</span>
+                <span class="text-caption">{{ t('bmi.results.scaleLabels.normal2') }}</span>
+                <span class="text-caption">{{ t('bmi.results.scaleLabels.overweight') }}</span>
+                <span class="text-caption">{{ t('bmi.results.scaleLabels.obese1') }}</span>
+                <span class="text-caption">{{ t('bmi.results.scaleLabels.obese2') }}</span>
               </div>
             </div>
           </div>
 
           <!-- Peso Ideale -->
           <div class="q-mb-md" v-if="result.idealWeight.min > 0">
-            <div class="text-h6 q-mb-sm">🎯 Peso Ideale (BMI 18.5-24.9):</div>
+            <div class="text-h6 q-mb-sm">{{ t('bmi.results.idealWeight') }}</div>
             <div class="text-body1">
               <strong>
                 {{ result.idealWeight.min.toFixed(1) }} - {{ result.idealWeight.max.toFixed(1) }} kg
               </strong>
             </div>
             <div class="text-caption text-grey-6" v-if="result.weightDifference !== 0">
-              {{ result.weightDifference > 0 ? 'Eccesso:' : 'Deficit:' }}
+              {{
+                result.weightDifference > 0
+                  ? t('bmi.results.weightDifference.excess')
+                  : t('bmi.results.weightDifference.deficit')
+              }}
               {{ Math.abs(result.weightDifference).toFixed(1) }} kg
             </div>
           </div>
 
           <!-- Classificazioni Dettagliate -->
           <q-expansion-item
-            icon="info"
-            label="📚 Classificazione Completa WHO"
+            :icon="t('bmi.sections.classification.icon')"
+            :label="t('bmi.sections.classification.title')"
             class="text-primary"
           >
             <q-card class="q-pa-md">
               <div class="row q-gutter-sm text-caption">
-                <div class="col-12">
-                  <span class="text-weight-bold text-blue">Sottopeso:</span> &lt; 18.5
-                </div>
-                <div class="col-12">
-                  <span class="text-weight-bold text-green">Normopeso:</span> 18.5 - 24.9
-                </div>
-                <div class="col-12">
-                  <span class="text-weight-bold text-orange">Sovrappeso:</span> 25.0 - 29.9
-                </div>
-                <div class="col-12">
-                  <span class="text-weight-bold text-red">Obesità I:</span> 30.0 - 34.9
-                </div>
-                <div class="col-12">
-                  <span class="text-weight-bold text-deep-orange">Obesità II:</span> 35.0 - 39.9
-                </div>
-                <div class="col-12">
-                  <span class="text-weight-bold text-purple">Obesità III:</span> ≥ 40.0
-                </div>
+                <div
+                  class="col-12"
+                  v-html="t('bmi.sections.classification.items.underweight')"
+                ></div>
+                <div class="col-12" v-html="t('bmi.sections.classification.items.normal')"></div>
+                <div
+                  class="col-12"
+                  v-html="t('bmi.sections.classification.items.overweight')"
+                ></div>
+                <div class="col-12" v-html="t('bmi.sections.classification.items.obese1')"></div>
+                <div class="col-12" v-html="t('bmi.sections.classification.items.obese2')"></div>
+                <div class="col-12" v-html="t('bmi.sections.classification.items.obese3')"></div>
               </div>
             </q-card>
           </q-expansion-item>
 
-          <!-- 1️⃣ Definizione e Significato Clinico -->
+          <!-- Definizione e Significato Clinico -->
           <q-expansion-item
-            icon="info"
-            label="1️⃣ Definizione e Significato Clinico"
+            :icon="t('bmi.sections.definition.icon')"
+            :label="t('bmi.sections.definition.title')"
             class="q-mt-sm"
             header-class="bg-blue-1 text-blue-9"
           >
             <q-card class="bg-blue-1">
               <q-card-section>
                 <p class="text-body2 q-mb-sm">
-                  <strong>Definizione:</strong> L'Indice di Massa Corporea (BMI - Body Mass Index) è
-                  una misura indiretta dell'adiposità corporea che mette in relazione il peso e
-                  l'altezza di un individuo. È il parametro antropometrico standard riconosciuto
-                  dall'OMS per classificare lo stato ponderale e valutare il rischio sanitario
-                  associato.
+                  <strong>{{ t('bmi.sections.definition.whatIs.title') }}</strong>
+                  {{ t('bmi.sections.definition.whatIs.text') }}
                 </p>
                 <p class="text-body2 q-mb-sm">
-                  <strong>Significato Clinico:</strong> Il BMI è utilizzato per:
+                  <strong>{{ t('bmi.sections.definition.clinicalSignificance.title') }}</strong>
+                  {{ t('bmi.sections.definition.clinicalSignificance.intro') }}
                 </p>
                 <ul class="text-body2">
-                  <li>Screening di malnutrizione o obesità nella popolazione</li>
-                  <li>Valutazione del rischio cardiovascolare e metabolico</li>
-                  <li>Monitoraggio dell'efficacia di interventi nutrizionali</li>
-                  <li>Stratificazione del rischio in contesti clinici e assicurativi</li>
+                  <li v-for="(item, index) in 4" :key="index">
+                    {{ t(`bmi.sections.definition.clinicalSignificance.items[${index}]`) }}
+                  </li>
                 </ul>
               </q-card-section>
             </q-card>
           </q-expansion-item>
 
-          <!-- 2️⃣ Fisiologia e Interpretazione -->
+          <!-- Fisiologia e Interpretazione -->
           <q-expansion-item
-            icon="science"
-            label="2️⃣ Fisiologia e Interpretazione"
+            :icon="t('bmi.sections.physiology.icon')"
+            :label="t('bmi.sections.physiology.title')"
             class="q-mt-sm"
             header-class="bg-green-1 text-green-9"
           >
             <q-card class="bg-green-1">
               <q-card-section>
                 <p class="text-body2 q-mb-sm">
-                  Il BMI fornisce una stima della massa grassa corporea, ma non distingue tra:
+                  {{ t('bmi.sections.physiology.intro') }}
                 </p>
                 <ul class="text-body2 q-mb-sm">
-                  <li>
-                    <strong>Massa magra vs massa grassa:</strong> Atleti muscolosi possono avere BMI
-                    elevato
-                  </li>
-                  <li>
-                    <strong>Distribuzione del grasso:</strong> Grasso viscerale vs sottocutaneo
-                  </li>
-                  <li><strong>Composizione corporea:</strong> Idratazione, densità ossea</li>
+                  <li
+                    v-for="(item, index) in 3"
+                    :key="index"
+                    v-html="t(`bmi.sections.physiology.limitations[${index}]`)"
+                  ></li>
                 </ul>
                 <p class="text-body2">
-                  <strong>Limitazioni:</strong> Il BMI non tiene conto di età, sesso, etnia, massa
-                  muscolare. Per valutazioni più precise considerare: circonferenza vita,
-                  plicometria, impedenziometria, DEXA.
+                  <strong>{{ t('bmi.sections.physiology.conclusion.title') }}</strong>
+                  {{ t('bmi.sections.physiology.conclusion.text') }}
                 </p>
               </q-card-section>
             </q-card>
           </q-expansion-item>
 
-          <!-- 3️⃣ Come si Misura -->
+          <!-- Come si Misura -->
           <q-expansion-item
-            icon="straighten"
-            label="3️⃣ Come si Misura"
+            :icon="t('bmi.sections.measurement.icon')"
+            :label="t('bmi.sections.measurement.title')"
             class="q-mt-sm"
             header-class="bg-amber-1 text-amber-9"
           >
             <q-card class="bg-amber-1">
               <q-card-section>
                 <p class="text-body2 q-mb-sm">
-                  <strong>Peso:</strong> Misurare al mattino, a digiuno, senza scarpe, con
-                  abbigliamento leggero. Bilancia tarata e certificata.
+                  <strong>{{ t('bmi.sections.measurement.weight.title') }}</strong>
+                  {{ t('bmi.sections.measurement.weight.text') }}
                 </p>
                 <p class="text-body2 q-mb-sm">
-                  <strong>Altezza:</strong> Misurare in posizione eretta, senza scarpe, talloni e
-                  schiena contro parete, sguardo parallelo al suolo. Stadiometro calibrato.
+                  <strong>{{ t('bmi.sections.measurement.height.title') }}</strong>
+                  {{ t('bmi.sections.measurement.height.text') }}
                 </p>
                 <p class="text-body2">
-                  <strong>Frequenza:</strong> Monitorare periodicamente (mensile/trimestrale) per
-                  valutare trend e efficacia interventi.
+                  <strong>{{ t('bmi.sections.measurement.frequency.title') }}</strong>
+                  {{ t('bmi.sections.measurement.frequency.text') }}
                 </p>
               </q-card-section>
             </q-card>
           </q-expansion-item>
 
-          <!-- 4️⃣ Formula di Calcolo -->
+          <!-- Formula di Calcolo -->
           <q-expansion-item
-            icon="functions"
-            label="4️⃣ Formula di Calcolo"
+            :icon="t('bmi.sections.formula.icon')"
+            :label="t('bmi.sections.formula.title')"
             class="q-mt-sm"
             header-class="bg-cyan-1 text-cyan-9"
           >
             <q-card class="bg-cyan-1">
               <q-card-section>
                 <div class="text-body2 q-mb-sm">
-                  <strong>Formula BMI (Quetelet Index):</strong>
+                  <strong>{{ t('bmi.sections.formula.formulaTitle') }}</strong>
                 </div>
                 <div class="bg-white q-pa-md text-center q-mb-sm">
-                  <code class="text-h6">BMI = Peso (kg) / Altezza² (m²)</code>
+                  <code class="text-h6">{{ t('bmi.sections.formula.formulaText') }}</code>
                 </div>
                 <p class="text-body2 q-mb-sm">
-                  <strong>Esempio:</strong><br />
-                  Peso = 70 kg, Altezza = 175 cm = 1.75 m<br />
-                  BMI = 70 / (1.75 × 1.75) = 70 / 3.0625 = <strong>22.9 kg/m²</strong> → Normopeso
+                  <strong>{{ t('bmi.sections.formula.example.title') }}</strong
+                  ><br />
+                  {{ t('bmi.sections.formula.example.calculation') }}<br />
+                  {{ t('bmi.sections.formula.example.result') }}
                 </p>
                 <p class="text-caption text-grey-8">
-                  Formula sviluppata da Adolphe Quetelet nel 1832, standardizzata dall'OMS.
+                  {{ t('bmi.sections.formula.note') }}
                 </p>
               </q-card-section>
             </q-card>
           </q-expansion-item>
 
-          <!-- 5️⃣ Interpretazione Risultati -->
+          <!-- Interpretazione Risultati -->
           <q-expansion-item
-            icon="psychology"
-            label="5️⃣ Interpretazione Risultati"
+            :icon="t('bmi.sections.interpretation.icon')"
+            :label="t('bmi.sections.interpretation.title')"
             class="q-mt-sm"
             header-class="bg-orange-1 text-orange-9"
           >
             <q-card class="bg-orange-1">
               <q-card-section>
                 <p class="text-body2 q-mb-sm">
-                  <strong>Classificazione WHO Adulti:</strong>
+                  {{ t('bmi.sections.interpretation.intro') }}
                 </p>
                 <ul class="text-body2 q-mb-sm">
-                  <li><strong>&lt; 16.0:</strong> Grave magrezza (severe thinness)</li>
-                  <li><strong>16.0 - 16.9:</strong> Magrezza moderata (moderate thinness)</li>
-                  <li><strong>17.0 - 18.4:</strong> Lieve magrezza (mild thinness)</li>
-                  <li><strong>18.5 - 24.9:</strong> ✅ Normopeso (normal range)</li>
-                  <li><strong>25.0 - 29.9:</strong> Sovrappeso (pre-obesity)</li>
-                  <li><strong>30.0 - 34.9:</strong> Obesità Classe I (obesity class I)</li>
-                  <li><strong>35.0 - 39.9:</strong> Obesità Classe II (obesity class II)</li>
-                  <li><strong>≥ 40.0:</strong> Obesità Classe III (obesity class III)</li>
+                  <li
+                    v-for="(item, index) in 6"
+                    :key="index"
+                    v-html="t(`bmi.sections.interpretation.categories[${index}]`)"
+                  ></li>
                 </ul>
                 <p class="text-caption text-grey-8">
-                  Per età &lt; 18 anni utilizzare percentili specifici CDC/WHO.
+                  {{ t('bmi.sections.interpretation.note') }}
                 </p>
               </q-card-section>
             </q-card>
           </q-expansion-item>
 
-          <!-- 6️⃣ Applicazioni Cliniche -->
+          <!-- Applicazioni Cliniche -->
           <q-expansion-item
-            icon="local_hospital"
-            label="6️⃣ Applicazioni Cliniche"
+            :icon="t('bmi.sections.clinicalApplications.icon')"
+            :label="t('bmi.sections.clinicalApplications.title')"
             class="q-mt-sm"
             header-class="bg-purple-1 text-purple-9"
           >
             <q-card class="bg-purple-1">
               <q-card-section>
                 <ul class="text-body2">
-                  <li>
-                    <strong>Screening popolazione:</strong> Identificazione precoce
-                    malnutrizione/obesità
-                  </li>
-                  <li>
-                    <strong>Rischio cardiovascolare:</strong> BMI ≥25 aumenta rischio ipertensione,
-                    diabete tipo 2, dislipidemia
-                  </li>
-                  <li>
-                    <strong>Nutrizione clinica:</strong> Valutazione stato nutrizionale pre/post
-                    intervento
-                  </li>
-                  <li>
-                    <strong>Terapia farmacologica:</strong> Alcuni farmaci dosati in base a BMI (es.
-                    eparina LMWH, chemioterapici)
-                  </li>
-                  <li>
-                    <strong>Chirurgia bariatrica:</strong> Criteri eleggibilità (BMI ≥40 o ≥35 con
-                    comorbidità)
-                  </li>
-                  <li>
-                    <strong>Assicurazioni:</strong> Stratificazione rischio e premi assicurativi
+                  <li v-for="(app, index) in 4" :key="index">
+                    <strong>{{
+                      t(`bmi.sections.clinicalApplications.applications[${index}].title`)
+                    }}</strong>
+                    {{ t(`bmi.sections.clinicalApplications.applications[${index}].text`) }}
                   </li>
                 </ul>
               </q-card-section>
             </q-card>
           </q-expansion-item>
 
-          <!-- 7️⃣ Valori di Allerta e Azioni Cliniche -->
+          <!-- Valori di Allerta e Azioni Cliniche -->
           <q-expansion-item
-            icon="warning"
-            label="7️⃣ Valori di Allerta e Azioni Cliniche"
+            :icon="t('bmi.sections.alerts.icon')"
+            :label="t('bmi.sections.alerts.title')"
             class="q-mt-sm"
             header-class="bg-red-1 text-red-9"
           >
             <q-card class="bg-red-1">
               <q-card-section>
                 <p class="text-body2 q-mb-sm">
-                  <strong>🔴 BMI &lt; 16:</strong> Grave magrezza → Valutazione urgente
-                  malnutrizione, disturbi alimentari, malassorbimento
+                  <strong>{{ t('bmi.sections.alerts.critical.title') }}</strong>
                 </p>
+                <p
+                  class="text-body2 q-mb-sm"
+                  v-for="(item, index) in 2"
+                  :key="'crit-' + index"
+                  v-html="t(`bmi.sections.alerts.critical.items[${index}]`)"
+                ></p>
                 <p class="text-body2 q-mb-sm">
-                  <strong>🟠 BMI 16-18.4:</strong> Sottopeso → Consulto nutrizionale, screening
-                  cause organiche
+                  <strong>{{ t('bmi.sections.alerts.monitoring.title') }}</strong>
                 </p>
-                <p class="text-body2 q-mb-sm">
-                  <strong>🟢 BMI 18.5-24.9:</strong> Normopeso → Mantenere stile vita sano,
-                  follow-up annuale
-                </p>
-                <p class="text-body2 q-mb-sm">
-                  <strong>🟡 BMI 25-29.9:</strong> Sovrappeso → Intervento dietetico, aumento
-                  attività fisica
-                </p>
-                <p class="text-body2 q-mb-sm">
-                  <strong>🔴 BMI 30-34.9:</strong> Obesità I → Programma strutturato perdita peso,
-                  screening comorbidità
-                </p>
-                <p class="text-body2 q-mb-sm">
-                  <strong>🔴🔴 BMI 35-39.9:</strong> Obesità II → Intervento multidisciplinare,
-                  valutazione chirurgia bariatrica
-                </p>
-                <p class="text-body2">
-                  <strong>🔴🔴🔴 BMI ≥40:</strong> Obesità III → Urgente consulto specialistico,
-                  candidato chirurgia bariatrica
-                </p>
+                <p
+                  class="text-body2 q-mb-sm"
+                  v-for="(item, index) in 3"
+                  :key="'mon-' + index"
+                  v-html="t(`bmi.sections.alerts.monitoring.items[${index}]`)"
+                ></p>
               </q-card-section>
             </q-card>
           </q-expansion-item>
 
-          <!-- 8️⃣ Note Pratiche -->
+          <!-- Note Pratiche -->
           <q-expansion-item
-            icon="menu_book"
-            label="8️⃣ Note Pratiche e Documentazione"
+            :icon="t('bmi.sections.documentation.icon')"
+            :label="t('bmi.sections.documentation.title')"
             class="q-mt-sm"
             header-class="bg-indigo-1 text-indigo-9"
           >
             <q-card class="bg-indigo-1">
               <q-card-section>
-                <p class="text-body2 q-mb-sm">
-                  <strong>Documentazione Clinica:</strong> Registrare BMI in cartella clinica con
-                  data, peso, altezza, trend temporale.
-                </p>
-                <p class="text-body2 q-mb-sm">
-                  <strong>Considerazioni Speciali:</strong>
-                </p>
-                <ul class="text-body2 q-mb-sm">
-                  <li>
-                    <strong>Anziani (≥65 anni):</strong> BMI ottimale può essere leggermente
-                    superiore (23-28) per protezione da fragilità
-                  </li>
-                  <li>
-                    <strong>Gravidanza:</strong> Non utilizzare BMI standard, usare curve peso
-                    gestazionale
-                  </li>
-                  <li>
-                    <strong>Atleti:</strong> BMI può sovrastimare adiposità in presenza alta massa
-                    muscolare
-                  </li>
-                  <li>
-                    <strong>Etnie asiatiche:</strong> Cut-off inferiori (sovrappeso ≥23, obesità
-                    ≥27.5)
-                  </li>
-                  <li>
-                    <strong>Amputazioni:</strong> Utilizzare formule corrette per peso/BMI stimato
-                  </li>
-                </ul>
-                <p class="text-caption text-grey-8">
-                  Consultare sempre il medico per interpretazione contestualizzata.
+                <p class="text-body2 q-mb-sm" v-for="(guideline, index) in 4" :key="index">
+                  <strong>{{ t(`bmi.sections.documentation.guidelines[${index}].title`) }}</strong>
+                  {{ t(`bmi.sections.documentation.guidelines[${index}].text`) }}
                 </p>
               </q-card-section>
             </q-card>
           </q-expansion-item>
 
-          <!-- 9️⃣ Riferimenti Scientifici -->
+          <!-- Riferimenti Scientifici -->
           <q-expansion-item
-            icon="science"
-            label="9️⃣ Riferimenti Scientifici"
+            :icon="t('bmi.sections.bibliography.icon')"
+            :label="t('bmi.sections.bibliography.title')"
             class="q-mt-sm"
             header-class="bg-teal-1 text-teal-9"
           >
             <q-card class="bg-teal-1">
               <q-card-section>
                 <ul class="text-body2">
-                  <li>
-                    <strong>WHO (2000):</strong> Obesity: preventing and managing the global
-                    epidemic. WHO Technical Report Series 894.
-                  </li>
-                  <li>
-                    <strong>Quetelet A (1832):</strong> Research on the law of growth of man.
-                    Nouveaux mémoires de l'Académie Royale des Sciences et Belles-Lettres de
-                    Bruxelles.
-                  </li>
-                  <li>
-                    <strong>Keys A et al. (1972):</strong> Indices of relative weight and obesity.
-                    Journal of Chronic Diseases 25(6):329-343.
-                  </li>
-                  <li>
-                    <strong>WHO Expert Consultation (2004):</strong> Appropriate body-mass index for
-                    Asian populations. Lancet 363(9403):157-163.
-                  </li>
-                  <li>
-                    <strong>CDC Growth Charts (2000):</strong> BMI-for-age percentiles for children
-                    and adolescents 2-20 years.
-                  </li>
-                  <li>
-                    <strong>NHLBI (1998):</strong> Clinical Guidelines on the Identification,
-                    Evaluation, and Treatment of Overweight and Obesity in Adults.
+                  <li v-for="(ref, index) in 4" :key="index">
+                    <strong>{{ t(`bmi.sections.bibliography.references[${index}].title`) }}</strong>
+                    {{ t(`bmi.sections.bibliography.references[${index}].text`) }}
+                    <span
+                      v-if="
+                        t(
+                          `bmi.sections.bibliography.references[${index}].link`,
+                          {},
+                          { missingWarn: false },
+                        )
+                      "
+                      class="text-blue"
+                    >
+                      ({{ t(`bmi.sections.bibliography.references[${index}].link`) }})</span
+                    >
+                    <span
+                      v-if="
+                        t(
+                          `bmi.sections.bibliography.references[${index}].doi`,
+                          {},
+                          { missingWarn: false },
+                        )
+                      "
+                    >
+                      {{ t(`bmi.sections.bibliography.references[${index}].doi`) }}</span
+                    >
+                    <span
+                      v-if="
+                        t(
+                          `bmi.sections.bibliography.references[${index}].note`,
+                          {},
+                          { missingWarn: false },
+                        )
+                      "
+                      class="text-caption"
+                    >
+                      ({{ t(`bmi.sections.bibliography.references[${index}].note`) }})</span
+                    >
                   </li>
                 </ul>
               </q-card-section>
             </q-card>
           </q-expansion-item>
-
-          <!-- Note Cliniche Personalizzate -->
-          <div class="q-mt-lg" v-if="result.bmi > 0">
-            <q-card class="bg-blue-1 q-pa-md">
-              <div class="text-subtitle2 q-mb-sm">💡 Note Cliniche:</div>
-              <p class="text-body2">{{ getClinicalNotes() }}</p>
-            </q-card>
-          </div>
         </q-card-section>
       </q-card>
     </div>

@@ -417,10 +417,10 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
             <!-- NEWS-STYLE DOCUMENTATION (9 SECTIONS)             -->
             <!-- ================================================= -->
 
-            <!-- 1️⃣ Definizione e Significato Clinico -->
+            <!-- Definizione e Significato Clinico -->
             <q-expansion-item
               icon="info"
-              label="1️⃣ Definizione e Significato Clinico"
+              label="Definizione e Significato Clinico"
               class="q-mt-sm"
               header-class="bg-blue-1 text-blue-9"
             >
@@ -455,10 +455,10 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
               </q-card>
             </q-expansion-item>
 
-            <!-- 2️⃣ Fisiologia del Bilancio Idrico -->
+            <!-- Fisiologia del Bilancio Idrico -->
             <q-expansion-item
               icon="biotech"
-              label="2️⃣ Fisiologia del Bilancio Idrico"
+              label="Fisiologia del Bilancio Idrico"
               class="q-mt-sm"
               header-class="bg-green-1 text-green-9"
             >
@@ -493,10 +493,10 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
               </q-card>
             </q-expansion-item>
 
-            <!-- 3️⃣ Come si Misura -->
+            <!-- Come si Misura -->
             <q-expansion-item
               icon="speed"
-              label="3️⃣ Come si Misura"
+              label="Come si Misura"
               class="q-mt-sm"
               header-class="bg-amber-1 text-amber-9"
             >
@@ -540,10 +540,10 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
               </q-card>
             </q-expansion-item>
 
-            <!-- 4️⃣ Formula di Calcolo -->
+            <!-- Formula di Calcolo -->
             <q-expansion-item
               icon="functions"
-              label="4️⃣ Formula di Calcolo"
+              label="Formula di Calcolo"
               class="q-mt-sm"
               header-class="bg-cyan-1 text-cyan-9"
             >
@@ -577,10 +577,10 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
               </q-card>
             </q-expansion-item>
 
-            <!-- 5️⃣ Interpretazione Risultati -->
+            <!-- Interpretazione Risultati -->
             <q-expansion-item
               icon="psychology"
-              label="5️⃣ Interpretazione Risultati"
+              label="Interpretazione Risultati"
               class="q-mt-sm"
               header-class="bg-orange-1 text-orange-9"
             >
@@ -623,10 +623,10 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
               </q-card>
             </q-expansion-item>
 
-            <!-- 6️⃣ Applicazioni Cliniche -->
+            <!-- Applicazioni Cliniche -->
             <q-expansion-item
               icon="local_hospital"
-              label="6️⃣ Applicazioni Cliniche"
+              label="Applicazioni Cliniche"
               class="q-mt-sm"
               header-class="bg-purple-1 text-purple-9"
             >
@@ -655,10 +655,10 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
               </q-card>
             </q-expansion-item>
 
-            <!-- 7️⃣ Valori Critici e Alert -->
+            <!-- Valori Critici e Alert -->
             <q-expansion-item
               icon="warning"
-              label="7️⃣ Valori Critici e Alert"
+              label="Valori Critici e Alert"
               class="q-mt-sm"
               header-class="bg-red-1 text-red-9"
             >
@@ -708,10 +708,10 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
               </q-card>
             </q-expansion-item>
 
-            <!-- 8️⃣ Documentazione Clinica -->
+            <!-- Documentazione Clinica -->
             <q-expansion-item
               icon="menu_book"
-              label="8️⃣ Documentazione Clinica"
+              label="Documentazione Clinica"
               class="q-mt-sm"
               header-class="bg-indigo-1 text-indigo-9"
             >
@@ -746,10 +746,10 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
               </q-card>
             </q-expansion-item>
 
-            <!-- 9️⃣ Riferimenti Scientifici -->
+            <!-- Riferimenti Scientifici -->
             <q-expansion-item
               icon="science"
-              label="9️⃣ Riferimenti Scientifici"
+              label="Riferimenti Scientifici"
               class="q-mt-sm"
               header-class="bg-teal-1 text-teal-9"
             >

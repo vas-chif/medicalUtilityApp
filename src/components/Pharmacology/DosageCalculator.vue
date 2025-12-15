@@ -467,7 +467,7 @@ const resetDosageForm = () => {
               suffix="kg"
               outlined
               class="q-mb-md"
-              :rules="[(val) => (val > 0 && val <= 500) || 'Peso tra 1-500 kg']"
+              :rules="[(val: number) => (val > 0 && val <= 500) || 'Peso tra 1-500 kg']"
             >
               <template v-slot:prepend>
                 <q-icon name="fitness_center" color="blue" />
@@ -482,7 +482,7 @@ const resetDosageForm = () => {
               suffix="anni"
               outlined
               class="q-mb-md"
-              :rules="[(val) => (val >= 0 && val <= 120) || 'Età tra 0-120 anni']"
+              :rules="[(val: number) => (val >= 0 && val <= 120) || 'Età tra 0-120 anni']"
             >
               <template v-slot:prepend>
                 <q-icon name="cake" color="orange" />
@@ -516,7 +516,7 @@ const resetDosageForm = () => {
               class="q-mb-md"
               emit-value
               map-options
-              :rules="[(val) => val !== null || 'Selezionare un farmaco']"
+              :rules="[(val: string | null) => val !== null || 'Selezionare un farmaco']"
               @update:model-value="onDrugChange"
             >
               <template v-slot:prepend>
@@ -534,7 +534,7 @@ const resetDosageForm = () => {
               outlined
               class="q-mb-md"
               v-if="selectedDrug?.type === 'weight-based'"
-              :rules="[(val) => val > 0 || 'Inserire dose positiva']"
+              :rules="[(val: number) => val > 0 || 'Inserire dose positiva']"
             >
               <template v-slot:prepend>
                 <q-icon name="straighten" color="green" />
@@ -551,7 +551,7 @@ const resetDosageForm = () => {
               outlined
               class="q-mb-md"
               v-if="selectedDrug?.type === 'fixed'"
-              :rules="[(val) => val > 0 || 'Inserire dose positiva']"
+              :rules="[(val: number) => val > 0 || 'Inserire dose positiva']"
             >
               <template v-slot:prepend>
                 <q-icon name="straighten" color="green" />
@@ -723,10 +723,10 @@ const resetDosageForm = () => {
             <!-- DOCUMENTAZIONE MEDICA - 5 SEZIONI                            -->
             <!-- ============================================================ -->
 
-            <!-- 1️⃣ Farmacocinetica e Farmacodinamica (PK/PD) -->
+            <!-- Farmacocinetica e Farmacodinamica (PK/PD) -->
             <q-expansion-item
               icon="science"
-              label="1️⃣ Farmacocinetica e Farmacodinamica (PK/PD)"
+              label="Farmacocinetica e Farmacodinamica (PK/PD)"
               class="q-mt-md"
               header-class="bg-blue-1 text-blue-9"
             >
@@ -772,10 +772,10 @@ const resetDosageForm = () => {
               </q-card>
             </q-expansion-item>
 
-            <!-- 2️⃣ Dosaggi Pediatrici e Neonatali -->
+            <!-- Dosaggi Pediatrici e Neonatali -->
             <q-expansion-item
               icon="child_care"
-              label="2️⃣ Dosaggi Pediatrici e Neonatali"
+              label="Dosaggi Pediatrici e Neonatali"
               class="q-mt-md"
               header-class="bg-green-1 text-green-9"
             >
@@ -811,10 +811,10 @@ const resetDosageForm = () => {
               </q-card>
             </q-expansion-item>
 
-            <!-- 3️⃣ Aggiustamento Dosaggio in Insufficienza Renale -->
+            <!-- Aggiustamento Dosaggio in Insufficienza Renale -->
             <q-expansion-item
               icon="medication"
-              label="3️⃣ Aggiustamento Dosaggio in Insufficienza Renale (CKD)"
+              label="Aggiustamento Dosaggio in Insufficienza Renale (CKD)"
               class="q-mt-md"
               header-class="bg-amber-1 text-amber-9"
             >
@@ -863,10 +863,10 @@ const resetDosageForm = () => {
               </q-card>
             </q-expansion-item>
 
-            <!-- 4️⃣ Loading Dose vs Maintenance Dose -->
+            <!-- Loading Dose vs Maintenance Dose -->
             <q-expansion-item
               icon="flash_on"
-              label="4️⃣ Loading Dose vs Maintenance Dose"
+              label="Loading Dose vs Maintenance Dose"
               class="q-mt-md"
               header-class="bg-cyan-1 text-cyan-9"
             >
@@ -903,10 +903,10 @@ const resetDosageForm = () => {
               </q-card>
             </q-expansion-item>
 
-            <!-- 5️⃣ Riferimenti Scientifici -->
+            <!-- Riferimenti Scientifici -->
             <q-expansion-item
               icon="menu_book"
-              label="5️⃣ Riferimenti Scientifici ScienceDirect"
+              label="Riferimenti Scientifici ScienceDirect"
               class="q-mt-md"
               header-class="bg-teal-1 text-teal-9"
             >

@@ -132,6 +132,24 @@ const deficit = computed((): number => {
 });
 
 /**
+ * Check if there are incompatible drugs forced into same lumen
+ * @returns true if any lumen has isCompatible = false
+ */
+const hasIncompatibleAllocations = computed((): boolean => {
+  return lumenAllocation.value.some((lumen) => lumen.isCompatible === false);
+});
+
+/**
+ * Get list of lumens with incompatibility issues
+ * @returns Array of lumen IDs with forced incompatible allocations
+ */
+const incompatibleLumens = computed((): number[] => {
+  return lumenAllocation.value
+    .filter((lumen) => lumen.isCompatible === false)
+    .map((lumen) => lumen.lumenId);
+});
+
+/**
  * Generate optimization recommendations
  * Based on deficit and drug incompatibilities
  * @returns Array of clinical recommendations
@@ -643,6 +661,18 @@ watch(
         <div class="text-body2 q-mt-sm">
           Deficit: <strong>{{ deficit }} {{ deficit === 1 ? 'lume' : 'lumi' }}</strong> mancante/i
         </div>
+        <div
+          v-if="hasIncompatibleAllocations"
+          class="text-body2 q-mt-sm bg-red-10 q-pa-sm rounded-borders"
+        >
+          <q-icon name="error" size="sm" class="q-mr-xs" />
+          <strong>ATTENZIONE:</strong> Farmaci incompatibili rilevati in
+          {{ incompatibleLumens.length === 1 ? 'lume' : 'lumi' }}
+          {{ incompatibleLumens.join(', ') }}
+          <br />
+          <strong>Raccomandazione:</strong> Aggiungere {{ deficit }}
+          {{ deficit === 1 ? 'lume' : 'lumi' }} aggiuntivo/i per evitare incompatibilità
+        </div>
       </q-banner>
 
       <!-- LUMEN CARDS (1 per lumen) -->
@@ -650,12 +680,28 @@ watch(
         <q-card
           v-for="lumen in lumenAllocation"
           :key="lumen.lumenId"
-          :class="['col-12 col-md-5', lumen.lumenId <= lumensCount ? 'bg-green-1' : 'bg-red-1']"
+          :class="[
+            'col-12 col-md-5',
+            lumen.lumenId <= lumensCount && lumen.isCompatible !== false
+              ? 'bg-green-1'
+              : 'bg-red-1',
+          ]"
         >
           <q-card-section>
-            <div :class="['text-h6', lumen.lumenId <= lumensCount ? 'text-green-9' : 'text-red-9']">
+            <div
+              :class="[
+                'text-h6',
+                lumen.lumenId <= lumensCount && lumen.isCompatible !== false
+                  ? 'text-green-9'
+                  : 'text-red-9',
+              ]"
+            >
               <q-icon
-                :name="lumen.lumenId <= lumensCount ? 'check_circle' : 'cancel'"
+                :name="
+                  lumen.lumenId <= lumensCount && lumen.isCompatible !== false
+                    ? 'check_circle'
+                    : 'cancel'
+                "
                 class="q-mr-sm"
               />
               Lumen {{ lumen.lumenId }}
@@ -667,6 +713,15 @@ watch(
                 class="q-ml-sm"
               >
                 NON DISPONIBILE
+              </q-chip>
+              <q-chip
+                v-else-if="lumen.isCompatible === false"
+                color="negative"
+                text-color="white"
+                size="sm"
+                class="q-ml-sm"
+              >
+                ⚠️ INCOMPATIBILITÀ
               </q-chip>
             </div>
           </q-card-section>

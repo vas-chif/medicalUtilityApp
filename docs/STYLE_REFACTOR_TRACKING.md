@@ -1,105 +1,47 @@
-# 🎨 STYLE REFACTOR TRACKING - NEWS Standard Compliance
+# 🎨 Style Refactor Tracking - NEWS Standard
 
-**Data creazione:** 2025-11-13  
-**Obiettivo:** Standardizzare tutti i calcolatori medici con lo style NEWS Score
-
-**Reference Gold Standard:** `src/pages/NEWSScoreCalculatorPage.vue`
+**Gold Standard**: `src/pages/NEWSScoreCalculatorPage.vue`
 
 ---
 
-## 📋 Color Scheme Standard Obbligatorio
+## 📋 Color Scheme Standard
 
-| Sezione | Background | Text Color | Icon | Header Class |
-|---------|-----------|------------|------|--------------|
-| 1️⃣ Definizione | `bg-blue-1` | `text-blue-9` | `info` | `bg-blue-1 text-blue-9` |
-| 2️⃣ Fisiologia | `bg-green-1` | `text-green-9` | `science` | `bg-green-1 text-green-9` |
-| 3️⃣ Misurazione | `bg-amber-1` | `text-amber-9` | `straighten` | `bg-amber-1 text-amber-9` |
-| 4️⃣ Formula | `bg-cyan-1` | `text-cyan-9` | `functions` | `bg-cyan-1 text-cyan-9` |
-| 5️⃣ Interpretazione | `bg-orange-1` | `text-orange-9` | `psychology` | `bg-orange-1 text-orange-9` |
-| 6️⃣ Applicazioni | `bg-purple-1` | `text-purple-9` | `local_hospital` | `bg-purple-1 text-purple-9` |
-| 7️⃣ Valori/Alert | `bg-red-1` | `text-red-9` | `warning` | `bg-red-1 text-red-9` |
-| 8️⃣ Documentazione | `bg-indigo-1` | `text-indigo-9` | `menu_book` | `bg-indigo-1 text-indigo-9` |
-| 9️⃣ Riferimenti | `bg-teal-1` | `text-teal-9` | `science` | `bg-teal-1 text-teal-9` |
-
----
-
-## ✅ File Conformi (COMPLETATI)
-
-### NEWS Score Calculator ✅
-- **File:** `src/pages/NEWSScoreCalculatorPage.vue`
-- **Stato:** ✅ GOLD STANDARD REFERENCE
-- **Righe:** ~800
-- **Sezioni:** 9/9 con color scheme completo
-- **Note:** Riferimento perfetto per tutti gli altri file
-
-### SOFA Score Calculator ✅
-- **File:** `src/pages/SOFAScoreCalculatorPage.vue`
-- **Stato:** ✅ CONFORME
-- **Righe:** 1937
-- **Sezioni:** 9/9 con color scheme completo
-- **Fix applicati:** 
-  - 2025-11-13: Escapati 5 caratteri `<` in `&lt;` (parsing errors)
-- **Note:** Documentazione completa e conforme
-
-### BMI Calculator Page ✅
-- **File:** `src/pages/BMICalculatorPage.vue`
-- **Stato:** ✅ CONFORME
-- **Righe:** 2592 (dopo refactoring, -5 righe da 2589+8 = rimozione dense)
-- **Fix applicati:**
-  - 2025-11-13: BSA/IBW documentation moved outside v-if (always visible)
-  - 2025-11-14: BSA documentation refactored to NEWS-style
-    - ✅ BSA: 2 sezioni (6️⃣ Applicazioni bg-purple-1, 4️⃣ Formule bg-cyan-1)
-    - ✅ IBW: 2 sezioni (6️⃣ Applicazioni bg-purple-1, 4️⃣ Formule bg-cyan-1)
-  - 2025-11-14: Rimossi ~22 attributi `dense` non conformi NEWS
-    - q-tabs (1), q-banner (10), q-chip (7), q-list (1), q-markup-table (1)
-- **Note:** ABW ha documentazione GCS-style completa, BSA/IBW ora NEWS-conformi, 0 errori
+| Sezione            | BG            | Text            | Icon             |
+| ------------------ | ------------- | --------------- | ---------------- |
+| 1️⃣ Definizione     | `bg-blue-1`   | `text-blue-9`   | `info`           |
+| 2️⃣ Fisiologia      | `bg-green-1`  | `text-green-9`  | `science`        |
+| 3️⃣ Misurazione     | `bg-amber-1`  | `text-amber-9`  | `straighten`     |
+| 4️⃣ Formula         | `bg-cyan-1`   | `text-cyan-9`   | `functions`      |
+| 5️⃣ Interpretazione | `bg-orange-1` | `text-orange-9` | `psychology`     |
+| 6️⃣ Applicazioni    | `bg-purple-1` | `text-purple-9` | `local_hospital` |
+| 7️⃣ Valori/Alert    | `bg-red-1`    | `text-red-9`    | `warning`        |
+| 8️⃣ Docs            | `bg-indigo-1` | `text-indigo-9` | `menu_book`      |
+| 9️⃣ Riferimenti     | `bg-teal-1`   | `text-teal-9`   | `science`        |
 
 ---
 
-## ⚠️ File NON Conformi (PENDING REFACTOR)
+## ✅ Conformi
 
-### 1. Quoziente Respiratorio Calculator ✅
-- **File:** `src/components/QuozienteRespiratorioCalculator.vue`
-- **Stato:** ✅ CONFORME
-- **Righe:** 1874 (dopo refactoring, -109 righe da 1983)
-- **Sezioni:** 9/9 NEWS-style standard + 3 subsections
-- **Fix applicati:**
-  - 2025-11-15: Refactoring completo NEWS-style
-  - ✅ Aggiunti emoji numerici (1️⃣-9️⃣) alle 9 sezioni principali
-  - ✅ Aggiunti header-class completi (bg-blue-1, bg-green-1, bg-amber-1, bg-cyan-1, bg-orange-1, bg-purple-1, bg-red-1, bg-indigo-1, bg-teal-1)
-  - ✅ Sostituiti ~12 `<div class="bg-grey-1">` con `<q-card class="q-pa-md">`
-  - ✅ Rimossi tutti attributi `dense` (q-banner, q-list, q-item, q-chip, q-input)
-  - ✅ Rimossi `color="medical-mint"` da tutti i q-expansion-item
-  - ✅ Eliminata sezione duplicata "Definizione e Significato Clinico" (line 655-743, ridondante)
-  - ✅ Convertite 3 subsections con bg-{color}-2 (Metabolismo Aerobico/Anaerobico bg-green-2, Come si Misura VCO2/VO2 bg-amber-2)
-  - ✅ 0 errori compilazione
-- **Priorità:** ✅ COMPLETATO (era MEDIA)
-- **Effort effettivo:** ~1.5h (era stimato 2-3h, pattern riutilizzato efficacemente)
-- **Note:** Quoziente Respiratorio VCO₂/VO₂, indicatore metabolico substrati energetici. Formula Hüfner constant 1.36. Include 12 sezioni consolidate in 9 NEWS + 3 subsections approfondite.
+- NEWS Score ✅ GOLD STANDARD (800 lines)
+- SOFA Score ✅ (1937 lines, 9/9 sections)
+- BMI Calculator ✅ (2592 lines, BSA/IBW NEWS-style)
+- Quoziente Respiratorio ✅ (1874 lines, -109 refactor)
+- APGAR Score ✅ (686 lines, +25 refactor)
+- GCS Calculator ✅ (complete)
 
-### 2. APGAR Score Calculator ✅
-- **File:** `src/components/APGARScoreCalculator.vue`
-- **Stato:** ✅ CONFORME (Refactoring completato 2025-11-13)
-- **Righe:** 686 (dopo refactoring, +25 righe)
-- **Fix applicati:**
-  - 2025-11-13: Refactoring completo NEWS-style standard
-  - ✅ Rimosso `dense` attribute
-  - ✅ Rimosso `color="medical-mint"` prop
-  - ✅ Aggiunti emoji numerici (1️⃣-9️⃣)
-  - ✅ Aggiunti `header-class="bg-{color}-1 text-{color}-9"`
-  - ✅ Sostituiti `<div class="bg-grey-1">` con `<q-card class="q-pa-md">`
-  - ✅ Cambiato `class="q-mt-xs"` in `class="q-mt-sm"`
-  - ✅ Consolidate 10 sezioni → 9 sezioni NEWS standard
-  - ✅ Rimossa sezione duplicata "Azioni Cliniche"
-- **Note:** Ottimizzazione score neonatale, codice production-ready conforme standard
+---
 
-### 3. GCS Calculator ✅
-  - ✅ Rimossa funzione inutilizzata `getClinicalActions()`
-- **Priorità:** ✅ COMPLETATO
-- **Effort effettivo:** 1.5h
-- **Note:** Refactoring perfetto, 0 errori, componente critico per neonatologia ora conforme
+## ⚠️ Non Conformi
+
+List pending calculators needing NEWS-style refactor.
+
+---
+
+**Reference**: `src/pages/NEWSScoreCalculatorPage.vue`  
+**Standard**: 9 sections, emoji headers, color-coded, no `dense`
 
 ### 4. GCS Calculator ✅
+
 - **File:** `src/components/GCSCalculator.vue`
 - **Stato:** ✅ CONFORME (Refactoring completato 2025-11-13)
 - **Righe:** 567 (dopo refactoring, ridotte da 649 = -82 righe)
@@ -123,6 +65,7 @@
 - **Note:** Refactoring perfetto, componente critico emergenze trauma/neurologia ora conforme NEWS standard
 
 ### 4. Pharmacology Page (4 Tabs Integrati) ✅
+
 - **File:** `src/pages/PharmacologyPage.vue`
 - **Stato:** ✅ CONFORME
 - **Righe:** 3435 (dopo refactoring completo)
@@ -143,6 +86,7 @@
 - **Note:** 23 sezioni, 50+ riferimenti scientifici ScienceDirect, codice production-ready
 
 ### 6. Mechanical Power Calculator ✅
+
 - **File:** `src/components/MechanicalPowerCalculator.vue`
 - **Stato:** ✅ CONFORME
 - **Righe:** 2303 (dopo refactoring, -21 righe da 2324)
@@ -161,6 +105,7 @@
 - **Note:** Formula Gattinoni VILI predictor, componente critico ICU ventilazione meccanica. Include subsections documentali approfondite.
 
 ### 7. GFR Calculator ✅
+
 - **File:** `src/pages/GFRCalculatorPage.vue` + 3 componenti modulari
 - **Stato:** ✅ CONFORME - REFACTORING ARCHITETTURALE COMPLETATO
 - **Righe:**
@@ -185,24 +130,28 @@
 - **Note:** **PRIMO ESEMPIO** nuovo standard architetturale. Pattern da replicare su PharmacologyPage (3435 righe → 250 + 4 componenti) e BMICalculatorPage (2592 righe → 300 + 3 componenti). Riferimento: REGOLE_COPILOT.md § 🏗️ ARCHITETTURA COMPONENTI linee 287-443.
 
 ### 6. Dosage Calculator ⚠️
+
 - **File:** `src/pages/PharmacologyPage.vue` (Tab 1)
 - **Stato:** ⚠️ Integrato in Pharmacology Page
 - **Problemi rilevati:** Vedere Pharmacology Page (#5)
 - **Priorità:** MEDIA (parte di Pharmacology refactor)
 
 ### 7. Drug Dilution Calculator ⚠️
+
 - **File:** `src/pages/PharmacologyPage.vue` (Tab 3)
 - **Stato:** ⚠️ Integrato in Pharmacology Page
 - **Problemi rilevati:** Vedere Pharmacology Page (#5)
 - **Priorità:** MEDIA (parte di Pharmacology refactor)
 
 ### 8. Infusion Rate Calculator ⚠️
+
 - **File:** `src/pages/PharmacologyPage.vue` (Tab 4)
 - **Stato:** ⚠️ Integrato in Pharmacology Page
 - **Problemi rilevati:** Vedere Pharmacology Page (#5)
 - **Priorità:** MEDIA (parte di Pharmacology refactor)
 
 ### 9. Clinical Assessment Page ✅
+
 - **File:** `src/pages/ClinicalAssessmentPage.vue`
 - **Stato:** ✅ CONFORME - ORCHESTRATOR PATTERN
 - **Righe:** 91 (orchestrator puro, 4 tabs integrati)
@@ -222,6 +171,7 @@
 - **Note:** Page orchestrator perfetto per Clinical Scoring Systems (APGAR, GCS, NEWS, SOFA). Pattern § 🏗️ ARCHITETTURA COMPONENTI già applicato correttamente. Tutti i componenti importati già NEWS-style conformi.
 
 ### 10. Intensive Care Utility Page ✅
+
 - **File:** `src/pages/IntensiveCareUtilityPage.vue`
 - **Stato:** ✅ CONFORME - ORCHESTRATOR PATTERN
 - **Righe:** 63 (orchestrator puro, 2 tabs integrati)
@@ -242,17 +192,20 @@
 ## 🎯 Priorità di Refactoring
 
 ### FASE 1: Quick Wins (1-2 giorni) ✅ COMPLETATO
+
 1. ✅ APGAR Score Calculator (761→686 righe) - ALTA priorità clinica neonatologia
 2. ✅ GCS Calculator (649→567 righe) - ALTA priorità emergenze trauma/neurologia
 3. ✅ Dilution/Infusion Locators → TROVATI in PharmacologyPage.vue (Tab 3 e 4)
 
 ### FASE 2: Calcolatori Medi (3-5 giorni) ✅ COMPLETATO
+
 4. ✅ **Pharmacology Page** (3435 righe, 4 tabs, 23 sezioni) - COMPLETATO 2025-11-14
    - Effort effettivo: ~2.5h (era stimato 6-8h)
 5. ✅ **BMI Calculator** (2592 righe, BSA/IBW refactored) - COMPLETATO 2025-11-14
    - Effort effettivo: ~0.5h
 
 ### FASE 3: File Complessi (4-5 giorni) ✅ COMPLETATO AL 100%! 🎉
+
 6. ✅ **Mechanical Power** (2303 righe, 9 sezioni) - COMPLETATO 2025-11-15
    - Effort effettivo: ~1.5h (era stimato 3-4h)
 7. ✅ **Quoziente Respiratorio** (1874 righe, 9+3 sezioni) - COMPLETATO 2025-11-15
@@ -271,6 +224,7 @@
 **Ottimizzazione effort:** ~45-50% grazie a pattern riutilizzabili NEWS-style + § 🏗️ ARCHITETTURA COMPONENTI
 
 **Breakdown effort per fase:**
+
 - FASE 1 (Quick Wins): ~3h (APGAR 1.5h + GCS 1.5h)
 - FASE 2 (Calcolatori Medi): ~3h (Pharmacology 2.5h + BMI 0.5h)
 - FASE 3 (File Complessi): ~10.3h (MechanicalPower 1.5h + Quoziente 1.5h + SOFA 2h + NEWS 2h + GFR 2.5h + ClinicalAssessment 0.2h + IntensiveCare 0.1h)
@@ -280,14 +234,9 @@
 ## 📝 Template Fix Standard
 
 ### BEFORE (NON conforme):
+
 ```vue
-<q-expansion-item
-  icon="info"
-  color="medical-mint"
-  label="Definizione"
-  dense
-  class="q-mt-xs"
->
+<q-expansion-item icon="info" color="medical-mint" label="Definizione" dense class="q-mt-xs">
   <div class="bg-grey-1 q-pa-sm">
     [Contenuto...]
   </div>
@@ -295,6 +244,7 @@
 ```
 
 ### AFTER (CONFORME):
+
 ```vue
 <!-- 1️⃣ Definizione e Significato Clinico -->
 <q-expansion-item
@@ -314,6 +264,7 @@
 ```
 
 ### Checklist per ogni sezione:
+
 - [ ] Rimuovi `dense`
 - [ ] Aggiungi `header-class="bg-[color]-1 text-[color]-9"`
 - [ ] Sostituisci `<div>` con `<q-card class="bg-[color]-1">`
@@ -326,6 +277,7 @@
 ## 🔍 Security Checklist (da verificare in FASE 1)
 
 ### Input Validation
+
 - [ ] APGAR: Range 0-2 per parametro validato ✅
 - [ ] GCS: Range eyes(1-4), verbal(1-5), motor(1-6) validato
 - [ ] Dosage: Peso/dose numerici con min/max
@@ -333,11 +285,13 @@
 - [ ] Dilution: Concentrazioni > 0
 
 ### XSS Prevention
+
 - [ ] Nessun `v-html` senza sanitizzazione
 - [ ] Input escapati correttamente
 - [ ] Output sanitizzato
 
 ### HTML Entity Escaping
+
 - [ ] Caratteri `<` escapati in `&lt;` ✅ (SOFA fixato)
 - [ ] Caratteri `>` escapati in `&gt;`
 - [ ] Verifica tutti i file
@@ -348,20 +302,22 @@
 
 **Ultimo aggiornamento:** 2025-11-16
 
-| Status | Count | % |
-|--------|-------|---|
-| ✅ Conforme | 11 | 100% |
-| ⚠️ Pending | 0 | 0% |
-| **TOTAL** | **11** | **100%** |
+| Status      | Count  | %        |
+| ----------- | ------ | -------- |
+| ✅ Conforme | 11     | 100%     |
+| ⚠️ Pending  | 0      | 0%       |
+| **TOTAL**   | **11** | **100%** |
 
 **🎉 PROGETTO COMPLETATO AL 100%! 🎉**
 
 **Effort Summary:**
+
 - **Completati:** 11/11 files (100%) = ~16.3h effettive
 - **Rimanenti:** 0 files (0%) = 0h
 - **Target 100%:** ✅ RAGGIUNTO!
 
 **Effort Breakdown:**
+
 - APGAR Score: 1.5h
 - GCS Calculator: 1.5h
 - Pharmacology Page (4 tabs): 2.5h
@@ -376,6 +332,7 @@
 - **TOTALE:** 16.3h
 
 **Ottimizzazione Achieved:**
+
 - Effort iniziale stimato: ~25-30h
 - Effort effettivo: 16.3h
 - **Risparmio: ~45-50%** grazie a pattern riutilizzabili NEWS-style + § 🏗️ ARCHITETTURA COMPONENTI
@@ -432,7 +389,7 @@
    - ✅ **0 errori TypeScript/ESLint** dopo riorganizzazione
    - ✅ **Cartelle future pronte:** BMI/, Pharmacology/, Compatibility/
 
-4. **TODO Fase 3:**
+7. **TODO Fase 3:**
    - [x] Refactor Mechanical Power (2324→2303 righe, 9 sezioni) ✅ COMPLETATO
    - [x] Refactor Quoziente Respiratorio (1983→1874 righe, 9+3 sezioni) ✅ COMPLETATO
    - [x] **Refactor GFR Calculator** (5533→206+2792 righe, architettura modulare) ✅ COMPLETATO

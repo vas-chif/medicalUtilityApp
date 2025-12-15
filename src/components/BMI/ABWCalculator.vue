@@ -14,6 +14,20 @@
  */
 
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+// import { useSecureLogger } from 'src/composables/useSecureLogger';
+// import { useSmartEnvironment } from 'src/composables/useSmartEnvironment';
+
+// ============================================================
+// COMPOSABLES
+// ============================================================
+const { t } = useI18n();
+// const { logger } = useSecureLogger();
+// const { isDev: isDevelopment } = useSmartEnvironment();
+
+// ============================================================
+// TYPES & INTERFACES
+// ============================================================
 
 interface ABWFormData {
   actualWeight: number | null;
@@ -81,9 +95,9 @@ const resetABWForm = () => {
     <div class="col-12 col-md-5">
       <q-card class="q-pa-md">
         <q-card-section>
-          <h6 class="text-h6 q-ma-none q-mb-md">⚖️ Adjusted Body Weight (ABW)</h6>
+          <h6 class="text-h6 q-ma-none q-mb-md">{{ t('abw.title') }}</h6>
           <p class="text-caption text-grey-7 q-mb-md">
-            Calcolo peso aggiustato per gestione obesità (farmacologica e nutrizionale)
+            {{ t('abw.description') }}
           </p>
 
           <!-- Peso Attuale -->
@@ -91,14 +105,14 @@ const resetABWForm = () => {
             v-model.number="abwForm.actualWeight"
             type="number"
             step="0.1"
-            label="Peso Attuale"
-            suffix="kg"
+            :label="t('abw.form.actualWeightLabel')"
+            :suffix="t('abw.form.actualWeightSuffix')"
             outlined
             class="q-mb-md"
-            :rules="[(val) => (val > 0 && val <= 500) || 'Peso tra 1-500 kg']"
+            :rules="[(val) => (val > 0 && val <= 500) || t('abw.form.actualWeightRule')]"
           >
             <template v-slot:prepend>
-              <q-icon name="fitness_center" color="blue" />
+              <q-icon :name="t('abw.form.actualWeightIcon')" color="blue" />
             </template>
           </q-input>
 
@@ -107,15 +121,15 @@ const resetABWForm = () => {
             v-model.number="abwForm.ibw"
             type="number"
             step="0.1"
-            label="Ideal Body Weight (IBW)"
-            suffix="kg"
+            :label="t('abw.form.ibwLabel')"
+            :suffix="t('abw.form.ibwSuffix')"
             outlined
             class="q-mb-md"
-            hint="Calcolato dalla tab IBW o inserisci manualmente"
-            :rules="[(val) => (val > 0 && val <= 200) || 'IBW tra 1-200 kg']"
+            :hint="t('abw.form.ibwHint')"
+            :rules="[(val) => (val > 0 && val <= 200) || t('abw.form.ibwRule')]"
           >
             <template v-slot:prepend>
-              <q-icon name="straighten" color="green" />
+              <q-icon :name="t('abw.form.ibwIcon')" color="green" />
             </template>
           </q-input>
 
@@ -128,7 +142,7 @@ const resetABWForm = () => {
             icon="calculate"
             :disable="!isABWFormValid"
           >
-            Calcola ABW
+            {{ t('abw.buttons.calculate') }}
           </q-btn>
           <q-btn
             @click="resetABWForm"
@@ -138,7 +152,7 @@ const resetABWForm = () => {
             icon="refresh"
             outline
           >
-            Reset
+            {{ t('abw.buttons.reset') }}
           </q-btn>
         </q-card-section>
       </q-card>
@@ -148,16 +162,17 @@ const resetABWForm = () => {
     <div class="col-12 col-md-6">
       <q-card class="q-pa-md">
         <q-card-section>
-          <h6 class="text-h6 q-ma-none q-mb-md">📊 Risultati ABW</h6>
+          <h6 class="text-h6 q-ma-none q-mb-md">{{ t('abw.results.title') }}</h6>
 
-          <div v-if="abwResult.abw > 0">
+          <!-- Risultati Calcolo (visibili solo dopo calcolo) -->
+          <div v-if="abwResult.abw > 0" class="q-mb-lg">
             <!-- Risultato Principale -->
             <div class="text-center q-mb-lg">
               <div class="text-h3 text-primary q-mb-sm">
                 {{ abwResult.abw.toFixed(1) }}
               </div>
               <div class="text-subtitle1 text-grey-7">
-                <strong>kg</strong> (Adjusted Body Weight)
+                <strong>{{ t('abw.results.mainValue') }}</strong> ({{ t('abw.results.mainLabel') }})
               </div>
             </div>
 
@@ -168,19 +183,23 @@ const resetABWForm = () => {
               <q-list bordered separator class="rounded-borders">
                 <q-item>
                   <q-item-section>
-                    <q-item-label overline>Peso Attuale</q-item-label>
+                    <q-item-label overline>{{
+                      t('abw.results.details.actualWeight')
+                    }}</q-item-label>
                     <q-item-label class="text-h6">{{ abwForm.actualWeight }} kg</q-item-label>
                   </q-item-section>
                 </q-item>
                 <q-item>
                   <q-item-section>
-                    <q-item-label overline>Ideal Body Weight (IBW)</q-item-label>
+                    <q-item-label overline>{{ t('abw.results.details.ibw') }}</q-item-label>
                     <q-item-label class="text-h6">{{ abwForm.ibw }} kg</q-item-label>
                   </q-item-section>
                 </q-item>
                 <q-item>
                   <q-item-section>
-                    <q-item-label overline>Eccesso di Peso</q-item-label>
+                    <q-item-label overline>{{
+                      t('abw.results.details.excessWeight')
+                    }}</q-item-label>
                     <q-item-label class="text-h6 text-orange">
                       {{ abwResult.excessWeight.toFixed(1) }} kg
                     </q-item-label>
@@ -188,7 +207,9 @@ const resetABWForm = () => {
                 </q-item>
                 <q-item>
                   <q-item-section>
-                    <q-item-label overline>Peso Eccesso Metabolicamente Attivo (25%)</q-item-label>
+                    <q-item-label overline>{{
+                      t('abw.results.details.activeWeight')
+                    }}</q-item-label>
                     <q-item-label class="text-h6 text-green">
                       {{ (abwResult.excessWeight * 0.25).toFixed(1) }} kg
                     </q-item-label>
@@ -196,83 +217,72 @@ const resetABWForm = () => {
                 </q-item>
               </q-list>
             </div>
-
-            <!-- Formula ABW -->
-            <q-banner class="bg-blue-1 q-mb-md" rounded>
-              <template v-slot:avatar>
-                <q-icon name="functions" color="primary" />
-              </template>
-              <div class="text-body2">
-                <strong>Formula:</strong> ABW = IBW + 0.25 × (Peso Attuale - IBW)<br />
-                <span class="text-caption">
-                  Solo il 25% dell'eccesso di peso è metabolicamente attivo
-                </span>
-              </div>
-            </q-banner>
-
-            <!-- Applicazioni Cliniche ABW -->
-            <q-expansion-item
-              icon="local_hospital"
-              label="🏥 Applicazioni Cliniche ABW"
-              class="text-primary"
-            >
-              <q-card class="q-pa-md">
-                <ul class="text-body2 q-mb-none">
-                  <li class="q-mb-sm">
-                    <strong>Nutrizione Obesità (BMI &gt;30):</strong> Calcolare fabbisogno calorico
-                    e proteico su ABW, non su peso totale (previene sovralimentazione)
-                  </li>
-                  <li class="q-mb-sm">
-                    <strong>Farmaci Lipofili:</strong> Propofol, benzodiazepine, amiodarone -
-                    dosaggio basato su ABW (accumulo nel tessuto adiposo)
-                  </li>
-                  <li class="q-mb-sm">
-                    <strong>Farmaci Idrofili:</strong> Aminoglicosidi, vancomicina - dosaggio basato
-                    su IBW (non ABW), scarsa distribuzione nel grasso
-                  </li>
-                  <li class="q-mb-sm">
-                    <strong>Pediatria:</strong> Formule specifiche TBW/LBW per anestesia (Samuels &
-                    Sjoblom 2017)
-                  </li>
-                  <li class="q-mb-sm">
-                    <strong>Criterio Obesità:</strong> Peso attuale &gt; 120% IBW oppure BMI &ge; 30
-                    kg/m²
-                  </li>
-                </ul>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Note Cliniche -->
-            <q-expansion-item icon="info" label="💡 Note Cliniche ABW" class="text-primary q-mt-sm">
-              <q-card class="q-pa-md">
-                <div class="text-body2">
-                  <p class="q-mb-sm">
-                    <strong>Razionale Fisiologico:</strong> Il tessuto adiposo in eccesso ha una
-                    massa metabolicamente attiva limitata. Solo circa il 25% del peso in eccesso
-                    contribuisce al metabolismo basale e al volume di distribuzione farmacologico.
-                  </p>
-                  <p class="q-mb-sm">
-                    <strong>Esempio Pratico:</strong> Paziente 120 kg, IBW 70 kg → Eccesso 50 kg →
-                    ABW = 70 + 0.25×50 = 82.5 kg. Usare 82.5 kg per calcolo calorie/proteine, non
-                    120 kg.
-                  </p>
-                  <p class="q-mb-sm">
-                    <strong>Limitazioni:</strong> Formula empirica sviluppata per adulti. Per
-                    pazienti critici o pediatria considerare metodologie più accurate (LBM, FFM).
-                  </p>
-                  <p class="q-mb-none">
-                    <strong>Alternativa:</strong> Utilizzare FFM (fat-free mass) da impedenziometria
-                    o formule specifiche quando disponibili.
-                  </p>
-                </div>
-              </q-card>
-            </q-expansion-item>
           </div>
 
-          <div v-else class="text-center text-grey-6 q-pa-xl">
+          <!-- Messaggio placeholder se nessun calcolo -->
+          <div v-else class="text-center text-grey-6 q-pa-md q-mb-lg">
             <q-icon name="info" size="lg" class="q-mb-md" />
-            <p class="text-body2">Inserisci peso attuale e IBW per calcolare l'ABW</p>
+            <p class="text-body2">{{ t('abw.results.placeholder') }}</p>
           </div>
+
+          <!-- ============================================================ -->
+          <!-- SEZIONI INFORMATIVE (SEMPRE VISIBILI) -->
+          <!-- ============================================================ -->
+
+          <!-- Formula ABW -->
+          <q-banner class="bg-blue-1 q-mb-md" rounded>
+            <template v-slot:avatar>
+              <q-icon :name="t('abw.formulaBanner.icon')" color="primary" />
+            </template>
+            <div class="text-body2">
+              <strong>{{ t('abw.formulaBanner.title') }}</strong> {{ t('abw.formulaBanner.formula')
+              }}<br />
+              <span class="text-caption">
+                {{ t('abw.formulaBanner.caption') }}
+              </span>
+            </div>
+          </q-banner>
+
+          <!-- Applicazioni Cliniche ABW -->
+          <q-expansion-item
+            :icon="t('abw.sections.clinicalApplications.icon')"
+            :label="t('abw.sections.clinicalApplications.title')"
+            class="text-primary"
+          >
+            <q-card class="q-pa-md">
+              <ul class="text-body2 q-mb-none">
+                <li class="q-mb-sm" v-for="(item, index) in 5" :key="index">
+                  <strong>{{
+                    t(`abw.sections.clinicalApplications.items[${index}].title`)
+                  }}</strong>
+                  {{ t(`abw.sections.clinicalApplications.items[${index}].text`) }}
+                </li>
+              </ul>
+            </q-card>
+          </q-expansion-item>
+
+          <!-- Note Cliniche -->
+          <q-expansion-item
+            :icon="t('abw.sections.clinicalNotes.icon')"
+            :label="t('abw.sections.clinicalNotes.title')"
+            class="text-primary q-mt-sm"
+          >
+            <q-card class="q-pa-md">
+              <div class="text-body2">
+                <p
+                  class="q-mb-sm"
+                  v-for="(item, index) in 4"
+                  :key="index"
+                  :class="{ 'q-mb-none': index === 3 }"
+                >
+                  <strong>{{ t(`abw.sections.clinicalNotes.paragraphs[${index}].title`) }}</strong>
+                  {{ t(`abw.sections.clinicalNotes.paragraphs[${index}].text`) }}
+                </p>
+              </div>
+            </q-card>
+          </q-expansion-item>
+
+          <!-- Fine sezioni informative -->
         </q-card-section>
       </q-card>
     </div>

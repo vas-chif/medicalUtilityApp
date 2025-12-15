@@ -15,6 +15,20 @@
  */
 
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+// import { useSecureLogger } from 'src/composables/useSecureLogger';
+// import { useSmartEnvironment } from 'src/composables/useSmartEnvironment';
+
+// ============================================================
+// COMPOSABLES
+// ============================================================
+const { t } = useI18n();
+// const { logger } = useSecureLogger();
+// const { isDev: isDevelopment } = useSmartEnvironment();
+
+// ============================================================
+// TYPES & INTERFACES
+// ============================================================
 
 interface BSAFormData {
   weight: number | null;
@@ -84,7 +98,7 @@ const resetBSAForm = () => {
     <div class="col-12 col-md-5">
       <q-card class="q-pa-md">
         <q-card-section>
-          <h6 class="text-h6 q-ma-none q-mb-md">📐 Body Surface Area (BSA)</h6>
+          <h6 class="text-h6 q-ma-none q-mb-md">{{ t('bsa.title') }}</h6>
           <p class="text-caption text-grey-7 q-mb-md">
             Calcolo superficie corporea con 3 formule per applicazioni chemioterapiche e
             cardiologiche
@@ -95,14 +109,14 @@ const resetBSAForm = () => {
             v-model.number="bsaForm.weight"
             type="number"
             step="0.1"
-            label="Peso"
-            suffix="kg"
+            :label="t('bsa.form.weightLabel')"
+            :suffix="t('bsa.form.weightSuffix')"
             outlined
             class="q-mb-md"
-            :rules="[(val) => (val > 0 && val <= 500) || 'Peso tra 1-500 kg']"
+            :rules="[(val) => (val > 0 && val <= 500) || t('bsa.form.weightRule')]"
           >
             <template v-slot:prepend>
-              <q-icon name="fitness_center" color="blue" />
+              <q-icon :name="t('bsa.form.weightIcon')" color="blue" />
             </template>
           </q-input>
 
@@ -110,14 +124,14 @@ const resetBSAForm = () => {
           <q-input
             v-model.number="bsaForm.height"
             type="number"
-            label="Altezza"
-            suffix="cm"
+            :label="t('bsa.form.heightLabel')"
+            :suffix="t('bsa.form.heightSuffix')"
             outlined
             class="q-mb-md"
-            :rules="[(val) => (val > 0 && val <= 300) || 'Altezza tra 1-300 cm']"
+            :rules="[(val) => (val > 0 && val <= 300) || t('bsa.form.heightRule')]"
           >
             <template v-slot:prepend>
-              <q-icon name="height" color="green" />
+              <q-icon :name="t('bsa.form.heightIcon')" color="green" />
             </template>
           </q-input>
 
@@ -130,7 +144,7 @@ const resetBSAForm = () => {
             icon="calculate"
             :disable="!isBSAFormValid"
           >
-            Calcola BSA
+            {{ t('bsa.buttons.calculate') }}
           </q-btn>
           <q-btn
             @click="resetBSAForm"
@@ -140,7 +154,7 @@ const resetBSAForm = () => {
             icon="refresh"
             outline
           >
-            Reset
+            {{ t('bsa.buttons.reset') }}
           </q-btn>
         </q-card-section>
       </q-card>
@@ -150,115 +164,114 @@ const resetBSAForm = () => {
     <div class="col-12 col-md-6">
       <q-card class="q-pa-md">
         <q-card-section>
-          <h6 class="text-h6 q-ma-none q-mb-md">📊 Risultati BSA</h6>
+          <h6 class="text-h6 q-ma-none q-mb-md">{{ t('bsa.results.title') }}</h6>
 
-          <div v-if="bsaResult.mosteller > 0">
+          <!-- Risultati Calcolo (visibili solo dopo calcolo) -->
+          <div v-if="bsaResult.mosteller > 0" class="q-mb-lg">
             <!-- Tabella Comparazione Formule -->
             <q-markup-table class="q-mb-md">
               <thead>
                 <tr>
-                  <th class="text-left">Formula</th>
-                  <th class="text-right">BSA (m²)</th>
-                  <th class="text-left">Applicazione</th>
+                  <th class="text-left">{{ t('bsa.results.table.formula') }}</th>
+                  <th class="text-right">{{ t('bsa.results.table.bsa') }}</th>
+                  <th class="text-left">{{ t('bsa.results.table.application') }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td><strong>Mosteller</strong></td>
+                  <td>
+                    <strong>{{ t('bsa.results.table.mosteller') }}</strong>
+                  </td>
                   <td class="text-right text-primary text-weight-bold">
                     {{ bsaResult.mosteller.toFixed(2) }}
                   </td>
-                  <td class="text-caption">Adulti (general purpose)</td>
+                  <td class="text-caption">{{ t('bsa.results.table.adultsGeneral') }}</td>
                 </tr>
                 <tr>
-                  <td><strong>DuBois</strong></td>
+                  <td>
+                    <strong>{{ t('bsa.results.table.dubois') }}</strong>
+                  </td>
                   <td class="text-right text-primary text-weight-bold">
                     {{ bsaResult.dubois.toFixed(2) }}
                   </td>
-                  <td class="text-caption">Ricerca metabolica</td>
+                  <td class="text-caption">{{ t('bsa.results.table.metabolicResearch') }}</td>
                 </tr>
                 <tr>
-                  <td><strong>Haycock</strong></td>
+                  <td>
+                    <strong>{{ t('bsa.results.table.haycock') }}</strong>
+                  </td>
                   <td class="text-right text-primary text-weight-bold">
                     {{ bsaResult.haycock.toFixed(2) }}
                   </td>
-                  <td class="text-caption">Pediatria (&lt;15 anni)</td>
+                  <td class="text-caption">{{ t('bsa.results.table.pediatrics') }}</td>
                 </tr>
               </tbody>
             </q-markup-table>
-
-            <!-- Note Cliniche BSA -->
-            <q-banner class="bg-blue-1 q-mb-md" rounded>
-              <template v-slot:avatar>
-                <q-icon name="info" color="primary" />
-              </template>
-              <div class="text-caption">
-                <strong>Valori Medi Adulti:</strong> Donne ~1.6 m², Uomini ~1.9 m²<br />
-                <strong>Neonati a termine:</strong> ~0.25 m²
-              </div>
-            </q-banner>
-
-            <!-- 6️⃣ Applicazioni Cliniche BSA -->
-            <q-expansion-item
-              icon="local_hospital"
-              label="6️⃣ Applicazioni Cliniche BSA"
-              class="q-mt-md"
-              header-class="bg-purple-1 text-purple-9"
-            >
-              <q-card class="bg-purple-1">
-                <q-card-section>
-                  <ul class="text-body2 q-mb-none">
-                    <li class="q-mb-sm">
-                      <strong>Chemioterapia:</strong> Dosaggio farmaci antineoplastici in mg/m²
-                      (cisplatino, doxorubicina, carboplatin)
-                    </li>
-                    <li class="q-mb-sm">
-                      <strong>Cardiologia:</strong> Cardiac Index = CO / BSA (L/min/m², normale
-                      2.5-4.0), Stroke Volume Index = SV / BSA
-                    </li>
-                    <li class="q-mb-sm">
-                      <strong>Nefrologia:</strong> GFR normalizzazione a 1.73 m² per confrontabilità
-                      tra pazienti
-                    </li>
-                    <li class="q-mb-sm">
-                      <strong>Ustioni:</strong> Calcolo TBSA% per fabbisogno fluidico (formula
-                      Parkland: 4mL × peso × TBSA% in 24h)
-                    </li>
-                  </ul>
-                </q-card-section>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- 4️⃣ Formule BSA -->
-            <q-expansion-item
-              icon="functions"
-              label="4️⃣ Formule BSA"
-              class="q-mt-md"
-              header-class="bg-cyan-1 text-cyan-9"
-            >
-              <q-card class="bg-cyan-1">
-                <q-card-section>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Mosteller (1987):</strong><br />
-                    BSA (m²) = √[(altezza_cm × peso_kg) / 3600]
-                  </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>DuBois & DuBois (1916):</strong><br />
-                    BSA (m²) = 0.007184 × altezza_cm^0.725 × peso_kg^0.425
-                  </p>
-                  <p class="text-body2 q-mb-none">
-                    <strong>Haycock et al. (1978):</strong><br />
-                    BSA (m²) = 0.024265 × altezza_cm^0.3964 × peso_kg^0.5378
-                  </p>
-                </q-card-section>
-              </q-card>
-            </q-expansion-item>
           </div>
 
-          <div v-else class="text-center text-grey-6 q-pa-xl">
+          <!-- Messaggio placeholder se nessun calcolo -->
+          <div v-else class="text-center text-grey-6 q-pa-md q-mb-lg">
             <q-icon name="info" size="lg" class="q-mb-md" />
-            <p class="text-body2">Inserisci peso e altezza per calcolare la BSA</p>
+            <p class="text-body2">{{ t('bsa.results.placeholder') }}</p>
           </div>
+
+          <!-- ============================================================ -->
+          <!-- SEZIONI INFORMATIVE (SEMPRE VISIBILI) -->
+          <!-- ============================================================ -->
+
+          <!-- Note Cliniche BSA -->
+          <q-banner class="bg-blue-1 q-mb-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="info" color="primary" />
+            </template>
+            <div class="text-caption">
+              <strong>{{ t('bsa.clinicalBanner.adultsAverage') }}</strong>
+              {{ t('bsa.clinicalBanner.adultsValues') }}<br />
+              <strong>{{ t('bsa.clinicalBanner.neonates') }}</strong>
+              {{ t('bsa.clinicalBanner.neonatesValue') }}
+            </div>
+          </q-banner>
+
+          <!-- Applicazioni Cliniche BSA -->
+          <q-expansion-item
+            :icon="t('bsa.sections.clinicalApplications.icon')"
+            :label="t('bsa.sections.clinicalApplications.title')"
+            class="q-mt-md"
+            header-class="bg-purple-1 text-purple-9"
+          >
+            <q-card class="bg-purple-1">
+              <q-card-section>
+                <ul class="text-body2 q-mb-none">
+                  <li class="q-mb-sm" v-for="(app, index) in 4" :key="index">
+                    <strong>{{
+                      t(`bsa.sections.clinicalApplications.applications[${index}].title`)
+                    }}</strong>
+                    {{ t(`bsa.sections.clinicalApplications.applications[${index}].text`) }}
+                  </li>
+                </ul>
+              </q-card-section>
+            </q-card>
+          </q-expansion-item>
+
+          <!-- Formule BSA -->
+          <q-expansion-item
+            :icon="t('bsa.sections.formulas.icon')"
+            :label="t('bsa.sections.formulas.title')"
+            class="q-mt-md"
+            header-class="bg-cyan-1 text-cyan-9"
+          >
+            <q-card class="bg-cyan-1">
+              <q-card-section>
+                <p class="text-body2 q-mb-sm" v-for="(item, index) in 3" :key="index">
+                  <strong>{{ t(`bsa.sections.formulas.items[${index}].name`) }}</strong
+                  ><br />
+                  {{ t(`bsa.sections.formulas.items[${index}].formula`) }}
+                </p>
+              </q-card-section>
+            </q-card>
+          </q-expansion-item>
+
+          <!-- Fine sezioni informative -->
         </q-card-section>
       </q-card>
     </div>

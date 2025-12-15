@@ -41,10 +41,20 @@
 // IMPORTS
 // ============================================================
 // Vue core
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
 // Composables
 import { useResetForm } from 'src/composables/useResetForm';
+import { useSecureLogger } from 'src/composables/useSecureLogger';
+import { useSmartEnvironment } from 'src/composables/useSmartEnvironment';
+import { useI18n } from 'vue-i18n';
+
+// ============================================================
+// COMPOSABLES
+// ============================================================
+const { logger } = useSecureLogger();
+const { isDev, isProd } = useSmartEnvironment();
+const { t } = useI18n({ useScope: 'global' });
 
 // ============================================================
 // PROPS & EMITS
@@ -150,20 +160,20 @@ const resetForm = () => {
 // ============================================================
 // OPTIONS DATA
 // ============================================================
-const genderOptions = [
-  { label: 'Maschio', value: 'male' },
-  { label: 'Femmina', value: 'female' },
-];
+const genderOptions = computed(() => [
+  { label: t('egfr.inputPanel.gender.options.male'), value: 'male' },
+  { label: t('egfr.inputPanel.gender.options.female'), value: 'female' },
+]);
 
-const raceOptions = [
-  { label: 'Altro', value: 'other' },
-  { label: 'Afroamericano', value: 'african' },
-];
+const raceOptions = computed(() => [
+  { label: t('egfr.inputPanel.race.options.other'), value: 'other' },
+  { label: t('egfr.inputPanel.race.options.african'), value: 'african' },
+]);
 
-const formulaOptions = [
-  { label: 'CKD-EPI (Raccomandato)', value: 'ckdepi' },
-  { label: 'MDRD', value: 'mdrd' },
-];
+const formulaOptions = computed(() => [
+  { label: t('egfr.inputPanel.formula.options.ckdepi'), value: 'ckdepi' },
+  { label: t('egfr.inputPanel.formula.options.mdrd'), value: 'mdrd' },
+]);
 
 // ============================================================
 // COMPUTED
@@ -283,24 +293,40 @@ const calculateCKDEPI = (): number => {
  */
 const getCKDStage = (gfr: number): { stage: string; description: string; color: string } => {
   if (gfr >= 90)
-    return { stage: 'Stadio 1', description: 'Funzione renale normale', color: 'green' };
+    return {
+      stage: t('egfr.ckdStages.stage1.label'),
+      description: t('egfr.ckdStages.stage1.description'),
+      color: 'green',
+    };
   if (gfr >= 60)
     return {
-      stage: 'Stadio 2',
-      description: 'Lieve riduzione funzione renale',
+      stage: t('egfr.ckdStages.stage2.label'),
+      description: t('egfr.ckdStages.stage2.description'),
       color: 'light-green',
     };
   if (gfr >= 45)
     return {
-      stage: 'Stadio 3a',
-      description: 'Moderata riduzione funzione renale',
+      stage: t('egfr.ckdStages.stage3a.label'),
+      description: t('egfr.ckdStages.stage3a.description'),
       color: 'orange',
     };
   if (gfr >= 30)
-    return { stage: 'Stadio 3b', description: 'Moderata-severa riduzione', color: 'deep-orange' };
+    return {
+      stage: t('egfr.ckdStages.stage3b.label'),
+      description: t('egfr.ckdStages.stage3b.description'),
+      color: 'deep-orange',
+    };
   if (gfr >= 15)
-    return { stage: 'Stadio 4', description: 'Severa riduzione funzione renale', color: 'red' };
-  return { stage: 'Stadio 5', description: 'Insufficienza renale terminale', color: 'purple' };
+    return {
+      stage: t('egfr.ckdStages.stage4.label'),
+      description: t('egfr.ckdStages.stage4.description'),
+      color: 'red',
+    };
+  return {
+    stage: t('egfr.ckdStages.stage5.label'),
+    description: t('egfr.ckdStages.stage5.description'),
+    color: 'purple',
+  };
 };
 
 /**
@@ -323,6 +349,33 @@ const getGFRPosition = (): number => {
 const getFormulaName = (): string => {
   return formData.value.formula === 'mdrd' ? 'MDRD' : 'CKD-EPI';
 };
+
+/**
+ * Get CSS class for CKD stage color
+ *
+ * @param index - Stage index (0-5)
+ * @returns CSS class string
+ */
+const getStageClass = (index: number): string => {
+  const classes = [
+    'text-green',
+    'text-light-green',
+    'text-orange',
+    'text-deep-orange',
+    'text-red',
+    'text-purple',
+  ];
+  return classes[index] || 'text-grey';
+};
+
+// ============================================================
+// LIFECYCLE
+// ============================================================
+onMounted(() => {
+  logger.info('eGFRCalculator component mounted', {
+    environment: isDev.value ? 'development' : 'production',
+  });
+});
 </script>
 
 <template>
@@ -338,18 +391,21 @@ const getFormulaName = (): string => {
       <div class="col-12 col-md-5">
         <q-card class="q-pa-md">
           <q-card-section>
-            <h6 class="text-h6 q-ma-none q-mb-md">📊 Parametri Paziente</h6>
+            <h6 class="text-h6 q-ma-none q-mb-md">{{ t('egfr.inputPanel.title') }}</h6>
 
             <!-- Creatinina Sierica -->
             <q-input
               v-model.number="formData.creatinine"
               type="number"
               step="0.01"
-              label="Creatinina Sierica"
-              suffix="mg/dL"
+              :label="t('egfr.inputPanel.creatinine.label')"
+              :suffix="t('egfr.inputPanel.creatinine.unit')"
               outlined
               class="q-mb-md"
-              :rules="[(val: number) => (val > 0 && val <= 20) || 'Creatinina tra 0.1-20 mg/dL']"
+              :rules="[
+                (val: number) =>
+                  (val > 0 && val <= 20) || t('egfr.inputPanel.creatinine.validation'),
+              ]"
             >
               <template v-slot:prepend>
                 <q-icon name="science" color="blue" />
@@ -360,11 +416,13 @@ const getFormulaName = (): string => {
             <q-input
               v-model.number="formData.age"
               type="number"
-              label="Età"
-              suffix="anni"
+              :label="t('egfr.inputPanel.age.label')"
+              :suffix="t('egfr.inputPanel.age.unit')"
               outlined
               class="q-mb-md"
-              :rules="[(val: number) => (val > 0 && val <= 120) || 'Età tra 1-120 anni']"
+              :rules="[
+                (val: number) => (val > 0 && val <= 120) || t('egfr.inputPanel.age.validation'),
+              ]"
             >
               <template v-slot:prepend>
                 <q-icon name="cake" color="orange" />
@@ -375,12 +433,12 @@ const getFormulaName = (): string => {
             <q-select
               v-model="formData.gender"
               :options="genderOptions"
-              label="Sesso"
+              :label="t('egfr.inputPanel.gender.label')"
               outlined
               class="q-mb-md"
               emit-value
               map-options
-              :rules="[(val: string) => val !== null || 'Selezionare il sesso']"
+              :rules="[(val: string) => val !== null || t('egfr.inputPanel.gender.validation')]"
             >
               <template v-slot:prepend>
                 <q-icon name="person" color="purple" />
@@ -391,7 +449,7 @@ const getFormulaName = (): string => {
             <q-select
               v-model="formData.race"
               :options="raceOptions"
-              label="Etnia (opzionale per correzione)"
+              :label="t('egfr.inputPanel.race.label')"
               outlined
               class="q-mb-md"
               emit-value
@@ -406,7 +464,7 @@ const getFormulaName = (): string => {
             <q-select
               v-model="formData.formula"
               :options="formulaOptions"
-              label="Formula di Calcolo"
+              :label="t('egfr.inputPanel.formula.label')"
               outlined
               class="q-mb-md"
               emit-value
@@ -426,7 +484,7 @@ const getFormulaName = (): string => {
               icon="calculate"
               :disable="!isFormValid"
             >
-              {{ calculateButtonText }}
+              {{ t('egfr.buttons.calculate') }}
             </q-btn>
 
             <!-- Bottone Reset -->
@@ -438,7 +496,7 @@ const getFormulaName = (): string => {
               icon="refresh"
               outline
             >
-              {{ resetButtonText }}
+              {{ t('egfr.buttons.reset') }}
             </q-btn>
           </q-card-section>
         </q-card>
@@ -450,22 +508,28 @@ const getFormulaName = (): string => {
       <div class="col-12 col-md-6">
         <q-card class="q-pa-md">
           <q-card-section>
-            <h6 class="text-h6 q-ma-none q-mb-md">📈 Risultati</h6>
+            <h6 class="text-h6 q-ma-none q-mb-md">{{ t('egfr.resultsPanel.title') }}</h6>
 
             <!-- Risultato Principale -->
             <div class="text-center q-mb-lg">
               <div class="text-h3 text-primary q-mb-sm">
                 {{ result.gfr.toFixed(1) }}
               </div>
-              <div class="text-subtitle1 text-grey-7"><strong>mL/min/1.73m²</strong> (eGFR)</div>
-              <div class="text-caption text-grey-6">Formula: {{ getFormulaName() }}</div>
+              <div class="text-subtitle1 text-grey-7">
+                <strong>{{ t('egfr.resultsPanel.result.unit') }}</strong> ({{
+                  t('egfr.resultsPanel.result.label')
+                }})
+              </div>
+              <div class="text-caption text-grey-6">
+                {{ t('egfr.resultsPanel.result.formulaPrefix') }}: {{ getFormulaName() }}
+              </div>
             </div>
 
             <!-- Classificazione CKD -->
             <q-separator class="q-mb-md" />
 
             <div class="q-mb-md" v-if="result.gfr > 0">
-              <div class="text-h6 q-mb-sm">🎯 Stadio Malattia Renale Cronica:</div>
+              <div class="text-h6 q-mb-sm">{{ t('egfr.resultsPanel.ckdStageTitle') }}</div>
               <q-chip :color="result.color" text-color="white" class="text-weight-bold" size="lg">
                 {{ result.stage }}
               </q-chip>
@@ -476,7 +540,9 @@ const getFormulaName = (): string => {
 
             <!-- Grafico Funzione Renale -->
             <div class="q-mb-lg" v-if="result.gfr > 0">
-              <div class="text-subtitle2 q-mb-sm">📊 Livello Funzione Renale:</div>
+              <div class="text-subtitle2 q-mb-sm">
+                {{ t('egfr.resultsPanel.renalFunctionTitle') }}
+              </div>
               <div class="gfr-scale">
                 <div class="gfr-bar">
                   <div class="gfr-indicator" :style="{ left: getGFRPosition() + '%' }"></div>
@@ -499,7 +565,7 @@ const getFormulaName = (): string => {
                 flat
                 color="primary"
                 :icon="showComparison ? 'expand_less' : 'expand_more'"
-                label="Confronta Formule"
+                :label="t('egfr.buttons.compareFormulas')"
                 class="full-width"
               />
               <div v-if="showComparison" class="q-mt-md q-pa-md bg-grey-1 rounded-borders">
@@ -515,32 +581,50 @@ const getFormulaName = (): string => {
             </div>
 
             <!-- Stadi CKD Quick Reference -->
-            <q-expansion-item icon="info" label="Classificazione Stadi CKD" class="q-mt-sm">
+            <q-expansion-item icon="info" :label="t('egfr.quickReference.title')" class="q-mt-sm">
               <q-card class="q-pa-md">
                 <div class="row q-gutter-sm text-body2">
                   <div class="col-12">
-                    <span class="text-weight-bold text-green">Stadio 1:</span> ≥90 - Funzione
-                    normale
+                    <span class="text-weight-bold text-green"
+                      >{{ t('egfr.ckdStages.stage1.label') }}:</span
+                    >
+                    {{ t('egfr.ckdStages.stage1.range') }} -
+                    {{ t('egfr.ckdStages.stage1.description') }}
                   </div>
                   <div class="col-12">
-                    <span class="text-weight-bold text-light-green">Stadio 2:</span> 60-89 - Lieve
-                    riduzione
+                    <span class="text-weight-bold text-light-green"
+                      >{{ t('egfr.ckdStages.stage2.label') }}:</span
+                    >
+                    {{ t('egfr.ckdStages.stage2.range') }} -
+                    {{ t('egfr.ckdStages.stage2.description') }}
                   </div>
                   <div class="col-12">
-                    <span class="text-weight-bold text-orange">Stadio 3a:</span> 45-59 - Moderata
-                    riduzione
+                    <span class="text-weight-bold text-orange"
+                      >{{ t('egfr.ckdStages.stage3a.label') }}:</span
+                    >
+                    {{ t('egfr.ckdStages.stage3a.range') }} -
+                    {{ t('egfr.ckdStages.stage3a.description') }}
                   </div>
                   <div class="col-12">
-                    <span class="text-weight-bold text-deep-orange">Stadio 3b:</span> 30-44 -
-                    Moderata-severa
+                    <span class="text-weight-bold text-deep-orange"
+                      >{{ t('egfr.ckdStages.stage3b.label') }}:</span
+                    >
+                    {{ t('egfr.ckdStages.stage3b.range') }} -
+                    {{ t('egfr.ckdStages.stage3b.description') }}
                   </div>
                   <div class="col-12">
-                    <span class="text-weight-bold text-red">Stadio 4:</span> 15-29 - Severa
-                    riduzione
+                    <span class="text-weight-bold text-red"
+                      >{{ t('egfr.ckdStages.stage4.label') }}:</span
+                    >
+                    {{ t('egfr.ckdStages.stage4.range') }} -
+                    {{ t('egfr.ckdStages.stage4.description') }}
                   </div>
                   <div class="col-12">
-                    <span class="text-weight-bold text-purple">Stadio 5:</span> &lt;15 -
-                    Insufficienza renale
+                    <span class="text-weight-bold text-purple"
+                      >{{ t('egfr.ckdStages.stage5.label') }}:</span
+                    >
+                    {{ t('egfr.ckdStages.stage5.range') }} -
+                    {{ t('egfr.ckdStages.stage5.description') }}
                   </div>
                 </div>
               </q-card>
@@ -550,39 +634,36 @@ const getFormulaName = (): string => {
             <!-- NEWS-STYLE DOCUMENTATION (9 SECTIONS)             -->
             <!-- ================================================= -->
 
-            <!-- 1️⃣ Definizione e Significato Clinico -->
+            <!-- Definizione e Significato Clinico -->
             <q-expansion-item
               icon="info"
-              label="1️⃣ Definizione e Significato Clinico"
+              :label="t('egfr.sections.definition.title')"
               class="q-mt-sm"
               header-class="bg-blue-1 text-blue-9"
             >
               <q-card class="q-pa-md">
                 <p class="text-body2 q-mb-sm">
-                  <strong>Definizione Fisiologica:</strong> Il Glomerular Filtration Rate (GFR)
-                  rappresenta il volume di plasma sanguigno filtrato attraverso i glomeruli renali
-                  per unità di tempo, espresso in mL/min/1.73m². È il parametro principale per
-                  valutare la funzione renale globale.
+                  <strong>{{ t('egfr.sections.definition.content.definitionLabel') }}:</strong>
+                  {{ t('egfr.sections.definition.content.definition') }}
                 </p>
                 <p class="text-body2 q-mb-sm">
-                  <strong>Significato Clinico:</strong> Il GFR è fondamentale per:
+                  <strong
+                    >{{ t('egfr.sections.definition.content.clinicalSignificanceTitle') }}:</strong
+                  >
+                  {{ t('egfr.sections.definition.content.clinicalSignificanceIntro') }}
                 </p>
                 <ul class="text-body2 q-mb-sm">
-                  <li>
-                    <strong>Diagnosi e Stadiazione CKD:</strong> La malattia renale cronica (CKD) è
-                    definita da GFR &lt;60 mL/min/1.73m² per ≥3 mesi (KDIGO 2024)
-                  </li>
-                  <li>
-                    <strong>Dosaggio Farmaci:</strong> Aggiustamento dose richiesto quando eGFR
-                    &lt;60 mL/min (antibiotici, anticoagulanti, ipoglicemizzanti)
-                  </li>
-                  <li>
-                    <strong>Rischio Cardiovascolare:</strong> Ogni riduzione 10 mL/min del GFR
-                    associata a ↑15-20% rischio eventi CV
-                  </li>
-                  <li>
-                    <strong>Terapia Sostitutiva:</strong> eGFR &lt;15 mL/min (stadio 5) indica
-                    necessità pianificazione dialisi/trapianto
+                  <li v-for="(item, index) in 4" :key="index">
+                    <strong
+                      >{{
+                        t(`egfr.sections.definition.content.clinicalSignificance[${index}].title`)
+                      }}:</strong
+                    >
+                    {{
+                      t(
+                        `egfr.sections.definition.content.clinicalSignificance[${index}].description`,
+                      )
+                    }}
                   </li>
                 </ul>
                 <q-banner class="bg-blue-2 text-blue-9 q-mt-md" rounded>
@@ -590,135 +671,130 @@ const getFormulaName = (): string => {
                     <q-icon name="info" color="blue" size="sm" />
                   </template>
                   <div class="text-caption">
-                    <strong>Nota Clinica:</strong> Il GFR stimato (eGFR) con equazioni basate su
-                    creatinina è il metodo standard per valutazione funzione renale nella pratica
-                    clinica.
+                    <strong>{{ t('egfr.sections.definition.content.note.title') }}:</strong>
+                    {{ t('egfr.sections.definition.content.note.text') }}
                   </div>
                 </q-banner>
               </q-card>
             </q-expansion-item>
 
-            <!-- 2️⃣ Fisiologia della Filtrazione Glomerulare -->
+            <!-- Fisiologia della Filtrazione Glomerulare -->
             <q-expansion-item
               icon="biotech"
-              label="2️⃣ Fisiologia della Filtrazione Glomerulare"
+              :label="t('egfr.sections.physiology.title')"
               class="q-mt-sm"
               header-class="bg-green-1 text-green-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Anatomia Funzionale del Nefrone:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.physiology.content.mechanismTitle') }}:
+                </p>
                 <p class="text-body2 q-mb-sm">
-                  Ciascun rene contiene ~1 milione di nefroni (unità funzionali). Il glomerulo è una
-                  rete di capillari fenestrati avvolti dalla capsula di Bowman, dove avviene
-                  l'ultrafiltrazione del plasma.
+                  {{ t('egfr.sections.physiology.content.mechanismIntro') }}
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li>
-                    <strong>Endotelio fenestrato:</strong> Pori 70-100 nm, impediscono passaggio
-                    cellule ematiche
-                  </li>
-                  <li>
-                    <strong>Membrana basale glomerulare (GBM):</strong> Barriera selettività
-                    dimensionale e carica
-                  </li>
-                  <li>
-                    <strong>Podociti:</strong> Interdigitazioni formano fessure 25-60 nm collegate
-                    da diaframma con nephrina
+                  <li v-for="(item, index) in 3" :key="index">
+                    <strong
+                      >{{
+                        t(`egfr.sections.physiology.content.mechanisms[${index}].name`)
+                      }}:</strong
+                    >
+                    {{ t(`egfr.sections.physiology.content.mechanisms[${index}].description`) }}
                   </li>
                 </ul>
-                <p class="text-body2 text-weight-bold q-mb-sm">Determinanti Emodinamici del GFR:</p>
-                <p class="text-body2 q-mb-sm">
-                  GFR = K<sub>f</sub> × [(P<sub>GC</sub> - P<sub>BS</sub>) - (π<sub>GC</sub> -
-                  π<sub>BS</sub>)]
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.physiology.content.determinantsTitle') }}:
                 </p>
+                <p
+                  class="text-body2 q-mb-sm"
+                  v-html="t('egfr.sections.physiology.content.equation')"
+                ></p>
                 <q-banner class="bg-orange-2 text-orange-9 q-mt-md" rounded>
                   <template v-slot:avatar>
                     <q-icon name="warning" color="orange" size="sm" />
                   </template>
                   <div class="text-caption">
-                    <strong>Implicazione Clinica:</strong> ACE-inibitori/ARB possono causare ↓acuto
-                    GFR (10-30%) in pazienti con stenosi arteria renale bilaterale. Monitorare
-                    creatinina 1-2 settimane dopo inizio terapia.
+                    <strong>{{ t('egfr.sections.physiology.content.alert.title') }}:</strong>
+                    {{ t('egfr.sections.physiology.content.alert.text') }}
                   </div>
                 </q-banner>
               </q-card>
             </q-expansion-item>
 
-            <!-- 3️⃣ Come si Misura/Calcola il GFR -->
+            <!-- Come si Misura/Calcola il GFR -->
             <q-expansion-item
               icon="speed"
-              label="3️⃣ Come si Misura/Calcola il GFR"
+              :label="t('egfr.sections.calculation.title')"
               class="q-mt-sm"
               header-class="bg-amber-1 text-amber-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Metodi di Misurazione:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.calculation.content.methodsTitle') }}:
+                </p>
                 <ul class="text-body2 q-mb-md">
-                  <li>
-                    <strong>Gold Standard (mGFR):</strong> Clearance inulina/iohexol - accurato ma
-                    complesso, riservato a ricerca
-                  </li>
-                  <li>
-                    <strong>eGFR (stimato):</strong> Equazioni basate su creatinina sierica (MDRD,
-                    CKD-EPI) - metodo standard clinico
-                  </li>
-                  <li>
-                    <strong>Clearance creatinina:</strong> Misurazione urine 24h - meno affidabile,
-                    errori raccolta
+                  <li v-for="(item, index) in 3" :key="index">
+                    <strong
+                      >{{ t(`egfr.sections.calculation.content.methods[${index}].name`) }}:</strong
+                    >
+                    {{ t(`egfr.sections.calculation.content.methods[${index}].description`) }}
                   </li>
                 </ul>
                 <p class="text-body2 q-mb-sm">
-                  <strong>Creatinina come Marker:</strong> La creatinina è prodotto del metabolismo
-                  muscolare, filtrata liberamente dal glomerulo e non riassorbita. Limitazioni:
+                  <strong>{{ t('egfr.sections.calculation.content.creatinineTitle') }}:</strong>
+                  {{ t('egfr.sections.calculation.content.creatinineIntro') }}
                 </p>
                 <ul class="text-body2">
-                  <li>Influenzata da massa muscolare (↓anziani, ↑atleti)</li>
-                  <li>Secrezione tubulare variabile (sovrastima GFR ~10-20%)</li>
-                  <li>Dieta ricca proteine può aumentare creatinina</li>
+                  <li v-for="(limitation, index) in 3" :key="index">
+                    {{ t(`egfr.sections.calculation.content.limitations[${index}]`) }}
+                  </li>
                 </ul>
                 <q-banner class="bg-amber-2 text-amber-9 q-mt-md" rounded>
                   <template v-slot:avatar>
                     <q-icon name="tips_and_updates" color="amber" size="sm" />
                   </template>
                   <div class="text-caption">
-                    <strong>Best Practice:</strong> Per accuratezza, evitare esercizio intenso 24h
-                    prima del prelievo e assicurarsi che il paziente sia a digiuno.
+                    <strong
+                      >{{ t('egfr.sections.calculation.content.bestPractice.title') }}:</strong
+                    >
+                    {{ t('egfr.sections.calculation.content.bestPractice.text') }}
                   </div>
                 </q-banner>
               </q-card>
             </q-expansion-item>
 
-            <!-- 4️⃣ Formule di Calcolo -->
+            <!-- Formule di Calcolo -->
             <q-expansion-item
               icon="functions"
-              label="4️⃣ Formule di Calcolo"
+              :label="t('egfr.sections.formula.title')"
               class="q-mt-sm"
               header-class="bg-cyan-1 text-cyan-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">MDRD (1999):</p>
-                <p class="text-body2 q-mb-sm">
-                  eGFR = 175 × SCr<sup>-1.154</sup> × Age<sup>-0.203</sup> × 0.742[se femmina] ×
-                  1.212[se afroamericano]
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.formula.content.mdrdTitle') }}:
                 </p>
+                <p
+                  class="text-body2 q-mb-sm"
+                  v-html="t('egfr.sections.formula.content.mdrdFormula')"
+                ></p>
                 <ul class="text-body2 q-mb-md">
-                  <li>Sviluppata su 1628 pazienti con CKD</li>
-                  <li>Sottostima GFR quando >60 mL/min</li>
-                  <li>Non raccomandata per screening popolazione generale</li>
+                  <li v-for="(item, index) in 3" :key="index">
+                    {{ t(`egfr.sections.formula.content.mdrdLimitations[${index}]`) }}
+                  </li>
                 </ul>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">CKD-EPI (2009, aggiornata 2021):</p>
-                <p class="text-body2 q-mb-sm">
-                  eGFR = 141 × min(SCr/κ,1)<sup>α</sup> × max(SCr/κ,1)<sup>-1.209</sup> × 0.993<sup
-                    >Age</sup
-                  >
-                  × 1.012[se femmina]
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.formula.content.ckdepiTitle') }}:
                 </p>
+                <p
+                  class="text-body2 q-mb-sm"
+                  v-html="t('egfr.sections.formula.content.ckdepiFormula')"
+                ></p>
                 <ul class="text-body2 q-mb-md">
-                  <li>κ = 0.7 (femmina), 0.9 (maschio)</li>
-                  <li>α = -0.329/-0.411 (SCr bassa), -1.209 (SCr alta)</li>
-                  <li>Più accurata di MDRD per eGFR >60 mL/min</li>
-                  <li>Equazione 2021 rimuove fattore di correzione razziale</li>
+                  <li v-for="(item, index) in 4" :key="index">
+                    {{ t(`egfr.sections.formula.content.ckdepiParameters[${index}]`) }}
+                  </li>
                 </ul>
 
                 <q-banner class="bg-cyan-2 text-cyan-9 q-mt-md" rounded>
@@ -726,146 +802,121 @@ const getFormulaName = (): string => {
                     <q-icon name="recommend" color="cyan" size="sm" />
                   </template>
                   <div class="text-caption">
-                    <strong>Raccomandazione KDIGO:</strong> CKD-EPI è preferita per la maggior parte
-                    delle applicazioni cliniche (maggiore accuratezza in tutto il range di GFR).
+                    <strong>{{ t('egfr.sections.formula.content.recommendation.title') }}:</strong>
+                    {{ t('egfr.sections.formula.content.recommendation.text') }}
                   </div>
                 </q-banner>
               </q-card>
             </q-expansion-item>
 
-            <!-- 5️⃣ Interpretazione Risultati -->
+            <!-- Interpretazione Risultati -->
             <q-expansion-item
               icon="psychology"
-              label="5️⃣ Interpretazione Risultati"
+              :label="t('egfr.sections.interpretation.title')"
               class="q-mt-sm"
               header-class="bg-orange-1 text-orange-9"
             >
               <q-card class="q-pa-md">
                 <p class="text-body2 text-weight-bold q-mb-sm">
-                  Classificazione KDIGO degli Stadi CKD:
+                  {{ t('egfr.sections.interpretation.content.stagingTitle') }}:
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li>
-                    <strong class="text-green">G1 (≥90):</strong> Funzione renale normale (con
-                    evidenza danno renale)
-                  </li>
-                  <li>
-                    <strong class="text-light-green">G2 (60-89):</strong> Lieve riduzione funzione
-                    renale
-                  </li>
-                  <li>
-                    <strong class="text-orange">G3a (45-59):</strong> Moderata riduzione funzione
-                    renale
-                  </li>
-                  <li>
-                    <strong class="text-deep-orange">G3b (30-44):</strong> Moderata-severa riduzione
-                  </li>
-                  <li>
-                    <strong class="text-red">G4 (15-29):</strong> Severa riduzione funzione renale
-                  </li>
-                  <li>
-                    <strong class="text-purple">G5 (&lt;15):</strong> Insufficienza renale terminale
-                    (dialisi/trapianto)
+                  <li v-for="(stage, index) in 6" :key="index">
+                    <strong
+                      :class="getStageClass(index)"
+                      v-html="t(`egfr.sections.interpretation.content.staging[${index}]`)"
+                    ></strong>
                   </li>
                 </ul>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Azioni Cliniche per Stadio:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.interpretation.content.actionsTitle') }}:
+                </p>
                 <ul class="text-body2">
-                  <li>
-                    <strong>G1-G2:</strong> Monitoraggio annuale, controllo fattori di rischio (DM,
-                    HTN)
-                  </li>
-                  <li>
-                    <strong>G3a:</strong> Monitoraggio semestrale, riferimento nefrologo se
-                    progressione
-                  </li>
-                  <li>
-                    <strong>G3b-G4:</strong> Riferimento nefrologo, aggiustamento farmaci, controllo
-                    PTH/vitamina D
-                  </li>
-                  <li>
-                    <strong>G5:</strong> Pianificazione terapia sostitutiva renale
-                    (emodialisi/peritoneale/trapianto)
+                  <li v-for="(action, index) in 4" :key="index">
+                    <strong
+                      >{{
+                        t(`egfr.sections.interpretation.content.actions[${index}].stage`)
+                      }}:</strong
+                    >
+                    {{ t(`egfr.sections.interpretation.content.actions[${index}].action`) }}
                   </li>
                 </ul>
               </q-card>
             </q-expansion-item>
 
-            <!-- 6️⃣ Applicazioni Cliniche -->
+            <!-- Applicazioni Cliniche -->
             <q-expansion-item
               icon="local_hospital"
-              label="6️⃣ Applicazioni Cliniche"
+              :label="t('egfr.sections.applications.title')"
               class="q-mt-sm"
               header-class="bg-purple-1 text-purple-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Dosaggio Farmaci:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.applications.content.drugDosingTitle') }}:
+                </p>
                 <ul class="text-body2 q-mb-md">
-                  <li>
-                    <strong>Antibiotici renali:</strong> Gentamicina, vancomicina, penicilline
-                    richiedono riduzione dose se eGFR &lt;60
-                  </li>
-                  <li>
-                    <strong>Anticoagulanti:</strong> Enoxaparina, dabigatran controindicati se eGFR
-                    &lt;30
-                  </li>
-                  <li>
-                    <strong>Metformina:</strong> Evitare se eGFR &lt;30, cautela se 30-45 (rischio
-                    acidosi lattica)
-                  </li>
-                  <li>
-                    <strong>Chemioterapici:</strong> Carboplatino, metotrexato richiedono
-                    aggiustamento dose preciso
+                  <li v-for="(item, index) in 4" :key="index">
+                    <strong
+                      >{{
+                        t(`egfr.sections.applications.content.drugDosing[${index}].category`)
+                      }}:</strong
+                    >
+                    {{ t(`egfr.sections.applications.content.drugDosing[${index}].description`) }}
                   </li>
                 </ul>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Screening Popolazione:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.applications.content.screeningTitle') }}:
+                </p>
                 <ul class="text-body2">
-                  <li>Diabete tipo 1/2 (screening annuale CKD)</li>
-                  <li>Ipertensione non controllata</li>
-                  <li>Storia familiare malattia renale policistica</li>
-                  <li>Età >60 anni con fattori di rischio CV</li>
+                  <li v-for="(item, index) in 4" :key="index">
+                    {{ t(`egfr.sections.applications.content.screening[${index}]`) }}
+                  </li>
                 </ul>
               </q-card>
             </q-expansion-item>
 
-            <!-- 7️⃣ Valori Critici e Alert -->
+            <!-- Valori Critici e Alert -->
             <q-expansion-item
               icon="warning"
-              label="7️⃣ Valori Critici e Alert"
+              :label="t('egfr.sections.referenceValues.title')"
               class="q-mt-sm"
               header-class="bg-red-1 text-red-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Valori Critici Immediati:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.referenceValues.content.criticalThresholdsTitle') }}:
+                </p>
                 <ul class="text-body2 q-mb-md">
-                  <li>
-                    <strong class="text-red">eGFR &lt;15 mL/min:</strong> Urgente riferimento
-                    nefrologo, pianificazione dialisi
-                  </li>
-                  <li>
-                    <strong class="text-red">↓GFR >25% in 3-6 mesi:</strong> Progressione rapida
-                    CKD, ricerca causa acuta
-                  </li>
-                  <li>
-                    <strong class="text-red">Creatinina >5 mg/dL:</strong> Considerare AKI (Acute
-                    Kidney Injury) vs. CKD avanzata
+                  <li v-for="(item, index) in 3" :key="index">
+                    <strong class="text-red"
+                      >{{
+                        t(
+                          `egfr.sections.referenceValues.content.criticalThresholds[${index}].threshold`,
+                        )
+                      }}:</strong
+                    >
+                    {{
+                      t(`egfr.sections.referenceValues.content.criticalThresholds[${index}].action`)
+                    }}
                   </li>
                 </ul>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Complicanze da Monitorare:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.referenceValues.content.complicationsTitle') }}:
+                </p>
                 <ul class="text-body2">
-                  <li><strong>Anemia:</strong> Ridotta produzione eritropoietina (eGFR &lt;45)</li>
-                  <li>
-                    <strong>Iperparatiroidismo secondario:</strong> ↑PTH, ↓vitamina D (eGFR &lt;60)
-                  </li>
-                  <li>
-                    <strong>Acidosi metabolica:</strong> Ridotta escrezione H<sup>+</sup> (eGFR
-                    &lt;30)
-                  </li>
-                  <li>
-                    <strong>Iperkaliemia:</strong> Ridotta escrezione K<sup>+</sup> (rischio
-                    aritmie)
+                  <li v-for="(item, index) in 4" :key="index">
+                    <strong
+                      >{{
+                        t(`egfr.sections.referenceValues.content.complications[${index}].name`)
+                      }}:</strong
+                    >
+                    {{
+                      t(`egfr.sections.referenceValues.content.complications[${index}].description`)
+                    }}
                   </li>
                 </ul>
 
@@ -874,85 +925,75 @@ const getFormulaName = (): string => {
                     <q-icon name="emergency" color="red" size="sm" />
                   </template>
                   <div class="text-caption">
-                    <strong>ALERT CLINICO:</strong> Se eGFR &lt;15 mL/min con sintomi uremici
-                    (nausea, confusione, edema polmonare), considerare dialisi urgente.
+                    <strong
+                      >{{
+                        t('egfr.sections.referenceValues.content.emergencyAlert.title')
+                      }}:</strong
+                    >
+                    {{ t('egfr.sections.referenceValues.content.emergencyAlert.text') }}
                   </div>
                 </q-banner>
               </q-card>
             </q-expansion-item>
 
-            <!-- 8️⃣ Documentazione Clinica -->
+            <!-- Documentazione Clinica -->
             <q-expansion-item
               icon="menu_book"
-              label="8️⃣ Documentazione Clinica"
+              :label="t('egfr.sections.documentation.title')"
               class="q-mt-sm"
               header-class="bg-indigo-1 text-indigo-9"
             >
               <q-card class="q-pa-md">
                 <p class="text-body2 text-weight-bold q-mb-sm">
-                  Elementi Essenziali da Documentare:
+                  {{ t('egfr.sections.documentation.content.elementsTitle') }}:
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li>Data e ora prelievo creatinina</li>
-                  <li>Formula utilizzata (MDRD vs. CKD-EPI)</li>
-                  <li>Parametri paziente (età, sesso, etnia se applicabile)</li>
-                  <li>Stadio CKD calcolato (G1-G5)</li>
-                  <li>Trend eGFR (confronto con valori precedenti)</li>
-                  <li>Aggiustamenti farmaci effettuati</li>
+                  <li v-for="(item, index) in 6" :key="index">
+                    {{ t(`egfr.sections.documentation.content.elements[${index}]`) }}
+                  </li>
                 </ul>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Template Note Clinica:</p>
-                <div class="bg-grey-2 q-pa-md rounded-borders text-body2">
-                  <p>
-                    <strong>eGFR:</strong> [valore] mL/min/1.73m² (CKD-EPI)<br />
-                    <strong>Stadio CKD:</strong> G[1-5] - [descrizione]<br />
-                    <strong>Trend:</strong> [stabile/↑/↓] rispetto [data precedente]<br />
-                    <strong>Azione:</strong> [monitoraggio/riferimento nefrologo/aggiustamento
-                    farmaci]
-                  </p>
-                </div>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.documentation.content.templateTitle') }}:
+                </p>
+                <div
+                  class="bg-grey-2 q-pa-md rounded-borders text-body2"
+                  v-html="t('egfr.sections.documentation.content.templateExample')"
+                ></div>
               </q-card>
             </q-expansion-item>
 
-            <!-- 9️⃣ Riferimenti Scientifici -->
+            <!-- Riferimenti Scientifici -->
             <q-expansion-item
               icon="science"
-              label="9️⃣ Riferimenti Scientifici"
+              :label="t('egfr.sections.bibliography.title')"
               class="q-mt-sm"
               header-class="bg-teal-1 text-teal-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Linee Guida Principali:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.bibliography.content.guidelinesTitle') }}:
+                </p>
                 <ul class="text-body2 q-mb-md">
-                  <li>
-                    <strong>KDIGO 2024:</strong> Clinical Practice Guideline for the Evaluation and
-                    Management of Chronic Kidney Disease
-                  </li>
-                  <li><strong>NKF-KDOQI:</strong> National Kidney Foundation Guidelines (USA)</li>
-                  <li>
-                    <strong>NICE Guidelines:</strong> Chronic kidney disease - assessment and
-                    management (UK)
+                  <li v-for="(item, index) in 3" :key="index">
+                    <strong
+                      >{{
+                        t(`egfr.sections.bibliography.content.guidelines[${index}].name`)
+                      }}:</strong
+                    >
+                    {{ t(`egfr.sections.bibliography.content.guidelines[${index}].description`) }}
                   </li>
                 </ul>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Pubblicazioni Chiave:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.bibliography.content.publicationsTitle') }}:
+                </p>
                 <ul class="text-body2">
-                  <li>
-                    Levey AS, et al. (2009). A new equation to estimate glomerular filtration rate.
-                    <em>Ann Intern Med</em> 150:604-612
-                  </li>
-                  <li>
-                    Inker LA, et al. (2021). New creatinine- and cystatin C-based equations to
-                    estimate GFR without race. <em>N Engl J Med</em> 385:1737-1749
-                  </li>
-                  <li>
-                    Stevens LA, Levey AS. (2009). Measured GFR as a confirmatory test for estimated
-                    GFR. <em>J Am Soc Nephrol</em> 20:2305-2313
-                  </li>
-                  <li>
-                    Go AS, et al. (2004). Chronic kidney disease and the risks of death,
-                    cardiovascular events, and hospitalization. <em>N Engl J Med</em> 351:1296-1305
-                  </li>
+                  <li
+                    v-for="(item, index) in 4"
+                    :key="index"
+                    v-html="t(`egfr.sections.bibliography.content.publications[${index}]`)"
+                  ></li>
                 </ul>
 
                 <q-banner class="bg-teal-2 text-teal-9 q-mt-md" rounded>
@@ -960,16 +1001,18 @@ const getFormulaName = (): string => {
                     <q-icon name="link" color="teal" size="sm" />
                   </template>
                   <div class="text-caption">
-                    <strong>Risorse Online:</strong>
-                    <a href="https://kdigo.org/guidelines/" target="_blank" class="text-teal-9"
-                      >KDIGO Guidelines</a
+                    <strong
+                      >{{ t('egfr.sections.bibliography.content.onlineResources.title') }}:</strong
                     >
+                    <a href="https://kdigo.org/guidelines/" target="_blank" class="text-teal-9">{{
+                      t('egfr.sections.bibliography.content.onlineResources.kdigo')
+                    }}</a>
                     |
                     <a
                       href="https://www.kidney.org/professionals/guidelines"
                       target="_blank"
                       class="text-teal-9"
-                      >NKF Guidelines</a
+                      >{{ t('egfr.sections.bibliography.content.onlineResources.nkf') }}</a
                     >
                   </div>
                 </q-banner>

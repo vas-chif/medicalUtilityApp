@@ -230,7 +230,7 @@ const resetDilutionForm = () => {
               suffix="mg"
               outlined
               class="q-mb-md"
-              :rules="[(val) => val > 0 || 'Dose deve essere > 0']"
+              :rules="[(val: number) => val > 0 || 'Dose deve essere > 0']"
             >
               <template v-slot:prepend>
                 <q-icon name="medication" color="red" />
@@ -246,7 +246,7 @@ const resetDilutionForm = () => {
               suffix="mL"
               outlined
               class="q-mb-md"
-              :rules="[(val) => val > 0 || 'Volume deve essere > 0']"
+              :rules="[(val: number) => val > 0 || 'Volume deve essere > 0']"
             >
               <template v-slot:prepend>
                 <q-icon name="local_drink" color="blue" />
