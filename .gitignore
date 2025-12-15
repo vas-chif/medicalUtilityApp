@@ -68,3 +68,5 @@ PROMPT_MEDICAL_UTILITY_PROJECT.md
 .env.master
 # Firebase CI Token (local reference only)
 .firebase-token.txt
+
+/scripts/generate_sofa_translations.py

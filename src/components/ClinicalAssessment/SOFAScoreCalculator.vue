@@ -8,6 +8,12 @@
  */
 
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+// ============================================================
+// I18N
+// ============================================================
+const { t } = useI18n({ useScope: 'global' });
 
 interface SOFAScores {
   respiration: number;
@@ -50,11 +56,11 @@ const getScoreColor = (score: number): string => {
  * @returns Mortality risk percentage string
  */
 const getMortalityRisk = (score: number): string => {
-  if (score < 2) return '<10% Mortality';
-  if (score < 6) return '15-20% Mortality';
-  if (score < 10) return '40-50% Mortality';
-  if (score < 15) return '>80% Mortality';
-  return '>90% Mortality';
+  if (score < 2) return t('sofa.results.mortalityRisk.veryLow');
+  if (score < 6) return t('sofa.results.mortalityRisk.low');
+  if (score < 10) return t('sofa.results.mortalityRisk.moderate');
+  if (score < 15) return t('sofa.results.mortalityRisk.high');
+  return t('sofa.results.mortalityRisk.veryHigh');
 };
 
 /**
@@ -68,12 +74,17 @@ const resetForm = () => {
 <template>
   <div class="q-mb-lg">
     <q-breadcrumbs>
-      <q-breadcrumbs-el icon="home" @click="$router.push('/')" class="cursor-pointer" />
-      <q-breadcrumbs-el label="SOFA Score" />
+      <q-breadcrumbs-el
+        :label="t('sofa.breadcrumbs.home')"
+        icon="home"
+        @click="$router.push('/')"
+        class="cursor-pointer"
+      />
+      <q-breadcrumbs-el :label="t('sofa.breadcrumbs.sofaScore')" />
     </q-breadcrumbs>
-    <h4 class="text-h4 text-primary q-mt-md q-mb-none">🏥 SOFA Score Calculator</h4>
+    <h4 class="text-h4 text-primary q-mt-md q-mb-none">🏥 {{ t('sofa.title') }}</h4>
     <p class="text-subtitle1 text-grey-7">
-      Sequential Organ Failure Assessment - Multi-organ dysfunction evaluation in intensive care
+      {{ t('sofa.subtitle') }}
     </p>
   </div>
 
@@ -82,8 +93,7 @@ const resetForm = () => {
       <q-icon name="local_hospital" color="primary" />
     </template>
     <div class="text-body2">
-      <strong>SOFA Score:</strong> Prognostic system to assess severity of organ dysfunction in
-      critically ill patients. 6 organ systems, score 0-4 each, total 0-24 points.
+      <strong>{{ t('sofa.banner.title') }}</strong> {{ t('sofa.banner.description') }}
     </div>
   </q-banner>
 
@@ -91,22 +101,22 @@ const resetForm = () => {
     <div class="col-12 col-md-5">
       <q-card flat bordered>
         <q-card-section>
-          <h6 class="text-h6 q-ma-none q-mb-md">📝 Organ Parameters</h6>
+          <h6 class="text-h6 q-ma-none q-mb-md">📝 {{ t('sofa.form.title') }}</h6>
 
           <!-- Respiration -->
           <div class="q-mb-md">
             <div class="text-subtitle2 text-weight-bold q-mb-xs">
               <q-icon name="air" color="cyan" size="xs" class="q-mr-xs" />
-              Respiration (PaO₂/FiO₂)
+              {{ t('sofa.form.respiration.label') }}
             </div>
             <q-option-group
               v-model="scores.respiration"
               :options="[
-                { label: '≥400', value: 0 },
-                { label: '<400', value: 1 },
-                { label: '<300', value: 2 },
-                { label: '<200 with respiratory support', value: 3 },
-                { label: '<100 with respiratory support', value: 4 },
+                { label: t('sofa.form.respiration.options.ge400'), value: 0 },
+                { label: t('sofa.form.respiration.options.lt400'), value: 1 },
+                { label: t('sofa.form.respiration.options.lt300'), value: 2 },
+                { label: t('sofa.form.respiration.options.lt200'), value: 3 },
+                { label: t('sofa.form.respiration.options.lt100'), value: 4 },
               ]"
               color="primary"
               size="sm"
@@ -118,16 +128,16 @@ const resetForm = () => {
           <div class="q-mb-md">
             <div class="text-subtitle2 text-weight-bold q-mb-xs">
               <q-icon name="bloodtype" color="red" size="xs" class="q-mr-xs" />
-              Coagulation (Platelets ×10³/μL)
+              {{ t('sofa.form.coagulation.label') }}
             </div>
             <q-option-group
               v-model="scores.coagulation"
               :options="[
-                { label: '≥150', value: 0 },
-                { label: '<150', value: 1 },
-                { label: '<100', value: 2 },
-                { label: '<50', value: 3 },
-                { label: '<20', value: 4 },
+                { label: t('sofa.form.coagulation.options.ge150'), value: 0 },
+                { label: t('sofa.form.coagulation.options.lt150'), value: 1 },
+                { label: t('sofa.form.coagulation.options.lt100'), value: 2 },
+                { label: t('sofa.form.coagulation.options.lt50'), value: 3 },
+                { label: t('sofa.form.coagulation.options.lt20'), value: 4 },
               ]"
               color="primary"
               size="sm"
@@ -139,16 +149,16 @@ const resetForm = () => {
           <div class="q-mb-md">
             <div class="text-subtitle2 text-weight-bold q-mb-xs">
               <q-icon name="spa" color="orange" size="xs" class="q-mr-xs" />
-              Liver (Bilirubin mg/dL)
+              {{ t('sofa.form.liver.label') }}
             </div>
             <q-option-group
               v-model="scores.liver"
               :options="[
-                { label: '<1.2', value: 0 },
-                { label: '1.2-1.9', value: 1 },
-                { label: '2.0-5.9', value: 2 },
-                { label: '6.0-11.9', value: 3 },
-                { label: '≥12.0', value: 4 },
+                { label: t('sofa.form.liver.options.lt1_2'), value: 0 },
+                { label: t('sofa.form.liver.options.range1_2_1_9'), value: 1 },
+                { label: t('sofa.form.liver.options.range2_0_5_9'), value: 2 },
+                { label: t('sofa.form.liver.options.range6_0_11_9'), value: 3 },
+                { label: t('sofa.form.liver.options.ge12'), value: 4 },
               ]"
               color="primary"
               size="sm"
@@ -160,16 +170,16 @@ const resetForm = () => {
           <div class="q-mb-md">
             <div class="text-subtitle2 text-weight-bold q-mb-xs">
               <q-icon name="favorite" color="pink" size="xs" class="q-mr-xs" />
-              Cardiovascular (MAP/Vasopressors)
+              {{ t('sofa.form.cardiovascular.label') }}
             </div>
             <q-option-group
               v-model="scores.cardiovascular"
               :options="[
-                { label: 'MAP ≥70 mmHg', value: 0 },
-                { label: 'MAP <70 mmHg', value: 1 },
-                { label: 'Dopamine ≤5 or Dobutamine any', value: 2 },
-                { label: 'Dopamine >5 OR Epinephrine ≤0.1 OR Norepinephrine ≤0.1', value: 3 },
-                { label: 'Dopamine >15 OR Epinephrine >0.1 OR Norepinephrine >0.1', value: 4 },
+                { label: t('sofa.form.cardiovascular.options.mapGe70'), value: 0 },
+                { label: t('sofa.form.cardiovascular.options.mapLt70'), value: 1 },
+                { label: t('sofa.form.cardiovascular.options.dopa5Dobut'), value: 2 },
+                { label: t('sofa.form.cardiovascular.options.dopa5EpiNorepi01'), value: 3 },
+                { label: t('sofa.form.cardiovascular.options.dopa15EpiNorepi01'), value: 4 },
               ]"
               color="primary"
               size="sm"
@@ -181,16 +191,16 @@ const resetForm = () => {
           <div class="q-mb-md">
             <div class="text-subtitle2 text-weight-bold q-mb-xs">
               <q-icon name="psychology" color="purple" size="xs" class="q-mr-xs" />
-              Central Nervous System (GCS)
+              {{ t('sofa.form.cns.label') }}
             </div>
             <q-option-group
               v-model="scores.cns"
               :options="[
-                { label: 'GCS 15', value: 0 },
-                { label: 'GCS 13-14', value: 1 },
-                { label: 'GCS 10-12', value: 2 },
-                { label: 'GCS 6-9', value: 3 },
-                { label: 'GCS <6', value: 4 },
+                { label: t('sofa.form.cns.options.gcs15'), value: 0 },
+                { label: t('sofa.form.cns.options.gcs13_14'), value: 1 },
+                { label: t('sofa.form.cns.options.gcs10_12'), value: 2 },
+                { label: t('sofa.form.cns.options.gcs6_9'), value: 3 },
+                { label: t('sofa.form.cns.options.gcsLt6'), value: 4 },
               ]"
               color="primary"
               size="sm"
@@ -202,16 +212,16 @@ const resetForm = () => {
           <div class="q-mb-md">
             <div class="text-subtitle2 text-weight-bold q-mb-xs">
               <q-icon name="water_drop" color="blue" size="xs" class="q-mr-xs" />
-              Renal (Creatinine mg/dL or Urine Output mL/day)
+              {{ t('sofa.form.renal.label') }}
             </div>
             <q-option-group
               v-model="scores.renal"
               :options="[
-                { label: '<1.2', value: 0 },
-                { label: '1.2-1.9', value: 1 },
-                { label: '2.0-3.4', value: 2 },
-                { label: '3.5-4.9 or <500 mL/day', value: 3 },
-                { label: '≥5.0 or <200 mL/day', value: 4 },
+                { label: t('sofa.form.renal.options.lt1_2'), value: 0 },
+                { label: t('sofa.form.renal.options.range1_2_1_9'), value: 1 },
+                { label: t('sofa.form.renal.options.range2_0_3_4'), value: 2 },
+                { label: t('sofa.form.renal.options.range3_5_4_9'), value: 3 },
+                { label: t('sofa.form.renal.options.ge5'), value: 4 },
               ]"
               color="primary"
               size="sm"
@@ -227,7 +237,7 @@ const resetForm = () => {
             icon="refresh"
             outline
           >
-            Reset
+            {{ t('sofa.form.resetButton') }}
           </q-btn>
         </q-card-section>
       </q-card>
@@ -236,13 +246,16 @@ const resetForm = () => {
     <div class="col-12 col-md-6">
       <q-card flat bordered>
         <q-card-section>
-          <h6 class="text-h6 q-ma-none q-mb-md">📈 SOFA Score Result</h6>
+          <h6 class="text-h6 q-ma-none q-mb-md">📈 {{ t('sofa.results.title') }}</h6>
 
           <div class="text-center q-mb-lg">
             <div class="text-h2" :class="'text-' + getScoreColor(totalScore)">
               {{ totalScore }}
             </div>
-            <div class="text-subtitle1 text-grey-7"><strong>Total Score</strong> (0-24)</div>
+            <div class="text-subtitle1 text-grey-7">
+              <strong>{{ t('sofa.results.totalScoreLabel') }}</strong>
+              {{ t('sofa.results.totalScoreRange') }}
+            </div>
             <q-chip :color="getScoreColor(totalScore)" text-color="white" class="text-h6 q-mt-sm">
               {{ getMortalityRisk(totalScore) }}
             </q-chip>
@@ -252,12 +265,13 @@ const resetForm = () => {
             <q-card-section>
               <div class="text-subtitle2 text-weight-bold q-mb-sm">
                 <q-icon name="medical_services" size="sm" class="q-mr-xs" />
-                Clinical Interpretation:
+                {{ t('sofa.results.interpretation.title') }}
               </div>
               <p class="text-body2 q-ma-none">
-                SOFA {{ totalScore }}: {{ getMortalityRisk(totalScore) }} in-hospital mortality
-                risk. Serial monitoring (every 24-48h) to assess trend. ΔScore +2 points indicates
-                significant deterioration.
+                {{ t('sofa.results.interpretation.sofaPrefix') }} {{ totalScore }}:
+                {{ getMortalityRisk(totalScore) }}
+                {{ t('sofa.results.interpretation.mortalityRiskText') }}
+                {{ t('sofa.results.interpretation.serialMonitoring') }}
               </p>
             </q-card-section>
           </q-card>
@@ -270,115 +284,63 @@ const resetForm = () => {
           <q-expansion-item
             icon="info"
             color="medical-mint"
-            label="Definition and Clinical Significance"
+            :label="t('sofa.sections.definition.title')"
             class="q-mt-md"
             header-class="bg-blue-1 text-blue-9"
           >
             <q-card flat class="q-pa-md bg-blue-1">
               <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">Historical Origin</p>
-                <p>
-                  The <strong>SOFA (Sequential Organ Failure Assessment) Score</strong> was
-                  developed in <strong>1996</strong> by
-                  <strong
-                    >Jean-Louis Vincent and the Sepsis-related Organ Failure Assessment Working
-                    Group</strong
-                  >
-                  at the European Society of Intensive Care Medicine consensus conference.
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.definition.historicalOriginTitle') }}
                 </p>
-                <p class="q-mt-md">
-                  <strong>Original objective:</strong> Create a simple, objective system to describe
-                  and quantify the degree of organ dysfunction over time in critically ill patients,
-                  particularly those with sepsis.
-                </p>
-                <p class="q-mt-md">
-                  <strong>Key characteristics:</strong>
-                </p>
+                <p v-html="t('sofa.sections.definition.historicalOriginParagraph1')"></p>
+                <p
+                  class="q-mt-md"
+                  v-html="t('sofa.sections.definition.historicalOriginParagraph2')"
+                ></p>
+                <p
+                  class="q-mt-md"
+                  v-html="t('sofa.sections.definition.keyCharacteristicsTitle')"
+                ></p>
                 <ul class="q-ml-md">
-                  <li>✅ Assesses <strong>6 major organ systems</strong> independently</li>
-                  <li>
-                    ✅ Each organ scored <strong>0-4 points</strong> based on severity of
-                    dysfunction
-                  </li>
-                  <li>✅ Total score <strong>0-24 points</strong> (higher = worse prognosis)</li>
-                  <li>
-                    ✅ Can be calculated <strong>repeatedly</strong> to track trajectory (delta
-                    SOFA)
-                  </li>
-                  <li>
-                    ✅ Validated predictor of <strong>ICU mortality</strong> (AUROC 0.74-0.86)
-                  </li>
+                  <li v-html="t('sofa.sections.definition.keyCharacteristic1')"></li>
+                  <li v-html="t('sofa.sections.definition.keyCharacteristic2')"></li>
+                  <li v-html="t('sofa.sections.definition.keyCharacteristic3')"></li>
+                  <li v-html="t('sofa.sections.definition.keyCharacteristic4')"></li>
+                  <li v-html="t('sofa.sections.definition.keyCharacteristic5')"></li>
                 </ul>
               </div>
 
               <q-separator class="q-my-md" />
 
               <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">Clinical Applications</p>
-                <p><strong>When to use:</strong></p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.definition.clinicalApplicationsTitle') }}
+                </p>
+                <p v-html="t('sofa.sections.definition.whenToUseTitle')"></p>
                 <ul class="q-ml-md">
-                  <li>
-                    � <strong>ICU admission triage:</strong> Baseline SOFA score for severity
-                    stratification
-                  </li>
-                  <li>
-                    📈 <strong>Serial monitoring:</strong> Daily SOFA scores to detect
-                    deterioration/improvement
-                  </li>
-                  <li>
-                    🦠 <strong>Sepsis diagnosis (Sepsis-3):</strong> SOFA ≥2 points = organ
-                    dysfunction criterion
-                  </li>
-                  <li>
-                    🔬 <strong>Clinical trials:</strong> Standardized severity measure and outcome
-                    predictor
-                  </li>
-                  <li>
-                    💊 <strong>Treatment decisions:</strong> Guide escalation/de-escalation of ICU
-                    care
-                  </li>
+                  <li v-html="t('sofa.sections.definition.whenToUseItem1')"></li>
+                  <li v-html="t('sofa.sections.definition.whenToUseItem2')"></li>
+                  <li v-html="t('sofa.sections.definition.whenToUseItem3')"></li>
+                  <li v-html="t('sofa.sections.definition.whenToUseItem4')"></li>
+                  <li v-html="t('sofa.sections.definition.whenToUseItem5')"></li>
                 </ul>
 
-                <p class="q-mt-md"><strong>When NOT to use:</strong></p>
+                <p class="q-mt-md" v-html="t('sofa.sections.definition.whenNotToUseTitle')"></p>
                 <ul class="q-ml-md">
-                  <li>
-                    ❌ <strong>Non-ICU patients:</strong> Not validated for ward/ED populations
-                  </li>
-                  <li>
-                    ❌ <strong>Pediatrics:</strong> Use Pediatric SOFA (pSOFA) or PELOD score
-                    instead
-                  </li>
-                  <li>
-                    ❌ <strong>Single time-point prognosis:</strong> Delta SOFA more predictive than
-                    baseline alone
-                  </li>
-                  <li>
-                    ❌ <strong>Sole treatment guide:</strong> Must integrate with clinical judgment
-                  </li>
+                  <li v-html="t('sofa.sections.definition.whenNotToUseItem1')"></li>
+                  <li v-html="t('sofa.sections.definition.whenNotToUseItem2')"></li>
+                  <li v-html="t('sofa.sections.definition.whenNotToUseItem3')"></li>
+                  <li v-html="t('sofa.sections.definition.whenNotToUseItem4')"></li>
                 </ul>
 
-                <p class="q-mt-md"><strong>Limitations:</strong></p>
+                <p class="q-mt-md" v-html="t('sofa.sections.definition.limitationsTitle')"></p>
                 <ul class="q-ml-md">
-                  <li>
-                    ⚠️ Does NOT capture <strong>all organ systems</strong> (e.g., GI, immunologic,
-                    endocrine)
-                  </li>
-                  <li>
-                    ⚠️ Requires <strong>accurate laboratory data</strong> (may be delayed or
-                    unavailable)
-                  </li>
-                  <li>
-                    ⚠️ Confounded by <strong>chronic organ dysfunction</strong> (use baseline SOFA
-                    if known)
-                  </li>
-                  <li>
-                    ⚠️ GCS component unreliable in <strong>sedated patients</strong> (consider
-                    sedation-free assessment)
-                  </li>
-                  <li>
-                    ⚠️ <strong>Not a treatment target:</strong> Improving care ≠ improving SOFA
-                    directly
-                  </li>
+                  <li v-html="t('sofa.sections.definition.limitationItem1')"></li>
+                  <li v-html="t('sofa.sections.definition.limitationItem2')"></li>
+                  <li v-html="t('sofa.sections.definition.limitationItem3')"></li>
+                  <li v-html="t('sofa.sections.definition.limitationItem4')"></li>
+                  <li v-html="t('sofa.sections.definition.limitationItem5')"></li>
                 </ul>
               </div>
             </q-card>
@@ -388,148 +350,96 @@ const resetForm = () => {
           <q-expansion-item
             icon="science"
             color="medical-mint"
-            label="Physiology of Multi-Organ Dysfunction"
+            :label="t('sofa.sections.organDysfunction.title')"
             class="q-mt-sm"
             header-class="bg-purple-1 text-purple-9"
           >
             <q-card flat class="q-pa-md bg-purple-1">
               <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">Pathophysiological Mechanisms</p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.organDysfunction.pathophysiologicalMechanismsTitle') }}
+                </p>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">1️⃣ Respiration (PaO₂/FiO₂ ratio):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.organDysfunction.respirationTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li><strong>Normal P/F ratio:</strong> ≥400 mmHg (intact gas exchange)</li>
-                    <li>
-                      <strong>Hypoxemia mechanisms:</strong> V/Q mismatch, shunt, diffusion
-                      impairment, hypoventilation
-                    </li>
-                    <li>
-                      <strong>ARDS pathophysiology:</strong> Alveolar-capillary membrane damage →
-                      pulmonary edema → surfactant dysfunction
-                    </li>
-                    <li>
-                      <strong>Berlin ARDS criteria:</strong> Mild P/F 200-300, Moderate 100-200,
-                      Severe &lt; 100
-                    </li>
-                    <li>
-                      <strong>Critical threshold:</strong> P/F &lt;100 with respiratory support =
-                      SOFA 4 (profound ARDS, mortality >40%)
-                    </li>
+                    <li v-html="t('sofa.sections.organDysfunction.respirationItem1')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.respirationItem2')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.respirationItem3')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.respirationItem4')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.respirationItem5')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">2️⃣ Coagulation (Platelets):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.organDysfunction.coagulationTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li><strong>Normal platelets:</strong> 150-400 ×10³/μL</li>
-                    <li>
-                      <strong>Thrombocytopenia causes in ICU:</strong> Consumptive coagulopathy
-                      (DIC), bone marrow suppression, dilutional, immune-mediated (HIT)
-                    </li>
-                    <li>
-                      <strong>DIC mechanisms:</strong> Systemic activation coagulation cascade →
-                      microthrombi → consumption clotting factors/platelets → bleeding + thrombosis
-                    </li>
-                    <li>
-                      <strong>Bleeding risk:</strong> Platelets &lt; 50K significant spontaneous
-                      bleeding risk, &lt;20K critical (SOFA 4)
-                    </li>
-                    <li>
-                      <strong>Sepsis-associated:</strong> Thrombocytopenia in 30-50% septic
-                      patients, marker of severity
-                    </li>
+                    <li v-html="t('sofa.sections.organDysfunction.coagulationItem1')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.coagulationItem2')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.coagulationItem3')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.coagulationItem4')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.coagulationItem5')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">3️⃣ Liver (Bilirubin):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.organDysfunction.liverTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li><strong>Normal bilirubin:</strong> &lt;1.2 mg/dL</li>
-                    <li>
-                      <strong>Hyperbilirubinemia mechanisms:</strong> Hypoxic hepatitis,
-                      cholestasis, impaired conjugation/excretion
-                    </li>
-                    <li>
-                      <strong>Shock liver:</strong> Acute ischemic injury (Zone 3 centrilobular
-                      necrosis) → transaminase ↑↑ (>1000 IU/L) + bilirubin ↑
-                    </li>
-                    <li>
-                      <strong>Cholestasis:</strong> Sepsis-induced impaired bile flow → conjugated
-                      hyperbilirubinemia
-                    </li>
-                    <li>
-                      <strong>Hepatic failure:</strong> Bilirubin ≥12 mg/dL (SOFA 4) with
-                      coagulopathy/encephalopathy = poor prognosis
-                    </li>
+                    <li v-html="t('sofa.sections.organDysfunction.liverItem1')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.liverItem2')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.liverItem3')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.liverItem4')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.liverItem5')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">4️⃣ Cardiovascular (MAP/Vasopressors):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.organDysfunction.cardiovascularTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li><strong>Normal MAP:</strong> ≥70 mmHg (adequate tissue perfusion)</li>
-                    <li>
-                      <strong>Shock types:</strong> Distributive (septic), cardiogenic, hypovolemic,
-                      obstructive
-                    </li>
-                    <li>
-                      <strong>Septic shock pathophysiology:</strong> Vasodilation (NO, cytokines) +
-                      myocardial depression + capillary leak → hypotension + ↓tissue O₂ delivery
-                    </li>
-                    <li>
-                      <strong>Vasopressor ladder:</strong> Norepinephrine 1st-line → +Vasopressin →
-                      +Epinephrine → High-dose (SOFA 4 = refractory shock)
-                    </li>
-                    <li>
-                      <strong>Critical threshold:</strong> MAP &lt;65 mmHg or high-dose vasopressors
-                      = end-organ hypoperfusion risk
-                    </li>
+                    <li v-html="t('sofa.sections.organDysfunction.cardiovascularItem1')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.cardiovascularItem2')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.cardiovascularItem3')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.cardiovascularItem4')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.cardiovascularItem5')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">5️⃣ Central Nervous System (GCS):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.organDysfunction.cnsTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li><strong>Normal consciousness:</strong> GCS 15 (fully awake, oriented)</li>
-                    <li>
-                      <strong>Encephalopathy mechanisms:</strong> Hypoxia, hypoperfusion, uremic
-                      toxins, hepatic encephalopathy, sepsis-associated delirium
-                    </li>
-                    <li>
-                      <strong>Sedation confounding:</strong> GCS unreliable in sedated patients
-                      (consider sedation-free assessment or exclude from SOFA)
-                    </li>
-                    <li>
-                      <strong>Coma (GCS &lt;6):</strong> SOFA 4 = profound CNS dysfunction, high
-                      mortality unless reversible cause
-                    </li>
+                    <li v-html="t('sofa.sections.organDysfunction.cnsItem1')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.cnsItem2')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.cnsItem3')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.cnsItem4')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">6️⃣ Renal (Creatinine/Urine Output):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.organDysfunction.renalTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Normal creatinine:</strong> 0.6-1.2 mg/dL (varies by muscle mass, age,
-                      sex)
-                    </li>
-                    <li>
-                      <strong>AKI mechanisms:</strong> Pre-renal (hypoperfusion), intrinsic renal
-                      (ATN, GN), post-renal (obstruction)
-                    </li>
-                    <li>
-                      <strong>Septic AKI:</strong> Hemodynamic (hypotension) + inflammatory
-                      (cytokine-mediated tubular injury) + microvascular dysfunction
-                    </li>
-                    <li>
-                      <strong>KDIGO AKI stages:</strong> Stage 1 (Cr 1.5-1.9× baseline), Stage 2
-                      (2.0-2.9×), Stage 3 (≥3× or ≥4 mg/dL or RRT)
-                    </li>
-                    <li>
-                      <strong>Oliguria/anuria:</strong> &lt;500 mL/day (SOFA 3), &lt;200 mL/day
-                      (SOFA 4) = severe AKI, likely RRT need
-                    </li>
+                    <li v-html="t('sofa.sections.organDysfunction.renalItem1')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.renalItem2')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.renalItem3')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.renalItem4')"></li>
+                    <li v-html="t('sofa.sections.organDysfunction.renalItem5')"></li>
                   </ul>
                 </div>
               </div>
@@ -540,146 +450,120 @@ const resetForm = () => {
           <q-expansion-item
             icon="calculate"
             color="medical-mint"
-            label="How to Calculate SOFA Score"
+            :label="t('sofa.sections.howToCalculate.title')"
             class="q-mt-sm"
             header-class="bg-green-1 text-green-9"
           >
             <q-card flat class="q-pa-md bg-green-1">
               <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">Calculation Steps</p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.howToCalculate.calculationStepsTitle') }}
+                </p>
 
-                <p><strong>Step 1: Collect Worst Values (24h window)</strong></p>
+                <p v-html="t('sofa.sections.howToCalculate.step1Title')"></p>
                 <ul class="q-ml-md q-mb-md">
-                  <li>
-                    📊 Use <strong>worst value</strong> for each parameter in the past 24 hours
-                  </li>
-                  <li>⏰ For serial SOFA: same time each day (e.g., 08:00 AM rounds)</li>
-                  <li>🔍 Ensure recent lab data: PaO₂, FiO₂, platelets, bilirubin, creatinine</li>
-                  <li>
-                    💊 Document MAP and any vasopressor doses (norepinephrine, dopamine,
-                    epinephrine)
-                  </li>
-                  <li>🧠 Assess GCS without sedation if possible (or note sedation influence)</li>
-                  <li>💧 Calculate 24h urine output (total mL/24h)</li>
+                  <li v-html="t('sofa.sections.howToCalculate.step1Item1')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step1Item2')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step1Item3')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step1Item4')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step1Item5')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step1Item6')"></li>
                 </ul>
 
-                <p><strong>Step 2: Score Each Organ (0-4 points)</strong></p>
+                <p v-html="t('sofa.sections.howToCalculate.step2Title')"></p>
                 <ul class="q-ml-md q-mb-md">
-                  <li><strong>Respiration:</strong> Calculate PaO₂/FiO₂ ratio → Score 0-4</li>
-                  <li><strong>Coagulation:</strong> Platelets count ×10³/μL → Score 0-4</li>
-                  <li><strong>Liver:</strong> Bilirubin mg/dL → Score 0-4</li>
-                  <li><strong>Cardiovascular:</strong> MAP and/or vasopressor doses → Score 0-4</li>
-                  <li><strong>CNS:</strong> Best GCS in 24h → Score 0-4</li>
-                  <li>
-                    <strong>Renal:</strong> Creatinine mg/dL OR urine output → Score 0-4 (use worse)
-                  </li>
+                  <li v-html="t('sofa.sections.howToCalculate.step2Item1')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step2Item2')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step2Item3')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step2Item4')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step2Item5')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step2Item6')"></li>
                 </ul>
 
-                <p><strong>Step 3: Sum All 6 Organ Scores</strong></p>
+                <p v-html="t('sofa.sections.howToCalculate.step3Title')"></p>
                 <ul class="q-ml-md q-mb-md">
-                  <li>
-                    🧮 <strong>Total SOFA Score</strong> = Respiration + Coagulation + Liver +
-                    Cardiovascular + CNS + Renal
-                  </li>
-                  <li>📈 <strong>Range:</strong> 0-24 points (minimum 0, maximum 24)</li>
-                  <li>
-                    📝 <strong>Documentation:</strong> Record individual organ scores + total (e.g.,
-                    "SOFA 12: R3 C2 L1 CV4 CNS1 Re1")
-                  </li>
+                  <li v-html="t('sofa.sections.howToCalculate.step3Item1')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step3Item2')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step3Item3')"></li>
                 </ul>
 
-                <p><strong>Step 4: Calculate Delta SOFA (if serial measurements)</strong></p>
+                <p v-html="t('sofa.sections.howToCalculate.step4Title')"></p>
                 <ul class="q-ml-md q-mb-md">
-                  <li>Δ<strong>SOFA</strong> = SOFA(current) - SOFA(baseline or previous)</li>
-                  <li>
-                    📊 <strong>Interpretation:</strong> ΔSOFA ≥+2 points = significant deterioration
-                    (10% ↑ mortality per point)
-                  </li>
-                  <li>
-                    📉 <strong>Improvement:</strong> ΔSOFA negative = organ function recovery
-                    (favorable prognosis)
-                  </li>
-                  <li>
-                    🦠 <strong>Sepsis-3 definition:</strong> Infection + ΔSOFA ≥2 = Sepsis (organ
-                    dysfunction)
-                  </li>
+                  <li v-html="t('sofa.sections.howToCalculate.step4Item1')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step4Item2')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step4Item3')"></li>
+                  <li v-html="t('sofa.sections.howToCalculate.step4Item4')"></li>
                 </ul>
 
                 <q-separator class="q-my-md" />
 
-                <p class="text-weight-bold text-h6 q-mb-sm">Special Considerations</p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.howToCalculate.specialConsiderationsTitle') }}
+                </p>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">🫁 Respiration (PaO₂/FiO₂):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.howToCalculate.respirationConsiderationsTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Calculate P/F ratio:</strong> PaO₂ (mmHg) / FiO₂ (decimal, e.g., 0.40
-                      for 40% oxygen)
-                    </li>
-                    <li>
-                      <strong>Example:</strong> PaO₂ 80 mmHg on FiO₂ 0.50 → P/F = 80/0.50 = 160 →
-                      SOFA 3
-                    </li>
-                    <li>
-                      <strong>Respiratory support:</strong> Score 3-4 require ventilatory support
-                      (mechanical ventilation, CPAP, high-flow)
-                    </li>
-                    <li>
-                      <strong>If no ABG:</strong> Use SpO₂/FiO₂ ratio as surrogate (less accurate)
-                    </li>
+                    <li
+                      v-html="t('sofa.sections.howToCalculate.respirationConsiderationsItem1')"
+                    ></li>
+                    <li
+                      v-html="t('sofa.sections.howToCalculate.respirationConsiderationsItem2')"
+                    ></li>
+                    <li
+                      v-html="t('sofa.sections.howToCalculate.respirationConsiderationsItem3')"
+                    ></li>
+                    <li
+                      v-html="t('sofa.sections.howToCalculate.respirationConsiderationsItem4')"
+                    ></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">💊 Cardiovascular (Vasopressors):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.howToCalculate.cardiovascularConsiderationsTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Doses in μg/kg/min:</strong> Dopamine, dobutamine, epinephrine,
-                      norepinephrine
-                    </li>
-                    <li><strong>Duration:</strong> Administered for ≥1 hour to count</li>
-                    <li>
-                      <strong>Combination:</strong> If multiple vasopressors → use highest scoring
-                      agent
-                    </li>
-                    <li>
-                      <strong>MAP without vasopressors:</strong> If MAP &lt;70 mmHg without drugs →
-                      SOFA 1
-                    </li>
+                    <li
+                      v-html="t('sofa.sections.howToCalculate.cardiovascularConsiderationsItem1')"
+                    ></li>
+                    <li
+                      v-html="t('sofa.sections.howToCalculate.cardiovascularConsiderationsItem2')"
+                    ></li>
+                    <li
+                      v-html="t('sofa.sections.howToCalculate.cardiovascularConsiderationsItem3')"
+                    ></li>
+                    <li
+                      v-html="t('sofa.sections.howToCalculate.cardiovascularConsiderationsItem4')"
+                    ></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">🧠 CNS (Glasgow Coma Scale):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.howToCalculate.cnsConsiderationsTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Best GCS in 24h:</strong> Use highest GCS observed (avoid sedation
-                      periods if possible)
-                    </li>
-                    <li>
-                      <strong>Sedation influence:</strong> If heavily sedated entire 24h → consider
-                      excluding CNS from SOFA or note limitation
-                    </li>
-                    <li>
-                      <strong>Intubated patients:</strong> Cannot assess verbal component → use E +
-                      M only (max GCS 10)
-                    </li>
+                    <li v-html="t('sofa.sections.howToCalculate.cnsConsiderationsItem1')"></li>
+                    <li v-html="t('sofa.sections.howToCalculate.cnsConsiderationsItem2')"></li>
+                    <li v-html="t('sofa.sections.howToCalculate.cnsConsiderationsItem3')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">💧 Renal (Creatinine OR Urine Output):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.howToCalculate.renalConsiderationsTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Use WORSE of two:</strong> Creatinine mg/dL OR urine output mL/day
-                    </li>
-                    <li>
-                      <strong>Baseline creatinine:</strong> If chronic kidney disease known → adjust
-                      interpretation (use ΔSOFA renal)
-                    </li>
-                    <li>
-                      <strong>RRT patients:</strong> On dialysis → automatically SOFA 4 for renal
-                    </li>
+                    <li v-html="t('sofa.sections.howToCalculate.renalConsiderationsItem1')"></li>
+                    <li v-html="t('sofa.sections.howToCalculate.renalConsiderationsItem2')"></li>
+                    <li v-html="t('sofa.sections.howToCalculate.renalConsiderationsItem3')"></li>
                   </ul>
                 </div>
               </div>
@@ -690,62 +574,67 @@ const resetForm = () => {
           <q-expansion-item
             icon="functions"
             color="medical-mint"
-            label="Formula and Scoring Tables"
+            :label="t('sofa.sections.formulaScoring.title')"
             class="q-mt-sm"
             header-class="bg-cyan-1 text-cyan-9"
           >
             <q-card flat class="q-pa-md bg-cyan-1">
               <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm text-center">SOFA Score Formula</p>
+                <p class="text-weight-bold text-h6 q-mb-sm text-center">
+                  {{ t('sofa.sections.formulaScoring.formulaTitle') }}
+                </p>
                 <p class="text-center text-h5 q-mb-md">
-                  <strong
-                    >SOFA = Respiration + Coagulation + Liver + Cardiovascular + CNS + Renal</strong
-                  >
+                  <strong>{{ t('sofa.sections.formulaScoring.formula') }}</strong>
                 </p>
                 <p class="text-center text-grey-7 q-mb-lg">
-                  Each organ scored 0-4 points → Total range 0-24 points
+                  {{ t('sofa.sections.formulaScoring.formulaSubtitle') }}
                 </p>
 
                 <q-separator class="q-my-md" />
 
-                <p class="text-weight-bold text-h6 q-mb-sm">Detailed Scoring Tables</p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.formulaScoring.detailedTablesTitle') }}
+                </p>
 
                 <!-- Respiration Table -->
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">🫁 Respiration (PaO₂/FiO₂ mmHg):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.formulaScoring.respirationTableTitle')"
+                  ></p>
                   <q-markup-table dense flat bordered>
                     <thead>
                       <tr>
-                        <th>Score</th>
-                        <th>PaO₂/FiO₂ Ratio</th>
-                        <th>Clinical Interpretation</th>
+                        <th>{{ t('sofa.sections.formulaScoring.tableHeaderScore') }}</th>
+                        <th>{{ t('sofa.sections.formulaScoring.respirationTableHeader') }}</th>
+                        <th>{{ t('sofa.sections.formulaScoring.tableHeaderInterpretation') }}</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <td><strong>0</strong></td>
-                        <td>≥400</td>
-                        <td>Normal oxygenation</td>
+                        <td v-html="t('sofa.sections.formulaScoring.respiration0')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.respiration0Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>1</strong></td>
-                        <td>&lt;400</td>
-                        <td>Mild hypoxemia</td>
+                        <td v-html="t('sofa.sections.formulaScoring.respiration1')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.respiration1Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>2</strong></td>
-                        <td>&lt;300</td>
-                        <td>Moderate hypoxemia (Mild ARDS)</td>
+                        <td v-html="t('sofa.sections.formulaScoring.respiration2')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.respiration2Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>3</strong></td>
-                        <td>&lt;200 + ventilation</td>
-                        <td>Severe hypoxemia (Moderate ARDS)</td>
+                        <td v-html="t('sofa.sections.formulaScoring.respiration3')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.respiration3Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>4</strong></td>
-                        <td>&lt;100 + ventilation</td>
-                        <td>Profound ARDS (Severe)</td>
+                        <td v-html="t('sofa.sections.formulaScoring.respiration4')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.respiration4Interp') }}</td>
                       </tr>
                     </tbody>
                   </q-markup-table>
@@ -753,40 +642,43 @@ const resetForm = () => {
 
                 <!-- Coagulation Table -->
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">🩸 Coagulation (Platelets ×10³/μL):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.formulaScoring.coagulationTableTitle')"
+                  ></p>
                   <q-markup-table dense flat bordered>
                     <thead>
                       <tr>
-                        <th>Score</th>
-                        <th>Platelet Count</th>
-                        <th>Clinical Interpretation</th>
+                        <th>{{ t('sofa.sections.formulaScoring.tableHeaderScore') }}</th>
+                        <th>{{ t('sofa.sections.formulaScoring.coagulationTableHeader') }}</th>
+                        <th>{{ t('sofa.sections.formulaScoring.tableHeaderInterpretation') }}</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <td><strong>0</strong></td>
-                        <td>≥150</td>
-                        <td>Normal coagulation</td>
+                        <td v-html="t('sofa.sections.formulaScoring.coagulation0')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.coagulation0Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>1</strong></td>
-                        <td>&lt;150</td>
-                        <td>Mild thrombocytopenia</td>
+                        <td v-html="t('sofa.sections.formulaScoring.coagulation1')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.coagulation1Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>2</strong></td>
-                        <td>&lt;100</td>
-                        <td>Moderate thrombocytopenia</td>
+                        <td v-html="t('sofa.sections.formulaScoring.coagulation2')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.coagulation2Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>3</strong></td>
-                        <td>&lt;50</td>
-                        <td>Severe (bleeding risk)</td>
+                        <td v-html="t('sofa.sections.formulaScoring.coagulation3')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.coagulation3Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>4</strong></td>
-                        <td>&lt;20</td>
-                        <td>Critical (spontaneous bleeding)</td>
+                        <td v-html="t('sofa.sections.formulaScoring.coagulation4')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.coagulation4Interp') }}</td>
                       </tr>
                     </tbody>
                   </q-markup-table>
@@ -794,40 +686,43 @@ const resetForm = () => {
 
                 <!-- Liver Table -->
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">🟡 Liver (Bilirubin mg/dL):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.formulaScoring.liverTableTitle')"
+                  ></p>
                   <q-markup-table dense flat bordered>
                     <thead>
                       <tr>
-                        <th>Score</th>
-                        <th>Bilirubin</th>
-                        <th>Clinical Interpretation</th>
+                        <th>{{ t('sofa.sections.formulaScoring.tableHeaderScore') }}</th>
+                        <th>{{ t('sofa.sections.formulaScoring.liverTableHeader') }}</th>
+                        <th>{{ t('sofa.sections.formulaScoring.tableHeaderInterpretation') }}</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <td><strong>0</strong></td>
-                        <td>&lt;1.2</td>
-                        <td>Normal liver function</td>
+                        <td v-html="t('sofa.sections.formulaScoring.liver0')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.liver0Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>1</strong></td>
-                        <td>1.2-1.9</td>
-                        <td>Mild hyperbilirubinemia</td>
+                        <td>{{ t('sofa.sections.formulaScoring.liver1') }}</td>
+                        <td>{{ t('sofa.sections.formulaScoring.liver1Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>2</strong></td>
-                        <td>2.0-5.9</td>
-                        <td>Moderate jaundice</td>
+                        <td>{{ t('sofa.sections.formulaScoring.liver2') }}</td>
+                        <td>{{ t('sofa.sections.formulaScoring.liver2Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>3</strong></td>
-                        <td>6.0-11.9</td>
-                        <td>Severe hepatic dysfunction</td>
+                        <td>{{ t('sofa.sections.formulaScoring.liver3') }}</td>
+                        <td>{{ t('sofa.sections.formulaScoring.liver3Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>4</strong></td>
-                        <td>≥12.0</td>
-                        <td>Hepatic failure</td>
+                        <td v-html="t('sofa.sections.formulaScoring.liver4')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.liver4Interp') }}</td>
                       </tr>
                     </tbody>
                   </q-markup-table>
@@ -835,34 +730,37 @@ const resetForm = () => {
 
                 <!-- Cardiovascular Table -->
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">❤️ Cardiovascular (MAP/Vasopressors):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.formulaScoring.cardiovascularTableTitle')"
+                  ></p>
                   <q-markup-table dense flat bordered>
                     <thead>
                       <tr>
-                        <th>Score</th>
-                        <th>MAP or Vasopressor Doses</th>
+                        <th>{{ t('sofa.sections.formulaScoring.tableHeaderScore') }}</th>
+                        <th>{{ t('sofa.sections.formulaScoring.cardiovascularTableHeader') }}</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <td><strong>0</strong></td>
-                        <td>MAP ≥70 mmHg</td>
+                        <td>{{ t('sofa.sections.formulaScoring.cardiovascular0') }}</td>
                       </tr>
                       <tr>
                         <td><strong>1</strong></td>
-                        <td>MAP &lt;70 mmHg</td>
+                        <td v-html="t('sofa.sections.formulaScoring.cardiovascular1')"></td>
                       </tr>
                       <tr>
                         <td><strong>2</strong></td>
-                        <td>Dopamine ≤5 OR Dobutamine (any)</td>
+                        <td>{{ t('sofa.sections.formulaScoring.cardiovascular2') }}</td>
                       </tr>
                       <tr>
                         <td><strong>3</strong></td>
-                        <td>Dopamine >5 OR Epi ≤0.1 OR Norepi ≤0.1 (μg/kg/min)</td>
+                        <td v-html="t('sofa.sections.formulaScoring.cardiovascular3')"></td>
                       </tr>
                       <tr>
                         <td><strong>4</strong></td>
-                        <td>Dopamine >15 OR Epi >0.1 OR Norepi >0.1 (μg/kg/min)</td>
+                        <td v-html="t('sofa.sections.formulaScoring.cardiovascular4')"></td>
                       </tr>
                     </tbody>
                   </q-markup-table>
@@ -870,40 +768,43 @@ const resetForm = () => {
 
                 <!-- CNS Table -->
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">🧠 CNS (Glasgow Coma Scale):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.formulaScoring.cnsTableTitle')"
+                  ></p>
                   <q-markup-table dense flat bordered>
                     <thead>
                       <tr>
-                        <th>Score</th>
-                        <th>GCS</th>
-                        <th>Clinical Interpretation</th>
+                        <th>{{ t('sofa.sections.formulaScoring.tableHeaderScore') }}</th>
+                        <th>{{ t('sofa.sections.formulaScoring.cnsTableHeader') }}</th>
+                        <th>{{ t('sofa.sections.formulaScoring.tableHeaderInterpretation') }}</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <td><strong>0</strong></td>
-                        <td>15</td>
-                        <td>Fully awake and oriented</td>
+                        <td>{{ t('sofa.sections.formulaScoring.cns0') }}</td>
+                        <td>{{ t('sofa.sections.formulaScoring.cns0Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>1</strong></td>
-                        <td>13-14</td>
-                        <td>Mild altered mental status</td>
+                        <td>{{ t('sofa.sections.formulaScoring.cns1') }}</td>
+                        <td>{{ t('sofa.sections.formulaScoring.cns1Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>2</strong></td>
-                        <td>10-12</td>
-                        <td>Moderate confusion/drowsiness</td>
+                        <td>{{ t('sofa.sections.formulaScoring.cns2') }}</td>
+                        <td>{{ t('sofa.sections.formulaScoring.cns2Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>3</strong></td>
-                        <td>6-9</td>
-                        <td>Severe coma (localizes pain)</td>
+                        <td>{{ t('sofa.sections.formulaScoring.cns3') }}</td>
+                        <td>{{ t('sofa.sections.formulaScoring.cns3Interp') }}</td>
                       </tr>
                       <tr>
                         <td><strong>4</strong></td>
-                        <td>&lt;6</td>
-                        <td>Deep coma (no response)</td>
+                        <td v-html="t('sofa.sections.formulaScoring.cns4')"></td>
+                        <td>{{ t('sofa.sections.formulaScoring.cns4Interp') }}</td>
                       </tr>
                     </tbody>
                   </q-markup-table>
@@ -911,34 +812,37 @@ const resetForm = () => {
 
                 <!-- Renal Table -->
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">💧 Renal (Creatinine mg/dL OR Urine Output):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.formulaScoring.renalTableTitle')"
+                  ></p>
                   <q-markup-table dense flat bordered>
                     <thead>
                       <tr>
-                        <th>Score</th>
-                        <th>Creatinine OR Urine Output</th>
+                        <th>{{ t('sofa.sections.formulaScoring.tableHeaderScore') }}</th>
+                        <th>{{ t('sofa.sections.formulaScoring.renalTableHeader') }}</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <td><strong>0</strong></td>
-                        <td>&lt;1.2 mg/dL</td>
+                        <td v-html="t('sofa.sections.formulaScoring.renal0')"></td>
                       </tr>
                       <tr>
                         <td><strong>1</strong></td>
-                        <td>1.2-1.9 mg/dL</td>
+                        <td>{{ t('sofa.sections.formulaScoring.renal1') }}</td>
                       </tr>
                       <tr>
                         <td><strong>2</strong></td>
-                        <td>2.0-3.4 mg/dL</td>
+                        <td>{{ t('sofa.sections.formulaScoring.renal2') }}</td>
                       </tr>
                       <tr>
                         <td><strong>3</strong></td>
-                        <td>3.5-4.9 mg/dL OR &lt;500 mL/day</td>
+                        <td v-html="t('sofa.sections.formulaScoring.renal3')"></td>
                       </tr>
                       <tr>
                         <td><strong>4</strong></td>
-                        <td>≥5.0 mg/dL OR &lt;200 mL/day OR RRT</td>
+                        <td v-html="t('sofa.sections.formulaScoring.renal4')"></td>
                       </tr>
                     </tbody>
                   </q-markup-table>
@@ -946,26 +850,17 @@ const resetForm = () => {
 
                 <q-separator class="q-my-md" />
 
-                <p class="text-weight-bold text-h6 q-mb-sm">Delta SOFA (ΔSOFA) Calculation</p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.formulaScoring.deltaSofaTitle') }}
+                </p>
                 <p class="text-center q-mb-sm">
-                  <strong>ΔSOFA = SOFA(current) - SOFA(baseline)</strong>
+                  <strong>{{ t('sofa.sections.formulaScoring.deltaSofaFormula') }}</strong>
                 </p>
                 <ul class="q-ml-md">
-                  <li>
-                    <strong>Baseline:</strong> First SOFA score on ICU admission OR pre-illness
-                    baseline if known
-                  </li>
-                  <li>
-                    <strong>ΔSOFA ≥+2:</strong> Sepsis criterion (Sepsis-3 definition), 10%
-                    increased mortality per point
-                  </li>
-                  <li>
-                    <strong>ΔSOFA negative:</strong> Improving organ function (favorable trajectory)
-                  </li>
-                  <li>
-                    <strong>ΔSOFA +3-4:</strong> Significant clinical deterioration, reassess
-                    treatment
-                  </li>
+                  <li v-html="t('sofa.sections.formulaScoring.deltaSofaItem1')"></li>
+                  <li v-html="t('sofa.sections.formulaScoring.deltaSofaItem2')"></li>
+                  <li v-html="t('sofa.sections.formulaScoring.deltaSofaItem3')"></li>
+                  <li v-html="t('sofa.sections.formulaScoring.deltaSofaItem4')"></li>
                 </ul>
               </div>
             </q-card>
@@ -975,147 +870,151 @@ const resetForm = () => {
           <q-expansion-item
             icon="psychology"
             color="medical-mint"
-            label="Clinical Interpretation and Mortality Prediction"
+            :label="t('sofa.sections.clinicalInterpretation.title')"
             class="q-mt-sm"
             header-class="bg-orange-1 text-orange-9"
           >
             <q-card flat class="q-pa-md bg-orange-1">
               <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">Mortality Risk Stratification</p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.clinicalInterpretation.mortalityRiskTitle') }}
+                </p>
 
                 <div class="q-mb-md">
                   <q-chip color="green" text-color="white" dense class="q-mb-xs">
                     <q-icon name="check_circle" class="q-mr-xs" />
-                    SOFA 0-6: Low Risk
+                    {{ t('sofa.sections.clinicalInterpretation.riskLevel1Chip') }}
                   </q-chip>
                   <p>
-                    <strong>Mortality risk:</strong> &lt;10-15% in-hospital mortality<br />
-                    <strong>Clinical status:</strong> Mild organ dysfunction or single organ
-                    involvement<br />
-                    <strong>ICU course:</strong> Typically shorter ICU stay, good recovery
-                    potential<br />
-                    <strong>Management:</strong> Standard ICU care, monitor for deterioration
+                    <span
+                      v-html="t('sofa.sections.clinicalInterpretation.riskLevel1Mortality')"
+                    ></span
+                    ><br />
+                    <span v-html="t('sofa.sections.clinicalInterpretation.riskLevel1Status')"></span
+                    ><br />
+                    <span v-html="t('sofa.sections.clinicalInterpretation.riskLevel1Course')"></span
+                    ><br />
+                    <span
+                      v-html="t('sofa.sections.clinicalInterpretation.riskLevel1Management')"
+                    ></span>
                   </p>
                 </div>
 
                 <div class="q-mb-md">
                   <q-chip color="orange" text-color="white" dense class="q-mb-xs">
                     <q-icon name="warning" class="q-mr-xs" />
-                    SOFA 7-9: Moderate Risk
+                    {{ t('sofa.sections.clinicalInterpretation.riskLevel2Chip') }}
                   </q-chip>
                   <p>
-                    <strong>Mortality risk:</strong> 15-20% in-hospital mortality<br />
-                    <strong>Clinical status:</strong> Moderate multi-organ dysfunction<br />
-                    <strong>ICU course:</strong> Prolonged ICU stay likely, requires close
-                    monitoring<br />
-                    <strong>Management:</strong> Aggressive organ support, daily SOFA trending
+                    <span
+                      v-html="t('sofa.sections.clinicalInterpretation.riskLevel2Mortality')"
+                    ></span
+                    ><br />
+                    <span v-html="t('sofa.sections.clinicalInterpretation.riskLevel2Status')"></span
+                    ><br />
+                    <span v-html="t('sofa.sections.clinicalInterpretation.riskLevel2Course')"></span
+                    ><br />
+                    <span
+                      v-html="t('sofa.sections.clinicalInterpretation.riskLevel2Management')"
+                    ></span>
                   </p>
                 </div>
 
                 <div class="q-mb-md">
                   <q-chip color="red" text-color="white" dense class="q-mb-xs">
                     <q-icon name="dangerous" class="q-mr-xs" />
-                    SOFA 10-12: High Risk
+                    {{ t('sofa.sections.clinicalInterpretation.riskLevel3Chip') }}
                   </q-chip>
                   <p>
-                    <strong>Mortality risk:</strong> 40-50% in-hospital mortality<br />
-                    <strong>Clinical status:</strong> Severe multi-organ failure<br />
-                    <strong>ICU course:</strong> Very prolonged ICU stay, complex management<br />
-                    <strong>Management:</strong> Maximum organ support, consider advanced therapies
-                    (ECMO, RRT, etc.)
+                    <span
+                      v-html="t('sofa.sections.clinicalInterpretation.riskLevel3Mortality')"
+                    ></span
+                    ><br />
+                    <span v-html="t('sofa.sections.clinicalInterpretation.riskLevel3Status')"></span
+                    ><br />
+                    <span v-html="t('sofa.sections.clinicalInterpretation.riskLevel3Course')"></span
+                    ><br />
+                    <span
+                      v-html="t('sofa.sections.clinicalInterpretation.riskLevel3Management')"
+                    ></span>
                   </p>
                 </div>
 
                 <div class="q-mb-md">
                   <q-chip color="red-10" text-color="white" dense class="q-mb-xs">
                     <q-icon name="local_hospital" class="q-mr-xs" />
-                    SOFA 13-14: Very High Risk
+                    {{ t('sofa.sections.clinicalInterpretation.riskLevel4Chip') }}
                   </q-chip>
                   <p>
-                    <strong>Mortality risk:</strong> 50-95% in-hospital mortality<br />
-                    <strong>Clinical status:</strong> Profound multiple organ failure<br />
-                    <strong>ICU course:</strong> Salvage therapy, extremely poor prognosis<br />
-                    <strong>Management:</strong> Maximum ICU resources, family discussions about
-                    goals of care
+                    <span
+                      v-html="t('sofa.sections.clinicalInterpretation.riskLevel4Mortality')"
+                    ></span
+                    ><br />
+                    <span v-html="t('sofa.sections.clinicalInterpretation.riskLevel4Status')"></span
+                    ><br />
+                    <span v-html="t('sofa.sections.clinicalInterpretation.riskLevel4Course')"></span
+                    ><br />
+                    <span
+                      v-html="t('sofa.sections.clinicalInterpretation.riskLevel4Management')"
+                    ></span>
                   </p>
                 </div>
 
                 <div class="q-mb-lg">
                   <q-chip color="red-10" text-color="white" dense class="q-mb-xs">
                     <q-icon name="report" class="q-mr-xs" />
-                    SOFA ≥15: Catastrophic
+                    {{ t('sofa.sections.clinicalInterpretation.riskLevel5Chip') }}
                   </q-chip>
                   <p>
-                    <strong>Mortality risk:</strong> >90% in-hospital mortality<br />
-                    <strong>Clinical status:</strong> Multi-organ failure with extremely poor
-                    prognosis<br />
-                    <strong>ICU course:</strong> Survival extremely rare<br />
-                    <strong>Management:</strong> Palliative care discussions appropriate, withdrawal
-                    of care may be considered
+                    <span
+                      v-html="t('sofa.sections.clinicalInterpretation.riskLevel5Mortality')"
+                    ></span
+                    ><br />
+                    <span v-html="t('sofa.sections.clinicalInterpretation.riskLevel5Status')"></span
+                    ><br />
+                    <span v-html="t('sofa.sections.clinicalInterpretation.riskLevel5Course')"></span
+                    ><br />
+                    <span
+                      v-html="t('sofa.sections.clinicalInterpretation.riskLevel5Management')"
+                    ></span>
                   </p>
                 </div>
 
                 <q-separator class="q-my-md" />
 
-                <p class="text-weight-bold text-h6 q-mb-sm">Delta SOFA (ΔSOFA) Interpretation</p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.clinicalInterpretation.deltaSofaInterpretationTitle') }}
+                </p>
 
                 <ul class="q-ml-md">
-                  <li>
-                    <strong>ΔSOFA +1 point:</strong> ~10% increased mortality risk per point
-                    increase
-                  </li>
-                  <li>
-                    <strong>ΔSOFA ≥+2 points (within 48h):</strong> Sepsis-3 criterion for organ
-                    dysfunction. Significant clinical deterioration. Triggers sepsis bundle
-                    protocols (antibiotics, fluid resuscitation, source control).
-                  </li>
-                  <li>
-                    <strong>ΔSOFA +3-4 points:</strong> Severe deterioration, reassess diagnosis and
-                    treatment. Consider missed infection source, resistant organisms, complications.
-                  </li>
-                  <li>
-                    <strong>ΔSOFA negative (decreasing):</strong> Improving organ function,
-                    favorable trajectory. Treatment effective, consider de-escalation when
-                    appropriate.
-                  </li>
-                  <li>
-                    <strong>ΔSOFA plateau (unchanged):</strong> Static course, neither improving nor
-                    worsening. May indicate chronic organ dysfunction or treatment equilibrium.
-                  </li>
+                  <li v-html="t('sofa.sections.clinicalInterpretation.deltaSofaItem1')"></li>
+                  <li v-html="t('sofa.sections.clinicalInterpretation.deltaSofaItem2')"></li>
+                  <li v-html="t('sofa.sections.clinicalInterpretation.deltaSofaItem3')"></li>
+                  <li v-html="t('sofa.sections.clinicalInterpretation.deltaSofaItem4')"></li>
+                  <li v-html="t('sofa.sections.clinicalInterpretation.deltaSofaItem5')"></li>
                 </ul>
 
                 <q-separator class="q-my-md" />
 
-                <p class="text-weight-bold text-h6 q-mb-sm">Sepsis-3 Definition Integration</p>
-                <p>
-                  <strong>Sepsis (Sepsis-3):</strong> Life-threatening organ dysfunction caused by
-                  dysregulated host response to infection
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.clinicalInterpretation.sepsis3Title') }}
                 </p>
+                <p v-html="t('sofa.sections.clinicalInterpretation.sepsis3Definition')"></p>
                 <ul class="q-ml-md">
-                  <li>
-                    <strong>Criteria:</strong> Suspected or documented infection +
-                    <strong>ΔSOFA ≥2 points</strong>
-                  </li>
-                  <li>
-                    <strong>Baseline SOFA:</strong> Assume 0 if no pre-existing organ dysfunction
-                    known
-                  </li>
-                  <li>
-                    <strong>Septic Shock:</strong> Sepsis + vasopressor requirement (MAP ≥65 mmHg) +
-                    lactate >2 mmol/L despite adequate fluid resuscitation
-                  </li>
-                  <li>
-                    <strong>Mortality:</strong> Sepsis ~10%, Septic Shock ~40% in-hospital mortality
-                  </li>
+                  <li v-html="t('sofa.sections.clinicalInterpretation.sepsis3Criteria')"></li>
+                  <li v-html="t('sofa.sections.clinicalInterpretation.sepsis3Baseline')"></li>
+                  <li v-html="t('sofa.sections.clinicalInterpretation.sepsis3Shock')"></li>
+                  <li v-html="t('sofa.sections.clinicalInterpretation.sepsis3Mortality')"></li>
                 </ul>
 
                 <q-banner class="bg-orange-2 text-orange-9 q-mt-md" dense rounded>
                   <template v-slot:avatar>
                     <q-icon name="info" color="orange" />
                   </template>
-                  <strong>Clinical Pearl:</strong> Serial SOFA trending (daily) is MORE predictive
-                  than single baseline SOFA. Worsening ΔSOFA indicates treatment failure or
-                  complications. Improving ΔSOFA validates treatment efficacy.
+                  <strong>{{
+                    t('sofa.sections.clinicalInterpretation.clinicalPearlTitle')
+                  }}</strong>
+                  {{ t('sofa.sections.clinicalInterpretation.clinicalPearlText') }}
                 </q-banner>
               </div>
             </q-card>
@@ -1125,174 +1024,106 @@ const resetForm = () => {
           <q-expansion-item
             icon="medical_services"
             color="medical-mint"
-            label="Clinical Applications of SOFA Score"
+            :label="t('sofa.sections.clinicalApplications.title')"
             class="q-mt-sm"
             header-class="bg-teal-1 text-teal-9"
           >
             <q-card flat class="q-pa-md bg-teal-1">
               <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">Primary Clinical Uses</p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.clinicalApplications.primaryUsesTitle') }}
+                </p>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">
-                    1️⃣ Sepsis Diagnosis and Severity Stratification (Sepsis-3)
-                  </p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.clinicalApplications.use1Title')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Screening:</strong> qSOFA (quick SOFA) ≥2 → triggers full SOFA
-                      calculation
-                    </li>
-                    <li>
-                      <strong>Diagnosis:</strong> Infection + ΔSOFA ≥2 = Sepsis (organ dysfunction)
-                    </li>
-                    <li>
-                      <strong>Severity:</strong> Baseline SOFA 0-6 (less severe), 7-12 (moderate),
-                      ≥13 (severe)
-                    </li>
-                    <li>
-                      <strong>Septic shock:</strong> Sepsis + vasopressors + lactate >2 mmol/L
-                    </li>
-                    <li>
-                      <strong>Triggers:</strong> SOFA ≥2 → initiate sepsis bundles (1-hour bundle:
-                      blood cultures, antibiotics, fluid resuscitation)
-                    </li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use1Item1')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use1Item2')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use1Item3')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use1Item4')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use1Item5')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">2️⃣ ICU Admission Triage and Bed Allocation</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.clinicalApplications.use2Title')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Baseline SOFA >10:</strong> High-risk patient, requires intensive
-                      monitoring and resources
-                    </li>
-                    <li>
-                      <strong>Resource allocation:</strong> Prioritize ICU beds for SOFA >8 during
-                      surge capacity
-                    </li>
-                    <li>
-                      <strong>Step-down criteria:</strong> SOFA decreasing to &lt;6 with stable
-                      trend → consider ICU discharge to step-down unit
-                    </li>
-                    <li>
-                      <strong>Prognosis discussion:</strong> SOFA ≥15 → poor prognosis, discuss
-                      goals of care with family
-                    </li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use2Item1')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use2Item2')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use2Item3')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use2Item4')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">3️⃣ Serial Monitoring and Deterioration Detection</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.clinicalApplications.use3Title')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Daily SOFA:</strong> Calculate at same time each day (e.g., morning
-                      rounds 08:00)
-                    </li>
-                    <li>
-                      <strong>Trend analysis:</strong> Graph SOFA over time to visualize trajectory
-                      (improving vs worsening)
-                    </li>
-                    <li>
-                      <strong>Alert thresholds:</strong> ΔSOFA ≥+2 in 24-48h → clinical alert,
-                      reassess treatment plan
-                    </li>
-                    <li>
-                      <strong>Organ-specific deterioration:</strong> Track individual organ scores
-                      to identify failing system (e.g., renal SOFA 0→3 = new AKI)
-                    </li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use3Item1')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use3Item2')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use3Item3')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use3Item4')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">4️⃣ Clinical Trial Endpoints and Research</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.clinicalApplications.use4Title')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Inclusion criteria:</strong> Many sepsis trials require baseline SOFA
-                      ≥2 or specific organ SOFA thresholds
-                    </li>
-                    <li>
-                      <strong>Primary outcome:</strong> ΔSOFA at day 7 or ICU discharge used as
-                      efficacy endpoint
-                    </li>
-                    <li>
-                      <strong>Stratification:</strong> Randomize by baseline SOFA categories (e.g.,
-                      &lt;8 vs ≥8) to balance severity
-                    </li>
-                    <li>
-                      <strong>Standardized measure:</strong> Allows comparison across international
-                      studies and institutions
-                    </li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use4Item1')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use4Item2')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use4Item3')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use4Item4')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">5️⃣ Prognostic Communication with Families</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.clinicalApplications.use5Title')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Baseline SOFA 8-12:</strong> "Your family member has moderate organ
-                      dysfunction, 15-50% mortality risk, prolonged ICU stay expected"
-                    </li>
-                    <li>
-                      <strong>SOFA ≥15:</strong> "Catastrophic multi-organ failure, >90% mortality,
-                      palliative care discussions appropriate"
-                    </li>
-                    <li>
-                      <strong>Improving ΔSOFA:</strong> "Organ function recovering, treatment
-                      effective, favorable prognosis"
-                    </li>
-                    <li>
-                      <strong>Worsening ΔSOFA:</strong> "Condition deteriorating despite treatment,
-                      need to reassess goals of care"
-                    </li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use5Item1')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use5Item2')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use5Item3')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use5Item4')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-lg">
-                  <p class="text-weight-bold">6️⃣ Quality Metrics and ICU Performance</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.clinicalApplications.use6Title')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Severity-adjusted mortality:</strong> Compare observed vs predicted
-                      mortality (Standardized Mortality Ratio)
-                    </li>
-                    <li>
-                      <strong>ICU benchmarking:</strong> SOFA used in APACHE IV, SAPS 3 models for
-                      severity adjustment
-                    </li>
-                    <li>
-                      <strong>Length of stay prediction:</strong> Baseline SOFA correlates with ICU
-                      LOS and mechanical ventilation days
-                    </li>
-                    <li>
-                      <strong>Risk stratification:</strong> Report outcomes stratified by SOFA
-                      categories for quality improvement
-                    </li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use6Item1')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use6Item2')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use6Item3')"></li>
+                    <li v-html="t('sofa.sections.clinicalApplications.use6Item4')"></li>
                   </ul>
                 </div>
 
                 <q-separator class="q-my-md" />
 
-                <p class="text-weight-bold text-h6 q-mb-sm">qSOFA (quick SOFA) Screening Tool</p>
-                <p>
-                  <strong>Purpose:</strong> Rapid bedside screening for sepsis risk (ED, ward,
-                  pre-hospital)
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.clinicalApplications.qsofaTitle') }}
                 </p>
+                <p v-html="t('sofa.sections.clinicalApplications.qsofaPurpose')"></p>
                 <ul class="q-ml-md">
-                  <li>
-                    <strong>Criteria (1 point each):</strong> (1) Respiratory rate ≥22/min, (2)
-                    Altered mental status (GCS &lt;15), (3) Systolic BP ≤100 mmHg
-                  </li>
-                  <li>
-                    <strong>qSOFA ≥2:</strong> Positive screen → calculate full SOFA score, initiate
-                    sepsis workup
-                  </li>
-                  <li>
-                    <strong>Advantages:</strong> No lab tests required, fast bedside assessment (1
-                    minute)
-                  </li>
-                  <li>
-                    <strong>Limitations:</strong> Lower sensitivity than full SOFA (more false
-                    negatives), not for diagnosis (screening only)
-                  </li>
+                  <li v-html="t('sofa.sections.clinicalApplications.qsofaItem1')"></li>
+                  <li v-html="t('sofa.sections.clinicalApplications.qsofaItem2')"></li>
+                  <li v-html="t('sofa.sections.clinicalApplications.qsofaItem3')"></li>
+                  <li v-html="t('sofa.sections.clinicalApplications.qsofaItem4')"></li>
                 </ul>
               </div>
             </q-card>
@@ -1302,171 +1133,119 @@ const resetForm = () => {
           <q-expansion-item
             icon="warning"
             color="medical-mint"
-            label="Reference Values and Critical Alerts"
+            :label="t('sofa.sections.referenceValues.title')"
             class="q-mt-sm"
             header-class="bg-red-1 text-red-9"
           >
             <q-card flat class="q-pa-md bg-red-1">
               <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">Organ-Specific Critical Thresholds</p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.referenceValues.organThresholdsTitle') }}
+                </p>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">🫁 Respiration:</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.referenceValues.respirationTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Normal P/F ratio:</strong> ≥400 mmHg (room air or minimal supplemental
-                      O₂)
-                    </li>
-                    <li><strong>Mild ARDS:</strong> P/F 200-300 (SOFA 2, moderate hypoxemia)</li>
-                    <li>
-                      <strong>Moderate ARDS:</strong> P/F 100-200 (SOFA 3, severe hypoxemia,
-                      requires ventilation)
-                    </li>
-                    <li>
-                      <strong>Severe ARDS:</strong> P/F &lt;100 (SOFA 4, refractory hypoxemia,
-                      consider ECMO, proning, recruitment maneuvers)
-                    </li>
-                    <li>
-                      <strong>⚠️ ALERT:</strong> P/F &lt;100 despite optimal ventilation → rescue
-                      therapies (ECMO, prone positioning, inhaled NO)
-                    </li>
+                    <li v-html="t('sofa.sections.referenceValues.respirationItem1')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.respirationItem2')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.respirationItem3')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.respirationItem4')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.respirationItem5')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">🩸 Coagulation:</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.referenceValues.coagulationTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li><strong>Normal platelets:</strong> 150-400 ×10³/μL</li>
-                    <li>
-                      <strong>Moderate thrombocytopenia:</strong> 50-100K (SOFA 2-3, monitor
-                      bleeding risk)
-                    </li>
-                    <li>
-                      <strong>Severe thrombocytopenia:</strong> &lt;50K (SOFA 3, prophylactic
-                      platelet transfusion if procedures/bleeding)
-                    </li>
-                    <li>
-                      <strong>Critical thrombocytopenia:</strong> &lt;20K (SOFA 4, spontaneous
-                      bleeding risk, urgent platelet transfusion)
-                    </li>
-                    <li>
-                      <strong>⚠️ ALERT:</strong> Platelets &lt;20K + active bleeding → emergent
-                      transfusion, consider DIC workup (PT/PTT, fibrinogen, D-dimer)
-                    </li>
+                    <li v-html="t('sofa.sections.referenceValues.coagulationItem1')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.coagulationItem2')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.coagulationItem3')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.coagulationItem4')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.coagulationItem5')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">🟡 Liver:</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.referenceValues.liverTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li><strong>Normal bilirubin:</strong> &lt;1.2 mg/dL</li>
-                    <li>
-                      <strong>Moderate hyperbilirubinemia:</strong> 2-6 mg/dL (SOFA 2, jaundice
-                      visible)
-                    </li>
-                    <li>
-                      <strong>Severe hepatic dysfunction:</strong> 6-12 mg/dL (SOFA 3, consider
-                      hepatic encephalopathy risk)
-                    </li>
-                    <li>
-                      <strong>Hepatic failure:</strong> ≥12 mg/dL (SOFA 4, check coagulation,
-                      ammonia, consider liver transplant evaluation)
-                    </li>
-                    <li>
-                      <strong>⚠️ ALERT:</strong> Bilirubin ≥12 + INR >2.0 + encephalopathy → acute
-                      liver failure, hepatology consult urgent
-                    </li>
+                    <li v-html="t('sofa.sections.referenceValues.liverItem1')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.liverItem2')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.liverItem3')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.liverItem4')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.liverItem5')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">❤️ Cardiovascular:</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.referenceValues.cardiovascularTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li><strong>Normal MAP:</strong> ≥70 mmHg without vasopressors</li>
-                    <li>
-                      <strong>Hypotension:</strong> MAP &lt;70 mmHg (SOFA 1, fluid resuscitation)
-                    </li>
-                    <li>
-                      <strong>Low-dose vasopressors:</strong> Dopamine ≤5 or dobutamine (SOFA 2)
-                    </li>
-                    <li>
-                      <strong>Moderate vasopressors:</strong> Dopamine >5 or low-dose epi/norepi
-                      (SOFA 3, septic shock)
-                    </li>
-                    <li>
-                      <strong>High-dose vasopressors:</strong> Dopamine >15 or high-dose epi/norepi
-                      (SOFA 4, refractory shock)
-                    </li>
-                    <li>
-                      <strong>⚠️ ALERT:</strong> SOFA CV 4 (refractory shock) → exclude tamponade,
-                      tension pneumothorax, PE, consider ECMO, stress-dose steroids
-                    </li>
+                    <li v-html="t('sofa.sections.referenceValues.cardiovascularItem1')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.cardiovascularItem2')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.cardiovascularItem3')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.cardiovascularItem4')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.cardiovascularItem5')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.cardiovascularItem6')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">🧠 CNS:</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.referenceValues.cnsTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li><strong>Normal consciousness:</strong> GCS 15 (fully awake)</li>
-                    <li><strong>Mild AMS:</strong> GCS 13-14 (SOFA 1, confusion/disorientation)</li>
-                    <li><strong>Moderate AMS:</strong> GCS 10-12 (SOFA 2, drowsy but arousable)</li>
-                    <li>
-                      <strong>Severe coma:</strong> GCS 6-9 (SOFA 3, localizes pain, consider
-                      intubation for airway protection)
-                    </li>
-                    <li>
-                      <strong>Deep coma:</strong> GCS &lt;6 (SOFA 4, no response, poor prognosis)
-                    </li>
-                    <li>
-                      <strong>⚠️ ALERT:</strong> GCS &lt;6 + fixed dilated pupils → brain death
-                      evaluation, CT head urgent
-                    </li>
+                    <li v-html="t('sofa.sections.referenceValues.cnsItem1')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.cnsItem2')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.cnsItem3')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.cnsItem4')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.cnsItem5')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.cnsItem6')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">💧 Renal:</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.referenceValues.renalTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Normal creatinine:</strong> 0.6-1.2 mg/dL (varies by age/sex/muscle
-                      mass)
-                    </li>
-                    <li>
-                      <strong>AKI Stage 1:</strong> Cr 1.2-1.9 (SOFA 1, monitor, optimize
-                      hemodynamics)
-                    </li>
-                    <li>
-                      <strong>AKI Stage 2:</strong> Cr 2.0-3.4 (SOFA 2, nephrology aware, avoid
-                      nephrotoxins)
-                    </li>
-                    <li>
-                      <strong>AKI Stage 3:</strong> Cr 3.5-4.9 or oliguria &lt;500 mL/day (SOFA 3,
-                      consider RRT soon)
-                    </li>
-                    <li>
-                      <strong>Renal failure:</strong> Cr ≥5.0 or anuria &lt;200 mL/day (SOFA 4, RRT
-                      indicated)
-                    </li>
-                    <li>
-                      <strong>⚠️ ALERT:</strong> SOFA Renal 4 + hyperkalemia (K+ >6.5) or pulmonary
-                      edema → emergent dialysis
-                    </li>
+                    <li v-html="t('sofa.sections.referenceValues.renalItem1')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.renalItem2')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.renalItem3')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.renalItem4')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.renalItem5')"></li>
+                    <li v-html="t('sofa.sections.referenceValues.renalItem6')"></li>
                   </ul>
                 </div>
 
                 <q-separator class="q-my-md" />
 
-                <p class="text-weight-bold text-h6 q-mb-sm">Critical SOFA Alert Thresholds</p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.referenceValues.criticalAlertsTitle') }}
+                </p>
                 <q-list dense class="bg-red-2">
                   <q-item>
                     <q-item-section avatar>
                       <q-icon color="red" name="dangerous" size="sm" />
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label class="text-weight-bold">SOFA ≥15</q-item-label>
+                      <q-item-label class="text-weight-bold">
+                        {{ t('sofa.sections.referenceValues.alert1Title') }}
+                      </q-item-label>
                       <q-item-label caption>
-                        Catastrophic multi-organ failure. >90% mortality. Palliative care
-                        discussions appropriate.
+                        {{ t('sofa.sections.referenceValues.alert1Description') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1475,10 +1254,11 @@ const resetForm = () => {
                       <q-icon color="red" name="trending_up" size="sm" />
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label class="text-weight-bold">ΔSOFA ≥+2 in 24-48h</q-item-label>
+                      <q-item-label class="text-weight-bold">
+                        {{ t('sofa.sections.referenceValues.alert2Title') }}
+                      </q-item-label>
                       <q-item-label caption>
-                        Sepsis criterion. Significant deterioration. Reassess diagnosis, treatment,
-                        infection source control.
+                        {{ t('sofa.sections.referenceValues.alert2Description') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1487,10 +1267,11 @@ const resetForm = () => {
                       <q-icon color="orange" name="warning" size="sm" />
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label class="text-weight-bold">Any single organ SOFA 4</q-item-label>
+                      <q-item-label class="text-weight-bold">
+                        {{ t('sofa.sections.referenceValues.alert3Title') }}
+                      </q-item-label>
                       <q-item-label caption>
-                        Severe single organ failure. High risk. Requires aggressive organ-specific
-                        support (e.g., ECMO for respiratory SOFA 4, RRT for renal SOFA 4).
+                        {{ t('sofa.sections.referenceValues.alert3Description') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1499,10 +1280,11 @@ const resetForm = () => {
                       <q-icon color="orange" name="speed" size="sm" />
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label class="text-weight-bold">SOFA 10-12</q-item-label>
+                      <q-item-label class="text-weight-bold">
+                        {{ t('sofa.sections.referenceValues.alert4Title') }}
+                      </q-item-label>
                       <q-item-label caption>
-                        High risk. 40-50% mortality. Very prolonged ICU course expected. Maximum
-                        organ support indicated.
+                        {{ t('sofa.sections.referenceValues.alert4Description') }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -1511,26 +1293,13 @@ const resetForm = () => {
                 <q-separator class="q-my-md" />
 
                 <p class="text-weight-bold text-h6 q-mb-sm">
-                  Baseline and Chronic Organ Dysfunction
+                  {{ t('sofa.sections.referenceValues.baselineTitle') }}
                 </p>
                 <ul class="q-ml-md">
-                  <li>
-                    <strong>Known baseline SOFA:</strong> If chronic organ dysfunction pre-illness
-                    (e.g., ESRD, cirrhosis, COPD) → use pre-illness baseline SOFA for ΔSOFA
-                    calculation
-                  </li>
-                  <li>
-                    <strong>Dialysis patients:</strong> Renal SOFA automatically 4 (on RRT) → focus
-                    on other organ scores
-                  </li>
-                  <li>
-                    <strong>Elderly/frail:</strong> May have higher baseline SOFA (e.g., mild renal
-                    impairment Cr 1.5) → interpret absolute SOFA with caution, ΔSOFA more valuable
-                  </li>
-                  <li>
-                    <strong>Pediatrics:</strong> SOFA not validated &lt;18 years → use Pediatric
-                    SOFA (pSOFA) or PELOD-2 score instead
-                  </li>
+                  <li v-html="t('sofa.sections.referenceValues.baselineItem1')"></li>
+                  <li v-html="t('sofa.sections.referenceValues.baselineItem2')"></li>
+                  <li v-html="t('sofa.sections.referenceValues.baselineItem3')"></li>
+                  <li v-html="t('sofa.sections.referenceValues.baselineItem4')"></li>
                 </ul>
               </div>
             </q-card>
@@ -1540,188 +1309,113 @@ const resetForm = () => {
           <q-expansion-item
             icon="menu_book"
             color="medical-mint"
-            label="Medical Documentation and Guidelines"
+            :label="t('sofa.sections.documentation.title')"
             class="q-mt-sm"
             header-class="bg-indigo-1 text-indigo-9"
           >
             <q-card flat class="q-pa-md bg-indigo-1">
               <div class="text-body2">
                 <p class="text-weight-bold text-h6 q-mb-sm">
-                  International Guidelines and Consensus Definitions
+                  {{ t('sofa.sections.documentation.guidelinesTitle') }}
                 </p>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">📋 Sepsis-3 Consensus Definitions (2016)</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.documentation.sepsis3GuideTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Task Force:</strong> Society of Critical Care Medicine (SCCM) +
-                      European Society of Intensive Care Medicine (ESICM)
-                    </li>
-                    <li>
-                      <strong>Sepsis definition:</strong> Life-threatening organ dysfunction caused
-                      by dysregulated host response to infection, operationalized as
-                      <strong>SOFA score ≥2 points</strong> from baseline
-                    </li>
-                    <li>
-                      <strong>Septic shock definition:</strong> Sepsis + vasopressor requirement to
-                      maintain MAP ≥65 mmHg + serum lactate >2 mmol/L despite adequate fluid
-                      resuscitation
-                    </li>
-                    <li>
-                      <strong>qSOFA screening:</strong> Respiratory rate ≥22/min, altered mental
-                      status (GCS &lt;15), systolic BP ≤100 mmHg (≥2 of 3 → positive screen)
-                    </li>
-                    <li>
-                      <strong>Impact:</strong> Replaced SIRS criteria (Sepsis-1/2 definitions).
-                      SOFA-based definition improves prognostic accuracy and clinical relevance.
-                    </li>
+                    <li v-html="t('sofa.sections.documentation.sepsis3Item1')"></li>
+                    <li v-html="t('sofa.sections.documentation.sepsis3Item2')"></li>
+                    <li v-html="t('sofa.sections.documentation.sepsis3Item3')"></li>
+                    <li v-html="t('sofa.sections.documentation.sepsis3Item4')"></li>
+                    <li v-html="t('sofa.sections.documentation.sepsis3Item5')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">📋 Surviving Sepsis Campaign Guidelines (2021)</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.documentation.sscGuideTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>1-Hour Bundle:</strong> Measure lactate, obtain blood cultures before
-                      antibiotics, administer broad-spectrum antibiotics, begin rapid fluid
-                      resuscitation (30 mL/kg crystalloid) if sepsis/septic shock suspected
-                    </li>
-                    <li>
-                      <strong>SOFA role:</strong> Used to confirm organ dysfunction (SOFA ≥2 from
-                      baseline) and guide treatment escalation
-                    </li>
-                    <li>
-                      <strong>Serial monitoring:</strong> Daily SOFA scores recommended to assess
-                      treatment response and guide de-escalation
-                    </li>
-                    <li>
-                      <strong>Vasopressor guidelines:</strong> Norepinephrine first-line, target MAP
-                      ≥65 mmHg, add vasopressin or epinephrine if refractory (aligns with SOFA
-                      cardiovascular scoring)
-                    </li>
+                    <li v-html="t('sofa.sections.documentation.sscItem1')"></li>
+                    <li v-html="t('sofa.sections.documentation.sscItem2')"></li>
+                    <li v-html="t('sofa.sections.documentation.sscItem3')"></li>
+                    <li v-html="t('sofa.sections.documentation.sscItem4')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">📋 Berlin ARDS Definition (2012)</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.documentation.ardsGuideTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Integration with SOFA:</strong> SOFA respiration component based on
-                      P/F ratio aligns with Berlin ARDS severity categories
-                    </li>
-                    <li><strong>Mild ARDS:</strong> P/F 200-300 (SOFA respiratory 2)</li>
-                    <li><strong>Moderate ARDS:</strong> P/F 100-200 (SOFA respiratory 3)</li>
-                    <li><strong>Severe ARDS:</strong> P/F &lt;100 (SOFA respiratory 4)</li>
-                    <li>
-                      <strong>Ventilation requirement:</strong> SOFA 3-4 require respiratory support
-                      (mechanical ventilation, CPAP, or high-flow nasal cannula ≥10 L/min)
-                    </li>
+                    <li v-html="t('sofa.sections.documentation.ardsItem1')"></li>
+                    <li v-html="t('sofa.sections.documentation.ardsItem2')"></li>
+                    <li v-html="t('sofa.sections.documentation.ardsItem3')"></li>
+                    <li v-html="t('sofa.sections.documentation.ardsItem4')"></li>
+                    <li v-html="t('sofa.sections.documentation.ardsItem5')"></li>
                   </ul>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">📋 KDIGO AKI Guidelines (2012)</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.documentation.kdigoAkiGuideTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>AKI staging:</strong> Stage 1 (Cr 1.5-1.9× baseline), Stage 2
-                      (2.0-2.9×), Stage 3 (≥3× or ≥4 mg/dL or RRT) partially aligns with SOFA renal
-                      scoring
-                    </li>
-                    <li>
-                      <strong>Urine output criteria:</strong> SOFA uses &lt;500 mL/day (SOFA 3) and
-                      &lt;200 mL/day (SOFA 4), similar to KDIGO AKI UO criteria
-                    </li>
-                    <li>
-                      <strong>RRT indication:</strong> SOFA renal 4 often indicates RRT candidacy
-                      (severe AKI, oliguria/anuria)
-                    </li>
+                    <li v-html="t('sofa.sections.documentation.kdigoItem1')"></li>
+                    <li v-html="t('sofa.sections.documentation.kdigoItem2')"></li>
+                    <li v-html="t('sofa.sections.documentation.kdigoItem3')"></li>
                   </ul>
                 </div>
 
                 <q-separator class="q-my-md" />
 
                 <p class="text-weight-bold text-h6 q-mb-sm">
-                  Clinical Documentation Best Practices
+                  {{ t('sofa.sections.documentation.bestPracticesTitle') }}
                 </p>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">📝 SOFA Score Documentation Template:</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.documentation.templateTitle')"
+                  ></p>
                   <q-card flat bordered class="q-pa-sm bg-white">
-                    <pre class="text-caption q-ma-none">
-<strong>ICU Day 3 - SOFA Score:</strong>
-
-<strong>Total SOFA: 12</strong> (↑ from Day 2 SOFA 10, ΔSOFA +2)
-
-<strong>Individual Organ Scores:</strong>
-- Respiration: 3 (P/F ratio 180 mmHg on FiO₂ 0.60, intubated)
-- Coagulation: 2 (Platelets 95 ×10³/μL, ↓ from 120K)
-- Liver: 1 (Bilirubin 1.8 mg/dL)
-- Cardiovascular: 4 (Norepinephrine 0.25 μg/kg/min, MAP 68 mmHg)
-- CNS: 1 (GCS 14, sedation off for assessment)
-- Renal: 1 (Creatinine 1.7 mg/dL, UO 1200 mL/24h)
-
-<strong>Clinical Interpretation:</strong>
-High-risk patient with severe multi-organ dysfunction.
-ΔSOFA +2 indicates deterioration despite antibiotics/fluids.
-
-<strong>Action Plan:</strong>
-1. Broaden antibiotics (add antifungal coverage)
-2. Increase vasopressor support (MAP target 65-70 mmHg)
-3. CT abdomen for source control evaluation
-4. Family meeting to discuss prognosis (40-50% mortality risk)
-5. Continue daily SOFA trending
-                      </pre>
+                    <pre
+                      class="text-caption q-ma-none"
+                      v-text="t('sofa.sections.documentation.templateContent')"
+                    ></pre>
                   </q-card>
                 </div>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">📊 Serial SOFA Trending Chart (recommend in EMR):</p>
+                  <p
+                    class="text-weight-bold"
+                    v-html="t('sofa.sections.documentation.trendingTitle')"
+                  ></p>
                   <ul class="q-ml-md">
-                    <li>
-                      <strong>Daily total SOFA:</strong> Graph over ICU stay to visualize trajectory
-                    </li>
-                    <li>
-                      <strong>Organ-specific trends:</strong> Track individual organ scores to
-                      identify specific failures (e.g., renal SOFA 0→3 = new AKI)
-                    </li>
-                    <li>
-                      <strong>Color-coding:</strong> Green (SOFA 0-6), Orange (7-12), Red (≥13) for
-                      quick severity assessment
-                    </li>
-                    <li>
-                      <strong>Annotations:</strong> Mark major interventions (e.g., "Day 2:
-                      Antibiotics changed", "Day 4: Source control surgery")
-                    </li>
+                    <li v-html="t('sofa.sections.documentation.trendingItem1')"></li>
+                    <li v-html="t('sofa.sections.documentation.trendingItem2')"></li>
+                    <li v-html="t('sofa.sections.documentation.trendingItem3')"></li>
+                    <li v-html="t('sofa.sections.documentation.trendingItem4')"></li>
                   </ul>
                 </div>
 
                 <q-separator class="q-my-md" />
 
                 <p class="text-weight-bold text-h6 q-mb-sm">
-                  Research and Quality Improvement Applications
+                  {{ t('sofa.sections.documentation.researchTitle') }}
                 </p>
 
                 <ul class="q-ml-md">
-                  <li>
-                    <strong>Clinical trial stratification:</strong> Randomize by baseline SOFA
-                    (&lt;8 vs ≥8) to balance severity between arms
-                  </li>
-                  <li>
-                    <strong>Primary endpoints:</strong> ΔSOFA at day 7, SOFA-free days (days alive
-                    and with SOFA &lt;6), organ failure-free days
-                  </li>
-                  <li>
-                    <strong>Secondary endpoints:</strong> Individual organ SOFA scores (e.g.,
-                    respiratory SOFA improvement in ARDS trial)
-                  </li>
-                  <li>
-                    <strong>ICU benchmarking:</strong> Severity-adjusted outcomes using SOFA in
-                    APACHE IV, SAPS 3 models
-                  </li>
-                  <li>
-                    <strong>Quality metrics:</strong> Sepsis mortality stratified by baseline SOFA
-                    for hospital quality reporting
-                  </li>
+                  <li v-html="t('sofa.sections.documentation.researchItem1')"></li>
+                  <li v-html="t('sofa.sections.documentation.researchItem2')"></li>
+                  <li v-html="t('sofa.sections.documentation.researchItem3')"></li>
+                  <li v-html="t('sofa.sections.documentation.researchItem4')"></li>
+                  <li v-html="t('sofa.sections.documentation.researchItem5')"></li>
                 </ul>
               </div>
             </q-card>
@@ -1731,143 +1425,134 @@ High-risk patient with severe multi-organ dysfunction.
           <q-expansion-item
             icon="import_contacts"
             color="medical-mint"
-            label="Scientific References (PMID Citations)"
+            :label="t('sofa.sections.scientificReferences.title')"
             class="q-mt-sm"
             header-class="bg-purple-1 text-purple-9"
           >
             <q-card flat class="q-pa-md bg-purple-1">
               <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">Key Publications and PMID Citations</p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.scientificReferences.publicationsTitle') }}
+                </p>
 
                 <div class="q-mb-md">
-                  <p class="text-weight-bold">📄 Vincent JL, Moreno R, Takala J, et al. (1996)</p>
+                  <p class="text-weight-bold">
+                    {{ t('sofa.sections.scientificReferences.publication1Author') }}
+                  </p>
                   <p class="q-ml-md text-grey-8">
-                    "The SOFA (Sepsis-related Organ Failure Assessment) score to describe organ
-                    dysfunction/failure"<br />
-                    <em>Intensive Care Medicine</em>, 22(7): 707-710<br />
-                    <strong>PMID: 8863252</strong><br />
-                    <strong>Original SOFA score publication.</strong> Developed by European Society
-                    of Intensive Care Medicine working group. Validated in 1449 ICU patients.
-                    Proposed 6-organ scoring system (0-4 each, total 0-24). Demonstrated correlation
-                    with ICU mortality (SOFA ≥15 → >90% mortality). Emphasized utility for
-                    <strong>serial assessment</strong> (delta SOFA) rather than single time-point.
+                    {{ t('sofa.sections.scientificReferences.publication1Title') }}<br />
+                    <span
+                      v-html="t('sofa.sections.scientificReferences.publication1Journal')"
+                    ></span
+                    ><br />
+                    <span v-html="t('sofa.sections.scientificReferences.publication1Pmid')"></span
+                    ><br />
+                    <span
+                      v-html="t('sofa.sections.scientificReferences.publication1Description')"
+                    ></span>
                   </p>
                 </div>
 
                 <div class="q-mb-md">
                   <p class="text-weight-bold">
-                    📄 Singer M, Deutschman CS, Seymour CW, et al. (2016)
+                    {{ t('sofa.sections.scientificReferences.publication2Author') }}
                   </p>
                   <p class="q-ml-md text-grey-8">
-                    "The Third International Consensus Definitions for Sepsis and Septic Shock
-                    (Sepsis-3)"<br />
-                    <em>JAMA</em>, 315(8): 801-810<br />
-                    <strong>PMID: 26903338</strong><br />
-                    <strong>Sepsis-3 consensus definitions.</strong> SCCM + ESICM task force.
-                    Redefined sepsis as "life-threatening organ dysfunction (SOFA ≥2 from baseline)
-                    caused by dysregulated host response to infection". Replaced SIRS criteria.
-                    Introduced qSOFA screening tool. Validated in 148,907 patients across 12
-                    databases. SOFA ≥2 had <strong>superior predictive validity</strong> vs SIRS
-                    (AUROC 0.74 vs 0.64 for in-hospital mortality).
-                  </p>
-                </div>
-
-                <div class="q-mb-md">
-                  <p class="text-weight-bold">📄 Ferreira FL, Bota DP, Bross A, et al. (2001)</p>
-                  <p class="q-ml-md text-grey-8">
-                    "Serial evaluation of the SOFA score to predict outcome in critically ill
-                    patients"<br />
-                    <em>JAMA</em>, 286(14): 1754-1758<br />
-                    <strong>PMID: 11594901</strong><br />
-                    <strong>Validation of serial SOFA monitoring.</strong> Studied 352 ICU patients
-                    with serial SOFA measurements. Demonstrated that
-                    <strong>ΔSOFA during first 48h</strong> is strong predictor of mortality (ΔSOFA
-                    +1 point = ~10% ↑ mortality). Patients with SOFA ≥11 or increasing SOFA had
-                    <strong>mortality rate >80%</strong>. Concluded serial assessment superior to
-                    single admission SOFA for prognostication.
-                  </p>
-                </div>
-
-                <div class="q-mb-md">
-                  <p class="text-weight-bold">📄 Seymour CW, Liu VX, Iwashyna TJ, et al. (2016)</p>
-                  <p class="q-ml-md text-grey-8">
-                    "Assessment of Clinical Criteria for Sepsis: For the Third International
-                    Consensus Definitions for Sepsis and Septic Shock (Sepsis-3)"<br />
-                    <em>JAMA</em>, 315(8): 762-774<br />
-                    <strong>PMID: 26903335</strong><br />
-                    <strong>Sepsis-3 validation study.</strong> Analyzed 148,907 patients with
-                    suspected infection across 12 international datasets. Compared SOFA, SIRS, LODS,
-                    qSOFA for predicting in-hospital mortality.
-                    <strong>SOFA ≥2 points:</strong> AUROC 0.74 (95% CI 0.73-0.76), sensitivity 63%,
-                    specificity 79% for mortality. <strong>qSOFA ≥2:</strong> AUROC 0.66 outside
-                    ICU, faster bedside screening but lower sensitivity than SOFA.
-                  </p>
-                </div>
-
-                <div class="q-mb-md">
-                  <p class="text-weight-bold">📄 Raith EP, Udy AA, Bailey M, et al. (2017)</p>
-                  <p class="q-ml-md text-grey-8">
-                    "Prognostic Accuracy of the SOFA Score, SIRS Criteria, and qSOFA Score for
-                    In-Hospital Mortality Among Adults With Suspected Infection Admitted to the
-                    Intensive Care Unit"<br />
-                    <em>JAMA</em>, 317(3): 290-300<br />
-                    <strong>PMID: 28114553</strong><br />
-                    <strong>Large ICU validation study.</strong> 184,875 ICU patients with suspected
-                    infection from Australia/New Zealand ICU databases.
-                    <strong>SOFA score:</strong> AUROC 0.753 for hospital mortality, superior to
-                    SIRS (AUROC 0.589) and qSOFA (AUROC 0.690). Baseline SOFA ≥2 identified 93% of
-                    ICU patients who died. Confirmed <strong>SOFA as best discriminator</strong> for
-                    organ dysfunction and mortality in ICU sepsis.
+                    {{ t('sofa.sections.scientificReferences.publication2Title') }}<br />
+                    <span
+                      v-html="t('sofa.sections.scientificReferences.publication2Journal')"
+                    ></span
+                    ><br />
+                    <span v-html="t('sofa.sections.scientificReferences.publication2Pmid')"></span
+                    ><br />
+                    <span
+                      v-html="t('sofa.sections.scientificReferences.publication2Description')"
+                    ></span>
                   </p>
                 </div>
 
                 <div class="q-mb-md">
                   <p class="text-weight-bold">
-                    📄 Lambden S, Laterre PF, Levy MM, Francois B. (2019)
+                    {{ t('sofa.sections.scientificReferences.publication3Author') }}
                   </p>
                   <p class="q-ml-md text-grey-8">
-                    "The SOFA score—development, utility and challenges of accurate assessment in
-                    clinical trials"<br />
-                    <em>Critical Care</em>, 23(1): 374<br />
-                    <strong>PMID: 31775846</strong><br />
-                    <strong>Comprehensive SOFA review.</strong> Historical development from 1996
-                    inception to Sepsis-3 integration. Discusses
-                    <strong>challenges:</strong> sedation confounding CNS score, chronic organ
-                    dysfunction baseline adjustments, inter-rater variability. Provides
-                    recommendations for standardized SOFA calculation in clinical trials: worst
-                    values per 24h window, sedation-free GCS when possible, document baseline SOFA
-                    for chronic disease. Reviews validation data showing
-                    <strong>consistent AUROC 0.74-0.86</strong> across diverse ICU populations.
+                    {{ t('sofa.sections.scientificReferences.publication3Title') }}<br />
+                    <span
+                      v-html="t('sofa.sections.scientificReferences.publication3Journal')"
+                    ></span
+                    ><br />
+                    <span v-html="t('sofa.sections.scientificReferences.publication3Pmid')"></span
+                    ><br />
+                    <span
+                      v-html="t('sofa.sections.scientificReferences.publication3Description')"
+                    ></span>
+                  </p>
+                </div>
+
+                <div class="q-mb-md">
+                  <p class="text-weight-bold">
+                    {{ t('sofa.sections.scientificReferences.publication4Author') }}
+                  </p>
+                  <p class="q-ml-md text-grey-8">
+                    {{ t('sofa.sections.scientificReferences.publication4Title') }}<br />
+                    <span
+                      v-html="t('sofa.sections.scientificReferences.publication4Journal')"
+                    ></span
+                    ><br />
+                    <span v-html="t('sofa.sections.scientificReferences.publication4Pmid')"></span
+                    ><br />
+                    <span
+                      v-html="t('sofa.sections.scientificReferences.publication4Description')"
+                    ></span>
+                  </p>
+                </div>
+
+                <div class="q-mb-md">
+                  <p class="text-weight-bold">
+                    {{ t('sofa.sections.scientificReferences.publication5Author') }}
+                  </p>
+                  <p class="q-ml-md text-grey-8">
+                    {{ t('sofa.sections.scientificReferences.publication5Title') }}<br />
+                    <span
+                      v-html="t('sofa.sections.scientificReferences.publication5Journal')"
+                    ></span
+                    ><br />
+                    <span v-html="t('sofa.sections.scientificReferences.publication5Pmid')"></span
+                    ><br />
+                    <span
+                      v-html="t('sofa.sections.scientificReferences.publication5Description')"
+                    ></span>
+                  </p>
+                </div>
+
+                <div class="q-mb-md">
+                  <p class="text-weight-bold">
+                    {{ t('sofa.sections.scientificReferences.publication6Author') }}
+                  </p>
+                  <p class="q-ml-md text-grey-8">
+                    {{ t('sofa.sections.scientificReferences.publication6Title') }}<br />
+                    <span
+                      v-html="t('sofa.sections.scientificReferences.publication6Journal')"
+                    ></span
+                    ><br />
+                    <span v-html="t('sofa.sections.scientificReferences.publication6Pmid')"></span
+                    ><br />
+                    <span
+                      v-html="t('sofa.sections.scientificReferences.publication6Description')"
+                    ></span>
                   </p>
                 </div>
 
                 <q-separator class="q-my-md" />
 
-                <p class="text-weight-bold text-h6 q-mb-sm">Additional Key References</p>
+                <p class="text-weight-bold text-h6 q-mb-sm">
+                  {{ t('sofa.sections.scientificReferences.additionalTitle') }}
+                </p>
 
                 <ul class="q-ml-md">
-                  <li>
-                    <strong>Jones AE, Trzeciak S, Kline JA.</strong> (2009) "The Sequential Organ
-                    Failure Assessment score for predicting outcome in patients with severe sepsis
-                    and evidence of hypoperfusion at the time of emergency department presentation".
-                    <em>Critical Care Medicine</em>, 37(5): 1649-1654.
-                    <strong>PMID: 19325482</strong>. ED validation showing SOFA predicted mortality
-                    better than APACHE II in sepsis patients.
-                  </li>
-                  <li>
-                    <strong>Moreno R, Vincent JL, Matos R, et al.</strong> (1999) "The use of
-                    maximum SOFA score to quantify organ dysfunction/failure in intensive care.
-                    Results of a prospective, multicentre study". <em>Intensive Care Medicine</em>,
-                    25(7): 686-696. <strong>PMID: 10470572</strong>. Maximum SOFA during ICU stay
-                    predicts mortality (AUROC 0.86).
-                  </li>
-                  <li>
-                    <strong>Rhodes A, Evans LE, Alhazzani W, et al.</strong> (2017) "Surviving
-                    Sepsis Campaign: International Guidelines for Management of Sepsis and Septic
-                    Shock: 2016". <em>Intensive Care Medicine</em>, 43(3): 304-377.
-                    <strong>PMID: 28101605</strong>. Surviving Sepsis Campaign guidelines
-                    recommending SOFA for sepsis diagnosis and monitoring.
-                  </li>
+                  <li v-html="t('sofa.sections.scientificReferences.additionalItem1')"></li>
+                  <li v-html="t('sofa.sections.scientificReferences.additionalItem2')"></li>
+                  <li v-html="t('sofa.sections.scientificReferences.additionalItem3')"></li>
                 </ul>
 
                 <q-separator class="q-my-md" />
@@ -1876,12 +1561,7 @@ High-risk patient with severe multi-organ dysfunction.
                   <template v-slot:avatar>
                     <q-icon name="school" color="blue" />
                   </template>
-                  <strong>Educational Note:</strong> These references represent peer-reviewed,
-                  high-impact publications validating SOFA score. PMID citations allow direct PubMed
-                  lookup. The SOFA score has been validated across >300,000 ICU patients in multiple
-                  international cohorts, consistently demonstrating AUROC 0.74-0.86 for mortality
-                  prediction. It remains the <strong>gold standard</strong> for quantifying organ
-                  dysfunction in critically ill patients.
+                  <span v-html="t('sofa.sections.scientificReferences.educationalNote')"></span>
                 </q-banner>
               </div>
             </q-card>
@@ -1897,8 +1577,7 @@ High-risk patient with severe multi-organ dysfunction.
         <q-icon name="warning" color="warning" />
       </template>
       <div class="text-caption">
-        <strong>CLINICAL DISCLAIMER:</strong> SOFA Score is a prognostic tool, does not replace
-        clinical assessment. Interpret in complete clinical context of the patient.
+        <strong>{{ t('sofa.disclaimer.title') }}</strong> {{ t('sofa.disclaimer.text') }}
       </div>
     </q-banner>
   </div>

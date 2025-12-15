@@ -47,23 +47,23 @@ export interface SectionContent {
  * Complete medical documentation structure (9 sections NEWS-style)
  */
 export interface MedicalSections {
-  /** 1️⃣ Definizione e Significato Clinico */
+  /** Definizione e Significato Clinico */
   definizione: SectionContent;
-  /** 2️⃣ Fisiologia e Meccanismo */
+  /** Fisiologia e Meccanismo */
   fisiologia: SectionContent;
-  /** 3️⃣ Come si Misura/Calcola */
+  /** Come si Misura/Calcola */
   misurazione: SectionContent;
-  /** 4️⃣ Formula e Componenti */
+  /** Formula e Componenti */
   formula: SectionContent;
-  /** 5️⃣ Interpretazione Clinica */
+  /** Interpretazione Clinica */
   interpretazione: SectionContent;
-  /** 6️⃣ Applicazioni Cliniche */
+  /** Applicazioni Cliniche */
   applicazioni: SectionContent;
-  /** 7️⃣ Valori di Riferimento e Alert */
+  /** Valori di Riferimento e Alert */
   valoriRiferimento: SectionContent;
-  /** 8️⃣ Documentazione Medica */
+  /** Documentazione Medica */
   documentazione: SectionContent;
-  /** 9️⃣ Riferimenti Scientifici */
+  /** Riferimenti Scientifici */
   riferimentiScientifici: SectionContent;
 }
 
@@ -86,7 +86,7 @@ const props = defineProps<Props>();
     <!-- NEWS-STYLE DOCUMENTATION (9 SECTIONS STANDARD)    -->
     <!-- ================================================= -->
 
-    <!-- 1️⃣ Definizione e Significato Clinico -->
+    <!-- Definizione e Significato Clinico -->
     <q-expansion-item
       icon="info"
       color="medical-mint"
@@ -102,7 +102,7 @@ const props = defineProps<Props>();
       </q-card>
     </q-expansion-item>
 
-    <!-- 2️⃣ Fisiologia e Meccanismo -->
+    <!-- Fisiologia e Meccanismo -->
     <q-expansion-item
       icon="science"
       color="medical-mint"
@@ -118,7 +118,7 @@ const props = defineProps<Props>();
       </q-card>
     </q-expansion-item>
 
-    <!-- 3️⃣ Come si Misura/Calcola -->
+    <!-- Come si Misura/Calcola -->
     <q-expansion-item
       icon="straighten"
       color="medical-mint"
@@ -134,7 +134,7 @@ const props = defineProps<Props>();
       </q-card>
     </q-expansion-item>
 
-    <!-- 4️⃣ Formula e Componenti -->
+    <!-- Formula e Componenti -->
     <q-expansion-item
       icon="functions"
       color="medical-mint"
@@ -150,7 +150,7 @@ const props = defineProps<Props>();
       </q-card>
     </q-expansion-item>
 
-    <!-- 5️⃣ Interpretazione Clinica -->
+    <!-- Interpretazione Clinica -->
     <q-expansion-item
       icon="psychology"
       color="medical-mint"
@@ -166,7 +166,7 @@ const props = defineProps<Props>();
       </q-card>
     </q-expansion-item>
 
-    <!-- 6️⃣ Applicazioni Cliniche -->
+    <!-- Applicazioni Cliniche -->
     <q-expansion-item
       icon="local_hospital"
       color="medical-mint"
@@ -182,7 +182,7 @@ const props = defineProps<Props>();
       </q-card>
     </q-expansion-item>
 
-    <!-- 7️⃣ Valori di Riferimento e Alert -->
+    <!-- Valori di Riferimento e Alert -->
     <q-expansion-item
       icon="warning"
       color="medical-mint"
@@ -198,7 +198,7 @@ const props = defineProps<Props>();
       </q-card>
     </q-expansion-item>
 
-    <!-- 8️⃣ Documentazione Medica -->
+    <!-- Documentazione Medica -->
     <q-expansion-item
       icon="menu_book"
       color="medical-mint"
@@ -214,7 +214,7 @@ const props = defineProps<Props>();
       </q-card>
     </q-expansion-item>
 
-    <!-- 9️⃣ Riferimenti Scientifici -->
+    <!-- Riferimenti Scientifici -->
     <q-expansion-item
       icon="science"
       color="medical-mint"

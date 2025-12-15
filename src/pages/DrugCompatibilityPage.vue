@@ -43,6 +43,7 @@
 // IMPORTS
 // ============================================================
 import { ref } from 'vue';
+import { useSecureLogger } from 'src/composables/useSecureLogger';
 
 // Componenti modulari (Page-based folder structure)
 import DrugSelector from 'src/components/Compatibility/DrugSelector.vue';
@@ -63,6 +64,7 @@ import type { MultiDrugAnalysis } from 'src/types/DrugTypes';
 // ============================================================
 // COMPOSABLES
 // ============================================================
+const { logger } = useSecureLogger();
 const { analyzeMultipleDrugs } = useDrugCompatibility();
 const compatibilityStore = useDrugCompatibilityStore();
 
@@ -81,15 +83,18 @@ const analysisResults = ref<MultiDrugAnalysis | null>(null);
  * Triggers multi-drug compatibility analysis using SORTED drugs from store
  */
 const handleDrugsSelected = (): void => {
-  console.log(
-    '[DrugCompatibilityPage] Drugs selected (store sorted):',
-    compatibilityStore.sortedDrugs,
-  );
+  logger.info('Drugs selected (store sorted)', { 
+    drugCount: compatibilityStore.sortedDrugs.length,
+    drugs: compatibilityStore.sortedDrugs 
+  });
 
   // Trigger multi-drug analysis usando sortedDrugs (alfabetico)
   analysisResults.value = analyzeMultipleDrugs(compatibilityStore.sortedDrugs);
 
-  console.log('[DrugCompatibilityPage] Analysis completed:', analysisResults.value);
+  logger.info('Analysis completed', { 
+    warnings: analysisResults.value?.warnings.length,
+    results: analysisResults.value?.results.length
+  });
 };
 
 /**
@@ -97,7 +102,7 @@ const handleDrugsSelected = (): void => {
  * Resets analysis results (selectedDrugs già resettato dallo store)
  */
 const handleSelectionCleared = (): void => {
-  console.log('[DrugCompatibilityPage] Selection cleared');
+  logger.info('Selection cleared');
 
   // Reset analysis results (store già resettato)
   analysisResults.value = null;
@@ -188,18 +193,18 @@ const handleSelectionCleared = (): void => {
       <!-- RIGHT COLUMN (DESKTOP): LumenAllocator + CompatibilityResults -->
       <div class="col-12 col-md-6">
         <!-- LumenAllocator (top of right column) -->
-        <!-- NOTE: selectedDrugs rimosso - usa sortedDrugs da store (deterministico) -->
+        <!-- NOTE: selectedDrugs rimosso - usa sortedDrugs da store (deter min istico) -->
         <div class="q-mb-md">
           <LumenAllocator
             :analysis-results="analysisResults"
             :available-lumens="3"
             @allocation-completed="
               (allocation) =>
-                console.log('[DrugCompatibilityPage] Allocation completed:', allocation)
+                logger.debug('Allocation completed', { allocation })
             "
             @insufficient-lumens="
               (deficit) =>
-                console.log('[DrugCompatibilityPage] Insufficient lumens, deficit:', deficit)
+                logger.warn('Insufficient lumens', { deficit })
             "
           />
         </div>

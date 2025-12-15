@@ -30,9 +30,6 @@ const routes: RouteRecordRaw[] = [
 
       // Redirect vecchie route farmacologia → nuova pagina unificata
       { path: 'dosage-calculator', redirect: '/pharmacology' },
-
-      // 🧪 TEMPORARY TEST ROUTE - DrugSelector.vue validation (DELETE AFTER TESTING)
-      { path: 'test-drug-selector', component: () => import('pages/TestDrugSelectorPage.vue') },
     ],
   },
 

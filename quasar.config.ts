@@ -74,6 +74,9 @@ export default defineConfig((ctx) => {
             // you need to set `runtimeOnly: false`
             // runtimeOnly: false,
 
+            // Disable strict message checking to allow HTML
+            strictMessage: false,
+
             ssr: ctx.modeName === 'ssr',
 
             // you need to set i18n resource including paths !

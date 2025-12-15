@@ -86,9 +86,10 @@ const activeTab = ref<string>('bmi');
     <!-- ============================================================ -->
     <q-tabs
       v-model="activeTab"
-      class="text-primary"
+      class="text-grey"
+      active-color="primary"
       indicator-color="primary"
-      align="left"
+      align="justify"
       narrow-indicator
     >
       <q-tab name="bmi" icon="calculate" label="BMI" />

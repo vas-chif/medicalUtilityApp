@@ -58,21 +58,21 @@ onMounted(async () => {
     // Load drug database (index.json + compatibility.json in parallel)
     await loadDatabase();
 
-    // Success notification
-    if (totalDrugs.value > 0) {
-      Notify.create({
-        type: 'positive',
-        message: `✅ Database farmaci caricato: ${totalDrugs.value} farmaci, ${totalCompatibilityPairs.value} compatibilità`,
-        caption: 'Database pronto per l\'uso',
-        position: 'top',
-        timeout: 3000,
-        icon: 'check_circle',
-      });
+    console.log(
+      `[App.vue] ✅ Database initialized successfully: ${totalDrugs.value} drugs, ${totalCompatibilityPairs.value} compatibility pairs`,
+    );
 
-      console.log(
-        `[App.vue] ✅ Database initialized successfully: ${totalDrugs.value} drugs, ${totalCompatibilityPairs.value} compatibility pairs`
-      );
-    }
+    // Success notification
+    // if (totalDrugs.value > 0) {
+    //   Notify.create({
+    //     type: 'positive',
+    //     message: `✅ Database farmaci caricato: ${totalDrugs.value} farmaci, ${totalCompatibilityPairs.value} compatibilità`,
+    //     caption: "Database pronto per l'uso",
+    //     position: 'top',
+    //     timeout: 3000,
+    //     icon: 'check_circle',
+    //   });
+    // }
   } catch (error) {
     // Error notification with retry option
     console.error('[App.vue] ❌ Failed to initialize database:', error);
@@ -115,9 +115,7 @@ onMounted(async () => {
     color="primary"
   >
     <q-spinner-gears size="50px" color="primary" />
-    <div class="q-mt-md text-grey-7">
-      Inizializzazione in corso...
-    </div>
+    <div class="q-mt-md text-grey-7">Inizializzazione in corso...</div>
   </q-inner-loading>
 
   <!-- ======================================================== -->
