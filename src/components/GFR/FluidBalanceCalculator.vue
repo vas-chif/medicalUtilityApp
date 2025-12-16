@@ -1,6 +1,5 @@
 <!-- FluidBalanceCalculator.vue -->
 <script setup lang="ts">
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @file FluidBalanceCalculator.vue
  * @description 24-hour Fluid Balance calculator component for volume status assessment
@@ -38,10 +37,15 @@
 // ============================================================
 // Vue core
 import { ref, computed } from 'vue';
+// Vue I18n
+import { useI18n } from 'vue-i18n';
 
 // ============================================================
 // PROPS & EMITS
 // ============================================================
+// Setup i18n
+const { t } = useI18n({ useScope: 'global' });
+
 /**
  * Component props definition (bilingual-ready)
  */
@@ -55,9 +59,9 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  calculateButtonText: 'Calcola Bilancio',
-  resetButtonText: 'Reset Dati',
-  title: 'Bilancio Idrico 24h',
+  calculateButtonText: '',
+  resetButtonText: '',
+  title: '',
 });
 
 /**
@@ -177,11 +181,11 @@ const getFluidBalanceColor = (balance: number): string => {
  * Get fluid balance status interpretation
  */
 const getFluidBalanceStatus = (balance: number): string => {
-  if (Math.abs(balance) <= 500) return 'Euvolemico (Bilancio Neutro)';
-  if (balance > 500 && balance <= 1000) return 'Lieve Sovraccarico Volemico';
-  if (balance > 1000) return 'Sovraccarico Volemico Significativo';
-  if (balance < -500 && balance >= -1000) return 'Lieve Deplezione Volemico-Idrica';
-  return 'Deplezione Volemico-Idrica Significativa';
+  if (Math.abs(balance) <= 500) return t('fluidBalance.interpretation.euvolemic');
+  if (balance > 500 && balance <= 1000) return t('fluidBalance.interpretation.mildOverload');
+  if (balance > 1000) return t('fluidBalance.interpretation.significantOverload');
+  if (balance < -500 && balance >= -1000) return t('fluidBalance.interpretation.mildDepletion');
+  return t('fluidBalance.interpretation.significantDepletion');
 };
 
 /**
@@ -189,15 +193,15 @@ const getFluidBalanceStatus = (balance: number): string => {
  */
 const getFluidBalanceClinicalNotes = (balance: number): string => {
   if (Math.abs(balance) <= 500) {
-    return 'Bilancio idrico ottimale. Stato euvolemico mantenuto. Continuare monitoraggio giornaliero.';
+    return t('fluidBalance.clinicalNotes.euvolemic');
   } else if (balance > 500 && balance <= 1000) {
-    return 'Lieve bilancio positivo. Monitorare segni di sovraccarico (edema, dispnea). Considerare restrizione fluidi se CKD/scompenso.';
+    return t('fluidBalance.clinicalNotes.mildOverload');
   } else if (balance > 1000) {
-    return 'Sovraccarico volemico. RISCHIO EDEMA POLMONARE. Restrizione fluidi <1000 mL/die + diuretici (furosemide 40-80 mg IV). Peso giornaliero. Target perdita 0.5-1 kg/die.';
+    return t('fluidBalance.clinicalNotes.significantOverload');
   } else if (balance < -500 && balance >= -1000) {
-    return 'Lieve deplezione. Valutare cause (diuretici, febbre, vomito, diarrea). Reintegro fluidi orali/IV se persistente.';
+    return t('fluidBalance.clinicalNotes.mildDepletion');
   } else {
-    return 'Deplezione significativa. RISCHIO AKI PRE-RENALE. Reintegro urgente fluidi IV (cristalloidi 500-1000 mL/h fino a euvolemia). Monitorare diuresi, pressione arteriosa, elettroliti.';
+    return t('fluidBalance.clinicalNotes.significantDepletion');
   }
 };
 </script>
@@ -215,20 +219,20 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
       <div class="col-12 col-md-5">
         <q-card class="q-pa-md">
           <q-card-section>
-            <h6 class="text-h6 q-ma-none q-mb-md">💧 Bilancio Idrico (24h)</h6>
+            <h6 class="text-h6 q-ma-none q-mb-md">{{ t('fluidBalance.inputPanel.title') }}</h6>
 
             <!-- ENTRATE (INPUTS) -->
             <div class="q-mb-lg">
               <div class="text-subtitle2 text-weight-bold text-green q-mb-sm">
-                ➕ ENTRATE (Inputs)
+                {{ t('fluidBalance.inputPanel.intakeTitle') }}
               </div>
 
               <q-input
                 v-model.number="formData.intake.oral"
                 type="number"
                 step="10"
-                label="Liquidi Orali (bevande)"
-                suffix="mL"
+                :label="t('fluidBalance.inputPanel.intake.oral.label')"
+                :suffix="t('fluidBalance.inputPanel.intake.oral.unit')"
                 outlined
                 class="q-mb-sm"
               >
@@ -241,8 +245,8 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
                 v-model.number="formData.intake.food"
                 type="number"
                 step="10"
-                label="Acqua da Cibo"
-                suffix="mL"
+                :label="t('fluidBalance.inputPanel.intake.food.label')"
+                :suffix="t('fluidBalance.inputPanel.intake.food.unit')"
                 outlined
                 class="q-mb-sm"
               >
@@ -255,8 +259,8 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
                 v-model.number="formData.intake.iv"
                 type="number"
                 step="10"
-                label="Infusioni IV"
-                suffix="mL"
+                :label="t('fluidBalance.inputPanel.intake.iv.label')"
+                :suffix="t('fluidBalance.inputPanel.intake.iv.unit')"
                 outlined
                 class="q-mb-sm"
               >
@@ -268,22 +272,22 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
               <q-separator class="q-my-sm" />
 
               <div class="text-body2 text-weight-bold text-green">
-                Totale Entrate: {{ totalIntake.toFixed(0) }} mL
+                {{ t('fluidBalance.inputPanel.intake.total') }}: {{ totalIntake.toFixed(0) }} mL
               </div>
             </div>
 
             <!-- USCITE (OUTPUTS) -->
             <div class="q-mb-lg">
               <div class="text-subtitle2 text-weight-bold text-red q-mb-sm">
-                ➖ USCITE (Outputs)
+                {{ t('fluidBalance.inputPanel.outputTitle') }}
               </div>
 
               <q-input
                 v-model.number="formData.output.urine"
                 type="number"
                 step="10"
-                label="Diuresi"
-                suffix="mL"
+                :label="t('fluidBalance.inputPanel.output.urine.label')"
+                :suffix="t('fluidBalance.inputPanel.output.urine.unit')"
                 outlined
                 class="q-mb-sm"
               >
@@ -296,8 +300,8 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
                 v-model.number="formData.output.stool"
                 type="number"
                 step="10"
-                label="Feci"
-                suffix="mL"
+                :label="t('fluidBalance.inputPanel.output.stool.label')"
+                :suffix="t('fluidBalance.inputPanel.output.stool.unit')"
                 outlined
                 class="q-mb-sm"
               >
@@ -310,11 +314,11 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
                 v-model.number="formData.output.insensible"
                 type="number"
                 step="50"
-                label="Perspiratio Insensibilis (stima 500-800 mL)"
-                suffix="mL"
+                :label="t('fluidBalance.inputPanel.output.insensible.label')"
+                :suffix="t('fluidBalance.inputPanel.output.insensible.unit')"
                 outlined
                 class="q-mb-sm"
-                hint="Perdite respiratorie + cutanee"
+                :hint="t('fluidBalance.inputPanel.output.insensible.hint')"
               >
                 <template v-slot:prepend>
                   <q-icon name="air" color="grey" size="sm" />
@@ -324,7 +328,7 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
               <q-separator class="q-my-sm" />
 
               <div class="text-body2 text-weight-bold text-red">
-                Totale Uscite: {{ totalOutput.toFixed(0) }} mL
+                {{ t('fluidBalance.inputPanel.output.total') }}: {{ totalOutput.toFixed(0) }} mL
               </div>
             </div>
 
@@ -336,7 +340,7 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
               class="full-width q-mb-sm"
               icon="calculate"
             >
-              {{ calculateButtonText }}
+              {{ props.calculateButtonText || t('fluidBalance.buttons.calculate') }}
             </q-btn>
 
             <!-- Bottone Reset -->
@@ -348,7 +352,7 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
               icon="refresh"
               outline
             >
-              {{ resetButtonText }}
+              {{ props.resetButtonText || t('fluidBalance.buttons.reset') }}
             </q-btn>
           </q-card-section>
         </q-card>
@@ -360,22 +364,29 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
       <div class="col-12 col-md-6">
         <q-card class="q-pa-md">
           <q-card-section>
-            <h6 class="text-h6 q-ma-none q-mb-md">📊 Risultati Bilancio</h6>
+            <h6 class="text-h6 q-ma-none q-mb-md">{{ t('fluidBalance.resultsPanel.title') }}</h6>
 
             <!-- Risultato Principale -->
             <div class="text-center q-mb-lg">
               <div class="text-h3 q-mb-sm" :class="fluidBalance >= 0 ? 'text-red' : 'text-orange'">
                 {{ fluidBalance > 0 ? '+' : '' }}{{ fluidBalance.toFixed(0) }}
               </div>
-              <div class="text-subtitle1 text-grey-7"><strong>mL</strong> (Bilancio Netto 24h)</div>
-              <div class="text-caption text-grey-6">Entrate - Uscite</div>
+              <div class="text-subtitle1 text-grey-7">
+                <strong>{{ t('fluidBalance.resultsPanel.balance.label') }}</strong>
+                {{ t('fluidBalance.resultsPanel.balance.subtitle') }}
+              </div>
+              <div class="text-caption text-grey-6">
+                {{ t('fluidBalance.resultsPanel.balance.formula') }}
+              </div>
             </div>
 
             <q-separator class="q-mb-md" />
 
             <!-- Interpretazione -->
             <div class="q-mb-md">
-              <div class="text-subtitle2 q-mb-sm">💧 Stato Volemico:</div>
+              <div class="text-subtitle2 q-mb-sm">
+                {{ t('fluidBalance.resultsPanel.volumeStatus.title') }}
+              </div>
               <q-chip
                 :color="getFluidBalanceColor(fluidBalance)"
                 text-color="white"
@@ -391,7 +402,9 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
 
             <!-- Balance Bar Visualization -->
             <div class="q-mb-lg">
-              <div class="text-subtitle2 q-mb-sm">📊 Visualizzazione Bilancio:</div>
+              <div class="text-subtitle2 q-mb-sm">
+                {{ t('fluidBalance.resultsPanel.visualization.title') }}
+              </div>
               <div class="balance-bar-container">
                 <div class="balance-bar">
                   <div
@@ -420,36 +433,38 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
             <!-- Definizione e Significato Clinico -->
             <q-expansion-item
               icon="info"
-              label="Definizione e Significato Clinico"
+              :label="t('fluidBalance.sections.definition.title')"
               class="q-mt-sm"
               header-class="bg-blue-1 text-blue-9"
             >
               <q-card class="q-pa-md">
                 <p class="text-body2 q-mb-sm">
-                  <strong>Definizione:</strong> Il bilancio idrico rappresenta la differenza tra
-                  entrate (intake) e uscite (output) di fluidi nelle 24 ore. È fondamentale per
-                  valutare lo stato volemico del paziente.
+                  <strong>{{
+                    t('fluidBalance.sections.definition.content.definitionLabel')
+                  }}</strong>
+                  {{ t('fluidBalance.sections.definition.content.definition') }}
                 </p>
-                <p class="text-body2 q-mb-sm"><strong>Interpretazione:</strong></p>
+                <p class="text-body2 q-mb-sm">
+                  <strong>{{
+                    t('fluidBalance.sections.definition.content.interpretationLabel')
+                  }}</strong>
+                </p>
                 <ul class="text-body2 q-mb-sm">
-                  <li>
-                    <strong>Bilancio Positivo (+):</strong> Entrate > Uscite → Sovraccarico
-                    volemico, edema, rischio insufficienza cardiaca/edema polmonare
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="
+                        t(`fluidBalance.sections.definition.content.interpretation[${idx - 1}]`)
+                      "
+                    ></span>
                   </li>
-                  <li>
-                    <strong>Bilancio Negativo (-):</strong> Entrate &lt; Uscite → Deplezione
-                    volemica, disidratazione, rischio AKI pre-renale
-                  </li>
-                  <li><strong>Bilancio Neutro (±500 mL):</strong> Euvolemia - stato ottimale</li>
                 </ul>
                 <q-banner class="bg-blue-2 text-blue-9 q-mt-md" rounded>
                   <template v-slot:avatar>
                     <q-icon name="info" color="blue" size="sm" />
                   </template>
                   <div class="text-caption">
-                    <strong>Nota Clinica:</strong> Il bilancio idrico è critico in ICU, CKD,
-                    scompenso cardiaco, sepsi, post-operatorio. Monitoraggio giornaliero
-                    obbligatorio.
+                    <strong>{{ t('fluidBalance.sections.definition.content.note.title') }}</strong>
+                    {{ t('fluidBalance.sections.definition.content.note.text') }}
                   </div>
                 </q-banner>
               </q-card>
@@ -458,36 +473,31 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
             <!-- Fisiologia del Bilancio Idrico -->
             <q-expansion-item
               icon="biotech"
-              label="Fisiologia del Bilancio Idrico"
+              :label="t('fluidBalance.sections.physiology.title')"
               class="q-mt-sm"
               header-class="bg-green-1 text-green-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Distribuzione Acqua Corporea:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.physiology.content.distributionTitle') }}
+                </p>
                 <ul class="text-body2 q-mb-md">
-                  <li>
-                    <strong>Totale Acqua Corporea:</strong> ~60% peso corporeo uomo, ~50% donna
-                    (↓grasso ha meno acqua)
-                  </li>
-                  <li><strong>Liquido Intracellulare (ICF):</strong> ~40% peso corporeo</li>
-                  <li>
-                    <strong>Liquido Extracellulare (ECF):</strong> ~20% peso corporeo (plasma 5% +
-                    interstizio 15%)
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="
+                        t(`fluidBalance.sections.physiology.content.distribution[${idx - 1}]`)
+                      "
+                    ></span>
                   </li>
                 </ul>
-                <p class="text-body2 text-weight-bold q-mb-sm">Regolazione Bilancio:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.physiology.content.regulationTitle') }}
+                </p>
                 <ul class="text-body2">
-                  <li>
-                    <strong>ADH (Ormone Antidiuretico):</strong> ↑riassorbimento acqua tubulo
-                    collettore (ritenzione acqua)
-                  </li>
-                  <li>
-                    <strong>Sistema Renina-Angiotensina-Aldosterone:</strong> ↑riassorbimento Na⁺ +
-                    acqua (espansione volume)
-                  </li>
-                  <li>
-                    <strong>Peptide Natriuretico (ANP/BNP):</strong> ↑escrezione Na⁺ + acqua
-                    (riduzione sovraccarico)
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="t(`fluidBalance.sections.physiology.content.regulation[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
               </q-card>
@@ -496,36 +506,30 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
             <!-- Come si Misura -->
             <q-expansion-item
               icon="speed"
-              label="Come si Misura"
+              :label="t('fluidBalance.sections.measurement.title')"
               class="q-mt-sm"
               header-class="bg-amber-1 text-amber-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Entrate (Inputs):</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.measurement.content.intakeTitle') }}
+                </p>
                 <ul class="text-body2 q-mb-md">
-                  <li><strong>Liquidi Orali:</strong> Acqua, succhi, tè, caffè, latte</li>
-                  <li><strong>Acqua da Cibo:</strong> ~700-1000 mL/die (frutta, verdura, zuppe)</li>
-                  <li>
-                    <strong>Infusioni IV:</strong> Cristalloidi, colloidi, nutrizione parenterale
-                  </li>
-                  <li>
-                    <strong>Acqua Metabolica:</strong> ~300 mL/die (ossidazione carboidrati/grassi)
+                  <li v-for="idx in 4" :key="idx">
+                    <span
+                      v-html="t(`fluidBalance.sections.measurement.content.intake[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Uscite (Outputs):</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.measurement.content.outputTitle') }}
+                </p>
                 <ul class="text-body2">
-                  <li>
-                    <strong>Diuresi:</strong> ~1500-2000 mL/die (catetere vescicale per accuratezza)
-                  </li>
-                  <li><strong>Feci:</strong> ~100-200 mL/die (↑↑ in diarrea fino a 5000 mL/die)</li>
-                  <li>
-                    <strong>Perspiratio Insensibilis:</strong> ~500-800 mL/die (↑febbre +10%/°C,
-                    ↑tachipnea, ↑sudorazione)
-                  </li>
-                  <li>
-                    <strong>Perdite Anomale:</strong> Vomito, sondino nasogastrico, drenaggi
-                    chirurgici, ustioni
+                  <li v-for="idx in 6" :key="idx">
+                    <span
+                      v-html="t(`fluidBalance.sections.measurement.content.output[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
                 <q-banner class="bg-amber-2 text-amber-9 q-mt-md" rounded>
@@ -533,8 +537,8 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
                     <q-icon name="tips_and_updates" color="amber" size="sm" />
                   </template>
                   <div class="text-caption">
-                    <strong>Best Practice:</strong> Usare catetere vescicale per diuresi accurata in
-                    ICU. Pesare pannolini per pazienti incontinenti. Aggiornare bilancio ogni 8-12h.
+                    <strong>{{ t('fluidBalance.sections.measurement.content.note.title') }}</strong>
+                    {{ t('fluidBalance.sections.measurement.content.note.text') }}
                   </div>
                 </q-banner>
               </q-card>
@@ -543,205 +547,197 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
             <!-- Formula di Calcolo -->
             <q-expansion-item
               icon="functions"
-              label="Formula di Calcolo"
+              :label="t('fluidBalance.sections.formula.title')"
               class="q-mt-sm"
               header-class="bg-cyan-1 text-cyan-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Formula Bilancio Idrico:</p>
-                <p class="text-body2 q-mb-md">
-                  <strong
-                    >Bilancio (mL) = Σ Entrate (Orali + Cibo + IV) - Σ Uscite (Diuresi + Feci +
-                    Insensibili)</strong
-                  >
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.formula.content.mainFormulaLabel') }}
                 </p>
+                <p
+                  class="text-body2 q-mb-md"
+                  v-html="t('fluidBalance.sections.formula.content.mainFormula')"
+                ></p>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Stima Perdite Insensibili:</p>
-                <ul class="text-body2 q-mb-md">
-                  <li><strong>Baseline:</strong> 10-15 mL/kg/die (~600-800 mL/70 kg)</li>
-                  <li><strong>Febbre:</strong> +10% per ogni °C >37°C</li>
-                  <li><strong>Tachipnea:</strong> +50-100 mL per ogni 10 atti/min >20</li>
-                  <li><strong>Ustioni:</strong> Formula di Parkland (4 mL/kg/%BSA nelle 24h)</li>
-                </ul>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">Esempio Calcolo ICU:</p>
-                <div class="bg-grey-2 q-pa-md rounded-borders text-body2">
-                  <p>
-                    <strong>Entrate:</strong> IV 2000 mL + Orali 500 mL = 2500 mL<br />
-                    <strong>Uscite:</strong> Diuresi 1800 mL + Feci 200 mL + Insensibili 700 mL =
-                    2700 mL<br />
-                    <strong>Bilancio:</strong> 2500 - 2700 =
-                    <strong class="text-orange">-200 mL</strong> (lieve deplezione)
-                  </p>
-                </div>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.formula.content.exampleTitle') }}
+                </p>
+                <div
+                  class="bg-grey-2 q-pa-md rounded-borders text-body2"
+                  v-html="t('fluidBalance.sections.formula.content.example')"
+                ></div>
               </q-card>
             </q-expansion-item>
 
             <!-- Interpretazione Risultati -->
             <q-expansion-item
               icon="psychology"
-              label="Interpretazione Risultati"
+              :label="t('fluidBalance.sections.clinicalInterpretation.title')"
               class="q-mt-sm"
               header-class="bg-orange-1 text-orange-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Classificazione:</p>
-                <ul class="text-body2 q-mb-md">
-                  <li><strong class="text-green">±500 mL:</strong> Euvolemico - Ottimale</li>
-                  <li>
-                    <strong class="text-light-blue">+500 a +1000 mL:</strong> Lieve sovraccarico -
-                    Monitorare
-                  </li>
-                  <li>
-                    <strong class="text-red">&gt;+1000 mL:</strong> Sovraccarico significativo -
-                    Intervento urgente
-                  </li>
-                  <li>
-                    <strong class="text-orange">-500 a -1000 mL:</strong> Lieve deplezione -
-                    Reintegro
-                  </li>
-                  <li>
-                    <strong class="text-deep-orange">&lt;-1000 mL:</strong> Deplezione severa -
-                    Rischio AKI
-                  </li>
-                </ul>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.clinicalInterpretation.content.euvolemicTitle') }}
+                </p>
+                <p
+                  class="text-body2 q-mb-md"
+                  v-html="t('fluidBalance.sections.clinicalInterpretation.content.euvolemic')"
+                ></p>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Azioni Cliniche:</p>
-                <ul class="text-body2">
-                  <li>
-                    <strong>Sovraccarico:</strong> Restrizione fluidi (&lt;1000 mL/die) + Furosemide
-                    40-80 mg IV + Peso giornaliero
-                  </li>
-                  <li>
-                    <strong>Deplezione:</strong> Reintegro cristalloidi 500-1000 mL/h + Monitorare
-                    PA, diuresi
-                  </li>
-                  <li>
-                    <strong>Euvolemia:</strong> Mantenere bilancio neutro, continuare monitoraggio
-                  </li>
-                </ul>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.clinicalInterpretation.content.mildOverloadTitle') }}
+                </p>
+                <p
+                  class="text-body2 q-mb-md"
+                  v-html="t('fluidBalance.sections.clinicalInterpretation.content.mildOverload')"
+                ></p>
+
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{
+                    t(
+                      'fluidBalance.sections.clinicalInterpretation.content.significantOverloadTitle',
+                    )
+                  }}
+                </p>
+                <p
+                  class="text-body2 q-mb-md"
+                  v-html="
+                    t('fluidBalance.sections.clinicalInterpretation.content.significantOverload')
+                  "
+                ></p>
+
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.clinicalInterpretation.content.mildDepletionTitle') }}
+                </p>
+                <p
+                  class="text-body2 q-mb-md"
+                  v-html="t('fluidBalance.sections.clinicalInterpretation.content.mildDepletion')"
+                ></p>
+
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{
+                    t(
+                      'fluidBalance.sections.clinicalInterpretation.content.significantDepletionTitle',
+                    )
+                  }}
+                </p>
+                <p
+                  class="text-body2"
+                  v-html="
+                    t('fluidBalance.sections.clinicalInterpretation.content.significantDepletion')
+                  "
+                ></p>
               </q-card>
             </q-expansion-item>
 
             <!-- Applicazioni Cliniche -->
             <q-expansion-item
               icon="local_hospital"
-              label="Applicazioni Cliniche"
+              :label="t('fluidBalance.sections.applications.title')"
               class="q-mt-sm"
               header-class="bg-purple-1 text-purple-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Indicazioni Monitoraggio:</p>
-                <ul class="text-body2 q-mb-md">
-                  <li>
-                    <strong>ICU/UTI:</strong> Sepsi, shock settico, ARDS, post-operatorio maggiore
-                  </li>
-                  <li><strong>Cardiologia:</strong> Scompenso cardiaco acuto, edema polmonare</li>
-                  <li><strong>Nefrologia:</strong> AKI, CKD stadio 4-5, dialisi</li>
-                  <li><strong>Chirurgia:</strong> Post-laparotomia, ustioni, trapianti</li>
-                </ul>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.applications.content.icuTitle') }}
+                </p>
+                <p class="text-body2 q-mb-md">
+                  {{ t('fluidBalance.sections.applications.content.icu') }}
+                </p>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Target Bilancio per Patologia:</p>
-                <ul class="text-body2">
-                  <li><strong>Sepsi (prime 6h):</strong> +2000-3000 mL (resuscitation fluidi)</li>
-                  <li>
-                    <strong>Sepsi (dopo 24h):</strong> Bilancio neutro/negativo (de-resuscitation)
-                  </li>
-                  <li>
-                    <strong>Scompenso Cardiaco:</strong> -500 a -1000 mL/die (diuresi forzata)
-                  </li>
-                  <li><strong>CKD/Dialisi:</strong> Bilancio neutro (evitare overload)</li>
-                </ul>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.applications.content.ckdTitle') }}
+                </p>
+                <p class="text-body2 q-mb-md">
+                  {{ t('fluidBalance.sections.applications.content.ckd') }}
+                </p>
+
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.applications.content.heartFailureTitle') }}
+                </p>
+                <p class="text-body2 q-mb-md">
+                  {{ t('fluidBalance.sections.applications.content.heartFailure') }}
+                </p>
+
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.applications.content.postOpTitle') }}
+                </p>
+                <p class="text-body2">
+                  {{ t('fluidBalance.sections.applications.content.postOp') }}
+                </p>
               </q-card>
             </q-expansion-item>
 
             <!-- Valori Critici e Alert -->
             <q-expansion-item
               icon="warning"
-              label="Valori Critici e Alert"
+              :label="t('fluidBalance.sections.referenceValues.title')"
               class="q-mt-sm"
               header-class="bg-red-1 text-red-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Valori Critici:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.referenceValues.content.criticalValuesTitle') }}
+                </p>
                 <ul class="text-body2 q-mb-md">
-                  <li>
-                    <strong class="text-red">&gt;+2000 mL/24h:</strong> Sovraccarico severo -
-                    Rischio edema polmonare acuto
-                  </li>
-                  <li>
-                    <strong class="text-red">&lt;-1500 mL/24h:</strong> Deplezione severa - Rischio
-                    AKI pre-renale
-                  </li>
-                  <li>
-                    <strong class="text-red">Diuresi &lt;0.5 mL/kg/h per >6h:</strong> Oliguria -
-                    CRITERIO AKI (KDIGO)
+                  <li v-for="idx in 4" :key="idx">
+                    <span
+                      v-html="
+                        t(
+                          `fluidBalance.sections.referenceValues.content.criticalValues[${idx - 1}]`,
+                        )
+                      "
+                    ></span>
                   </li>
                 </ul>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Segni Clinici Sovraccarico:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.referenceValues.content.populationsTitle') }}
+                </p>
                 <ul class="text-body2 q-mb-md">
-                  <li>Dispnea, tachipnea, ortopnea</li>
-                  <li>Edema declive, sacrale, ascite</li>
-                  <li>Turgore giugulare, reflusso epato-giugulare</li>
-                  <li>Aumento peso corporeo (>2 kg in 24h)</li>
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="
+                        t(`fluidBalance.sections.referenceValues.content.populations[${idx - 1}]`)
+                      "
+                    ></span>
+                  </li>
                 </ul>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Segni Clinici Deplezione:</p>
-                <ul class="text-body2">
-                  <li>Ipotensione, tachicardia, ipotensione ortostatica</li>
-                  <li>Cute secca, mucose asciutte, ↓turgore cutaneo</li>
-                  <li>Oliguria (&lt;400 mL/24h)</li>
-                  <li>↑creatinina, ↑urea (AKI pre-renale)</li>
-                </ul>
-
-                <q-banner class="bg-red-2 text-red-9 q-mt-md" rounded>
-                  <template v-slot:avatar>
-                    <q-icon name="emergency" color="red" size="sm" />
-                  </template>
-                  <div class="text-caption">
-                    <strong>ALERT CLINICO:</strong> Bilancio >+3000 mL con dispnea/crepitii → EDEMA
-                    POLMONARE. Ossigeno, Furosemide 80-120 mg IV, Nitroglicerina, posizione seduta,
-                    considerare CPAP/BiPAP.
-                  </div>
-                </q-banner>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.referenceValues.content.monitoringTitle') }}
+                </p>
+                <p class="text-body2">
+                  {{ t('fluidBalance.sections.referenceValues.content.monitoring') }}
+                </p>
               </q-card>
             </q-expansion-item>
 
             <!-- Documentazione Clinica -->
             <q-expansion-item
               icon="menu_book"
-              label="Documentazione Clinica"
+              :label="t('fluidBalance.sections.documentation.title')"
               class="q-mt-sm"
               header-class="bg-indigo-1 text-indigo-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Template Bilancio Idrico 24h:</p>
-                <div class="bg-grey-2 q-pa-md rounded-borders text-body2 q-mb-md">
-                  <p>
-                    <strong>DATA:</strong> [gg/mm/aaaa]<br />
-                    <strong>ENTRATE:</strong><br />
-                    - Orali: [X] mL<br />
-                    - Cibo: [Y] mL<br />
-                    - IV: [Z] mL<br />
-                    <strong>Totale Entrate:</strong> [TOT] mL<br /><br />
-                    <strong>USCITE:</strong><br />
-                    - Diuresi: [A] mL<br />
-                    - Feci: [B] mL<br />
-                    - Insensibili: [C] mL<br />
-                    <strong>Totale Uscite:</strong> [TOT] mL<br /><br />
-                    <strong>BILANCIO NETTO:</strong> [+/-XXX] mL<br />
-                    <strong>STATO VOLEMICO:</strong> [Euvolemico/Sovraccarico/Deplezione]<br />
-                    <strong>PESO:</strong> [XX.X] kg (Δ peso: [+/-X.X] kg)<br />
-                    <strong>AZIONE:</strong> [Mantenere/Restrizione fluidi/Reintegro]
-                  </p>
-                </div>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.documentation.content.templateTitle') }}
+                </p>
+                <div
+                  class="bg-grey-2 q-pa-md rounded-borders text-body2 q-mb-md"
+                  v-html="t('fluidBalance.sections.documentation.content.templateExample')"
+                ></div>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Frequenza Aggiornamenti:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.documentation.content.elementsTitle') }}
+                </p>
                 <ul class="text-body2">
-                  <li><strong>ICU:</strong> Ogni 8h (turni infermieristici)</li>
-                  <li><strong>Ward:</strong> Ogni 24h</li>
-                  <li><strong>Instabilità:</strong> Ogni 1-2h (sepsi, edema polmonare)</li>
+                  <li v-for="idx in 6" :key="idx">
+                    {{ t(`fluidBalance.sections.documentation.content.elements[${idx - 1}]`) }}
+                  </li>
                 </ul>
               </q-card>
             </q-expansion-item>
@@ -749,42 +745,34 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
             <!-- Riferimenti Scientifici -->
             <q-expansion-item
               icon="science"
-              label="Riferimenti Scientifici"
+              :label="t('fluidBalance.sections.bibliography.title')"
               class="q-mt-sm"
               header-class="bg-teal-1 text-teal-9"
             >
               <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">Pubblicazioni Chiave:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.bibliography.content.publicationsTitle') }}
+                </p>
                 <ul class="text-body2 q-mb-md">
-                  <li>
-                    <strong>Bouchard J, et al.</strong> (2009). Fluid accumulation, survival and
-                    recovery of kidney function in critically ill patients with acute kidney injury.
-                    <em>Kidney Int</em> 76(4):422-427
-                  </li>
-                  <li>
-                    <strong>Malbrain ML, et al.</strong> (2014). Fluid overload, de-resuscitation,
-                    and outcomes in critically ill or injured patients: a systematic review.
-                    <em>Crit Care Med</em> 42(8):1835-1854
-                  </li>
-                  <li>
-                    <strong>Marik PE, et al.</strong> (2017). Fluid administration in severe sepsis
-                    and septic shock, patterns and outcomes: an analysis of a large national
-                    database. <em>Intensive Care Med</em> 43(5):625-632
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="
+                        t(`fluidBalance.sections.bibliography.content.publications[${idx - 1}]`)
+                      "
+                    ></span>
                   </li>
                 </ul>
 
-                <p class="text-body2 text-weight-bold q-mb-sm">Linee Guida:</p>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('fluidBalance.sections.bibliography.content.guidelinesTitle') }}
+                </p>
                 <ul class="text-body2">
-                  <li>
-                    <strong>Surviving Sepsis Campaign 2021:</strong> Early goal-directed fluid
-                    resuscitation
-                  </li>
-                  <li>
-                    <strong>KDIGO AKI Guidelines:</strong> Fluid management in acute kidney injury
-                  </li>
-                  <li>
-                    <strong>ESC Heart Failure Guidelines:</strong> Diuretic therapy and fluid
-                    management
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="
+                        t(`fluidBalance.sections.bibliography.content.guidelines[${idx - 1}]`)
+                      "
+                    ></span>
                   </li>
                 </ul>
 
@@ -793,19 +781,23 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
                     <q-icon name="link" color="teal" size="sm" />
                   </template>
                   <div class="text-caption">
-                    <strong>Risorse Online:</strong>
+                    <strong>{{
+                      t('fluidBalance.sections.bibliography.content.onlineResources.title')
+                    }}</strong>
                     <a
                       href="https://www.sccm.org/SurvivingSepsisCampaign"
                       target="_blank"
                       class="text-teal-9"
-                      >Surviving Sepsis Campaign</a
+                      >{{ t('fluidBalance.sections.bibliography.content.onlineResources.ssc') }}</a
                     >
                     |
                     <a
                       href="https://kdigo.org/guidelines/acute-kidney-injury/"
                       target="_blank"
                       class="text-teal-9"
-                      >KDIGO AKI</a
+                      >{{
+                        t('fluidBalance.sections.bibliography.content.onlineResources.kdigo')
+                      }}</a
                     >
                   </div>
                 </q-banner>

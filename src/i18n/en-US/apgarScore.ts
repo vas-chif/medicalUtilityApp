@@ -138,14 +138,12 @@ export default {
     formula: {
       title: 'Formula and Components',
       mainFormula: 'APGAR Score = A + P + G + A + R (0-10 total points)',
-      components: {
-        appearance:
-          '<strong>A - Appearance:</strong> 0=cyanosis/pallor, 1=pink body blue extremities, 2=completely pink',
-        pulse: '<strong>P - Pulse:</strong> 0=absent, 1=<100 bpm, 2=>=100 bpm',
-        grimace: '<strong>G - Grimace:</strong> 0=no response, 1=grimace, 2=cough/sneeze/cry',
-        activity: '<strong>A - Activity:</strong> 0=limp, 1=some flexion, 2=active movement',
-        respiration: '<strong>R - Respiration:</strong> 0=absent, 1=weak/irregular, 2=vigorous cry',
-      },
+      appearance:
+        '<strong>A - Appearance:</strong> 0=cyanosis/pallor, 1=pink body blue extremities, 2=completely pink',
+      pulse: '<strong>P - Pulse:</strong> 0=absent, 1=<100 bpm, 2=>=100 bpm',
+      grimace: '<strong>G - Grimace:</strong> 0=no response, 1=grimace, 2=cough/sneeze/cry',
+      activity: '<strong>A - Activity:</strong> 0=limp, 1=some flexion, 2=active movement',
+      respiration: '<strong>R - Respiration:</strong> 0=absent, 1=weak/irregular, 2=vigorous cry',
     },
 
     clinicalInterpretation: {
@@ -235,32 +233,30 @@ export default {
 
     bibliography: {
       title: 'Scientific References',
-      citations: {
-        apgar1953: {
-          title: 'Apgar V. "A proposal for a new method of evaluation of the newborn infant"',
-          details:
-            '(1953). Curr Res Anesth Analg 32(4):260-267. PMID: 13083014. Original study introducing score. Validated on 2096 newborns, correlation with mortality and morbidity.',
-        },
-        casey2001: {
-          title: 'Casey BM, et al. "The continuing value of the Apgar score"',
-          details:
-            '(2001). N Engl J Med 344(7):467-471. PMID: 11172187. Large cohort 151,891 newborns. 5min score 0-3 strong predictor neonatal mortality (OR 146 vs score 7-10) and cerebral palsy (OR 244).',
-        },
-        li2019: {
-          title: 'Li F, et al. "Apgar score and long-term health outcomes"',
-          details:
-            '(2019). Pediatrics 143(4):e20182846. Meta-analysis 6.7M newborns. 5min score <7 associated with ?risk epilepsy (RR 4.8), ADHD (RR 1.9), autism spectrum disorders (RR 1.5) in 5-10 year follow-up.',
-        },
-        msd: {
-          title: 'MSD Manuals - Professional: Neonatal Resuscitation.',
-          details:
-            'Chapter on newborn assessment and resuscitation. Includes AAP/AHA algorithm, intubation indications, drugs (epinephrine, volume expanders), therapeutic hypothermia management.',
-        },
-        sciencedirect: {
-          title: 'ScienceDirect Encyclopedia of Infant and Early Childhood Development (2020):',
-          details:
-            'Chapter "Apgar Score and Newborn Assessment". Comprehensive treatment of history, neonatal transition physiology, score limitations (prematurity, drugs, congenital anomalies), integration with other assessments (cord pH, lactate).',
-        },
+      apgar1953: {
+        title: 'Apgar V. "A proposal for a new method of evaluation of the newborn infant"',
+        details:
+          '(1953). Curr Res Anesth Analg 32(4):260-267. PMID: 13083014. Original study introducing score. Validated on 2096 newborns, correlation with mortality and morbidity.',
+      },
+      casey2001: {
+        title: 'Casey BM, et al. "The continuing value of the Apgar score"',
+        details:
+          '(2001). N Engl J Med 344(7):467-471. PMID: 11172187. Large cohort 151,891 newborns. 5min score 0-3 strong predictor neonatal mortality (OR 146 vs score 7-10) and cerebral palsy (OR 244).',
+      },
+      li2019: {
+        title: 'Li F, et al. "Apgar score and long-term health outcomes"',
+        details:
+          '(2019). Pediatrics 143(4):e20182846. Meta-analysis 6.7M newborns. 5min score <7 associated with ?risk epilepsy (RR 4.8), ADHD (RR 1.9), autism spectrum disorders (RR 1.5) in 5-10 year follow-up.',
+      },
+      msd: {
+        title: 'MSD Manuals - Professional: Neonatal Resuscitation.',
+        details:
+          'Chapter on newborn assessment and resuscitation. Includes AAP/AHA algorithm, intubation indications, drugs (epinephrine, volume expanders), therapeutic hypothermia management.',
+      },
+      sciencedirect: {
+        title: 'ScienceDirect Encyclopedia of Infant and Early Childhood Development (2020):',
+        details:
+          'Chapter "Apgar Score and Newborn Assessment". Comprehensive treatment of history, neonatal transition physiology, score limitations (prematurity, drugs, congenital anomalies), integration with other assessments (cord pH, lactate).',
       },
     },
   },
