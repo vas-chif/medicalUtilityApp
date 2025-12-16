@@ -413,6 +413,11 @@ export default {
           '<strong>MDRD Study:</strong> https://www.mdrd.com/',
           '<strong>QxMD:</strong> Mobile app for eGFR calculation + drug dosing',
         ],
+        onlineResources: {
+          title: 'Online Resources',
+          kdigo: 'KDIGO Guidelines',
+          nkf: 'NKF Resources',
+        },
         educationalNote: {
           title: 'Educational Note:',
           content:

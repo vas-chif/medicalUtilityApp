@@ -138,17 +138,15 @@ export default {
     formula: {
       title: 'Formula e Componenti',
       mainFormula: 'Score APGAR = A + P + G + A + R (0-10 punti totali)',
-      components: {
-        appearance:
-          '<strong>A - Appearance:</strong> 0=cianosi/pallore, 1=corpo roseo estremita blu, 2=completamente roseo',
-        pulse: '<strong>P - Pulse:</strong> 0=assente, 1=<100 bpm, 2=>=100 bpm',
-        grimace:
-          '<strong>G - Grimace:</strong> 0=nessuna risposta, 1=smorfie, 2=tosse/starnuto/pianto',
-        activity:
-          '<strong>A - Activity:</strong> 0=flaccido, 1=qualche flessione, 2=movimenti attivi',
-        respiration:
-          '<strong>R - Respiration:</strong> 0=assente, 1=debole/irregolare, 2=pianto vigoroso',
-      },
+      appearance:
+        '<strong>A - Appearance:</strong> 0=cianosi/pallore, 1=corpo roseo estremita blu, 2=completamente roseo',
+      pulse: '<strong>P - Pulse:</strong> 0=assente, 1=<100 bpm, 2=>=100 bpm',
+      grimace:
+        '<strong>G - Grimace:</strong> 0=nessuna risposta, 1=smorfie, 2=tosse/starnuto/pianto',
+      activity:
+        '<strong>A - Activity:</strong> 0=flaccido, 1=qualche flessione, 2=movimenti attivi',
+      respiration:
+        '<strong>R - Respiration:</strong> 0=assente, 1=debole/irregolare, 2=pianto vigoroso',
     },
 
     clinicalInterpretation: {
@@ -238,32 +236,30 @@ export default {
 
     bibliography: {
       title: 'Riferimenti Scientifici',
-      citations: {
-        apgar1953: {
-          title: 'Apgar V. "A proposal for a new method of evaluation of the newborn infant"',
-          details:
-            '(1953). Curr Res Anesth Analg 32(4):260-267. PMID: 13083014. Studio originale che introduce score. Validato su 2096 neonati, correlazione con mortalita e morbilita.',
-        },
-        casey2001: {
-          title: 'Casey BM, et al. "The continuing value of the Apgar score"',
-          details:
-            '(2001). N Engl J Med 344(7):467-471. PMID: 11172187. Large cohort 151,891 neonati. Score 5min 0-3 predittore forte mortalita neonatale (OR 146 vs score 7-10) e paralisi cerebrale (OR 244).',
-        },
-        li2019: {
-          title: 'Li F, et al. "Apgar score and long-term health outcomes"',
-          details:
-            '(2019). Pediatrics 143(4):e20182846. Meta-analisi 6.7M neonati. Score 5min <7 associato a ?rischio epilessia (RR 4.8), ADHD (RR 1.9), disturbi spettro autistico (RR 1.5) in follow-up 5-10 anni.',
-        },
-        msd: {
-          title: 'MSD Manuals - Professional: Neonatal Resuscitation.',
-          details:
-            'Capitolo su valutazione e rianimazione neonato. Include algoritmo AAP/AHA, indicazioni intubazione, farmaci (adrenalina, volume expanders), gestione ipotermia terapeutica.',
-        },
-        sciencedirect: {
-          title: 'ScienceDirect Encyclopedia of Infant and Early Childhood Development (2020):',
-          details:
-            'Capitolo "Apgar Score and Newborn Assessment". Trattazione completa storia, fisiologia transizione neonatale, limitazioni score (prematurita, farmaci, anomalie congenite), integrazione con altri assessment (pH cordone, lactato).',
-        },
+      apgar1953: {
+        title: 'Apgar V. "A proposal for a new method of evaluation of the newborn infant"',
+        details:
+          '(1953). Curr Res Anesth Analg 32(4):260-267. PMID: 13083014. Studio originale che introduce score. Validato su 2096 neonati, correlazione con mortalita e morbilita.',
+      },
+      casey2001: {
+        title: 'Casey BM, et al. "The continuing value of the Apgar score"',
+        details:
+          '(2001). N Engl J Med 344(7):467-471. PMID: 11172187. Large cohort 151,891 neonati. Score 5min 0-3 predittore forte mortalita neonatale (OR 146 vs score 7-10) e paralisi cerebrale (OR 244).',
+      },
+      li2019: {
+        title: 'Li F, et al. "Apgar score and long-term health outcomes"',
+        details:
+          '(2019). Pediatrics 143(4):e20182846. Meta-analisi 6.7M neonati. Score 5min <7 associato a ?rischio epilessia (RR 4.8), ADHD (RR 1.9), disturbi spettro autistico (RR 1.5) in follow-up 5-10 anni.',
+      },
+      msd: {
+        title: 'MSD Manuals - Professional: Neonatal Resuscitation.',
+        details:
+          'Capitolo su valutazione e rianimazione neonato. Include algoritmo AAP/AHA, indicazioni intubazione, farmaci (adrenalina, volume expanders), gestione ipotermia terapeutica.',
+      },
+      sciencedirect: {
+        title: 'ScienceDirect Encyclopedia of Infant and Early Childhood Development (2020):',
+        details:
+          'Capitolo "Apgar Score and Newborn Assessment". Trattazione completa storia, fisiologia transizione neonatale, limitazioni score (prematurita, farmaci, anomalie congenite), integrazione con altri assessment (pH cordone, lactato).',
       },
     },
   },

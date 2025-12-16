@@ -13,6 +13,8 @@ import gcsScore from './gcsScore';
 import mechanicalPower from './mechanicalPower';
 import respiratoryQuotient from './respiratoryQuotient';
 import savedCalculations from './savedCalculations';
+import fluidBalance from './fluidBalance';
+import dosageCalculator from './dosageCalculator';
 // import ibw from './ibw';
 
 export default {
@@ -78,4 +80,10 @@ export default {
 
   // Saved Calculations Component
   savedCalc: savedCalculations,
+
+  // Fluid Balance Calculator (24h)
+  fluidBalance,
+
+  // Dosage Calculator
+  dosageCalculator,
 };

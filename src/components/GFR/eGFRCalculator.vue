@@ -644,7 +644,7 @@ onMounted(() => {
               <q-card class="q-pa-md">
                 <p class="text-body2 q-mb-sm">
                   <strong>{{ t('egfr.sections.definition.content.definitionLabel') }}:</strong>
-                  {{ t('egfr.sections.definition.content.definition') }}
+                  <span v-html="t('egfr.sections.definition.content.definition')"></span>
                 </p>
                 <p class="text-body2 q-mb-sm">
                   <strong
@@ -654,16 +654,9 @@ onMounted(() => {
                 </p>
                 <ul class="text-body2 q-mb-sm">
                   <li v-for="(item, index) in 4" :key="index">
-                    <strong
-                      >{{
-                        t(`egfr.sections.definition.content.clinicalSignificance[${index}].title`)
-                      }}:</strong
-                    >
-                    {{
-                      t(
-                        `egfr.sections.definition.content.clinicalSignificance[${index}].description`,
-                      )
-                    }}
+                    <span
+                      v-html="t(`egfr.sections.definition.content.clinicalSignificance[${index}]`)"
+                    ></span>
                   </li>
                 </ul>
                 <q-banner class="bg-blue-2 text-blue-9 q-mt-md" rounded>
@@ -694,12 +687,9 @@ onMounted(() => {
                 </p>
                 <ul class="text-body2 q-mb-md">
                   <li v-for="(item, index) in 3" :key="index">
-                    <strong
-                      >{{
-                        t(`egfr.sections.physiology.content.mechanisms[${index}].name`)
-                      }}:</strong
-                    >
-                    {{ t(`egfr.sections.physiology.content.mechanisms[${index}].description`) }}
+                    <span
+                      v-html="t(`egfr.sections.physiology.content.mechanisms[${index}]`)"
+                    ></span>
                   </li>
                 </ul>
                 <p class="text-body2 text-weight-bold q-mb-sm">
@@ -733,11 +723,8 @@ onMounted(() => {
                   {{ t('egfr.sections.calculation.content.methodsTitle') }}:
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li v-for="(item, index) in 3" :key="index">
-                    <strong
-                      >{{ t(`egfr.sections.calculation.content.methods[${index}].name`) }}:</strong
-                    >
-                    {{ t(`egfr.sections.calculation.content.methods[${index}].description`) }}
+                  <li v-for="(item, index) in 4" :key="index">
+                    <span v-html="t(`egfr.sections.calculation.content.methods[${index}]`)"></span>
                   </li>
                 </ul>
                 <p class="text-body2 q-mb-sm">
@@ -830,18 +817,34 @@ onMounted(() => {
                 </ul>
 
                 <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.interpretation.content.actionsTitle') }}:
+                  {{ t('egfr.sections.interpretation.content.albuminuriaTitle') }}:
                 </p>
-                <ul class="text-body2">
-                  <li v-for="(action, index) in 4" :key="index">
-                    <strong
-                      >{{
-                        t(`egfr.sections.interpretation.content.actions[${index}].stage`)
-                      }}:</strong
-                    >
-                    {{ t(`egfr.sections.interpretation.content.actions[${index}].action`) }}
+                <ul class="text-body2 q-mb-md">
+                  <li v-for="(item, index) in 3" :key="index">
+                    <span
+                      v-html="t(`egfr.sections.interpretation.content.albuminuria[${index}]`)"
+                    ></span>
                   </li>
                 </ul>
+                <p class="text-body2 text-weight-bold q-mb-sm">
+                  {{ t('egfr.sections.interpretation.content.progressionTitle') }}:
+                </p>
+                <ul class="text-body2">
+                  <li v-for="(item, index) in 3" :key="index">
+                    <span
+                      v-html="t(`egfr.sections.interpretation.content.progression[${index}]`)"
+                    ></span>
+                  </li>
+                </ul>
+                <q-banner class="bg-orange-2 text-orange-9 q-mt-md" rounded>
+                  <template v-slot:avatar>
+                    <q-icon name="warning" color="orange" size="sm" />
+                  </template>
+                  <div class="text-caption">
+                    <strong>{{ t('egfr.sections.interpretation.content.alert.title') }}:</strong>
+                    <span v-html="t('egfr.sections.interpretation.content.alert.text')"></span>
+                  </div>
+                </q-banner>
               </q-card>
             </q-expansion-item>
 
@@ -858,12 +861,9 @@ onMounted(() => {
                 </p>
                 <ul class="text-body2 q-mb-md">
                   <li v-for="(item, index) in 4" :key="index">
-                    <strong
-                      >{{
-                        t(`egfr.sections.applications.content.drugDosing[${index}].category`)
-                      }}:</strong
-                    >
-                    {{ t(`egfr.sections.applications.content.drugDosing[${index}].description`) }}
+                    <span
+                      v-html="t(`egfr.sections.applications.content.drugDosing[${index}]`)"
+                    ></span>
                   </li>
                 </ul>
 
@@ -871,8 +871,10 @@ onMounted(() => {
                   {{ t('egfr.sections.applications.content.screeningTitle') }}:
                 </p>
                 <ul class="text-body2">
-                  <li v-for="(item, index) in 4" :key="index">
-                    {{ t(`egfr.sections.applications.content.screening[${index}]`) }}
+                  <li v-for="(item, index) in 5" :key="index">
+                    <span
+                      v-html="t(`egfr.sections.applications.content.screening[${index}]`)"
+                    ></span>
                   </li>
                 </ul>
               </q-card>
@@ -890,33 +892,23 @@ onMounted(() => {
                   {{ t('egfr.sections.referenceValues.content.criticalThresholdsTitle') }}:
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li v-for="(item, index) in 3" :key="index">
-                    <strong class="text-red"
-                      >{{
-                        t(
-                          `egfr.sections.referenceValues.content.criticalThresholds[${index}].threshold`,
-                        )
-                      }}:</strong
-                    >
-                    {{
-                      t(`egfr.sections.referenceValues.content.criticalThresholds[${index}].action`)
-                    }}
+                  <li v-for="(item, index) in 4" :key="index">
+                    <span
+                      v-html="
+                        t(`egfr.sections.referenceValues.content.criticalThresholds[${index}]`)
+                      "
+                    ></span>
                   </li>
                 </ul>
 
                 <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.referenceValues.content.complicationsTitle') }}:
+                  {{ t('egfr.sections.referenceValues.content.rapidDeclineTitle') }}:
                 </p>
                 <ul class="text-body2">
-                  <li v-for="(item, index) in 4" :key="index">
-                    <strong
-                      >{{
-                        t(`egfr.sections.referenceValues.content.complications[${index}].name`)
-                      }}:</strong
-                    >
-                    {{
-                      t(`egfr.sections.referenceValues.content.complications[${index}].description`)
-                    }}
+                  <li v-for="(item, index) in 3" :key="index">
+                    <span
+                      v-html="t(`egfr.sections.referenceValues.content.rapidDecline[${index}]`)"
+                    ></span>
                   </li>
                 </ul>
 
@@ -975,13 +967,10 @@ onMounted(() => {
                   {{ t('egfr.sections.bibliography.content.guidelinesTitle') }}:
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li v-for="(item, index) in 3" :key="index">
-                    <strong
-                      >{{
-                        t(`egfr.sections.bibliography.content.guidelines[${index}].name`)
-                      }}:</strong
-                    >
-                    {{ t(`egfr.sections.bibliography.content.guidelines[${index}].description`) }}
+                  <li v-for="(item, index) in 4" :key="index">
+                    <span
+                      v-html="t(`egfr.sections.bibliography.content.guidelines[${index}]`)"
+                    ></span>
                   </li>
                 </ul>
 

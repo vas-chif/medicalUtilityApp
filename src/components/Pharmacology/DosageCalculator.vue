@@ -10,7 +10,7 @@
  *
  * @author Vasile Chifeac
  * @created 2025-11-16
- * @modified 2025-11-16
+ * @modified 2025-12-16
  *
  * @example
  * <DosageCalculator
@@ -34,7 +34,15 @@
  */
 
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSecureLogger } from 'src/composables/useSecureLogger';
+
+// ============================================================
+// I18N
+// ============================================================
+const i18n = useI18n({ useScope: 'global' });
+const t = i18n.t.bind(i18n);
+const tm = i18n.tm.bind(i18n);
 
 // ============================================================
 // LOGGING
@@ -55,9 +63,9 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  calculateButtonText: 'Calcola Dosaggio',
-  resetButtonText: 'Reset Dati',
-  title: '💊 Dosage Calculator',
+  calculateButtonText: '',
+  resetButtonText: '',
+  title: '',
 });
 
 interface DosageCalculatedPayload {
@@ -170,90 +178,92 @@ const initialDosageResult: DosageResult = {
 const dosageForm = ref<DosageFormData>({ ...initialDosageForm });
 const dosageResult = ref<DosageResult>({ ...initialDosageResult });
 
-// Drug Database
-const drugs: Record<string, DrugInfo> = {
+// Drug Database (with i18n)
+const drugs = computed<Record<string, DrugInfo>>(() => ({
   paracetamol: {
-    name: 'Paracetamolo',
-    class: 'Analgesico/Antipiretico',
+    name: t('dosageCalculator.drugs.paracetamol.name'),
+    class: t('dosageCalculator.drugs.paracetamol.class'),
     type: 'weight-based',
-    doseLabel: 'Dose per kg',
-    doseUnit: 'mg/kg',
-    indications: 'Dolore e febbre',
-    therapeuticRange: '10-15 mg/kg ogni 4-6h',
-    notes: 'Max 4g/die negli adulti, 60mg/kg/die nei bambini',
+    doseLabel: t('dosageCalculator.drugs.paracetamol.doseLabel'),
+    doseUnit: t('dosageCalculator.drugs.paracetamol.doseUnit'),
+    indications: t('dosageCalculator.drugs.paracetamol.indications'),
+    therapeuticRange: t('dosageCalculator.drugs.paracetamol.therapeuticRange'),
+    notes: t('dosageCalculator.drugs.paracetamol.notes'),
     precision: 1,
     renalElimination: false,
   },
   amoxicillin: {
-    name: 'Amoxicillina',
-    class: 'Antibiotico (Penicillina)',
+    name: t('dosageCalculator.drugs.amoxicillin.name'),
+    class: t('dosageCalculator.drugs.amoxicillin.class'),
     type: 'weight-based',
-    doseLabel: 'Dose per kg',
-    doseUnit: 'mg/kg',
-    indications: 'Infezioni batteriche',
-    therapeuticRange: '20-40 mg/kg ogni 8h',
-    notes: 'Aggiustare in insufficienza renale',
+    doseLabel: t('dosageCalculator.drugs.amoxicillin.doseLabel'),
+    doseUnit: t('dosageCalculator.drugs.amoxicillin.doseUnit'),
+    indications: t('dosageCalculator.drugs.amoxicillin.indications'),
+    therapeuticRange: t('dosageCalculator.drugs.amoxicillin.therapeuticRange'),
+    notes: t('dosageCalculator.drugs.amoxicillin.notes'),
     precision: 1,
     renalElimination: true,
   },
   furosemide: {
-    name: 'Furosemide',
-    class: "Diuretico dell'ansa",
+    name: t('dosageCalculator.drugs.furosemide.name'),
+    class: t('dosageCalculator.drugs.furosemide.class'),
     type: 'weight-based',
-    doseLabel: 'Dose per kg',
-    doseUnit: 'mg/kg',
-    indications: 'Edema, ipertensione',
-    therapeuticRange: '0.5-2 mg/kg',
-    notes: 'Monitorare elettroliti e funzione renale',
+    doseLabel: t('dosageCalculator.drugs.furosemide.doseLabel'),
+    doseUnit: t('dosageCalculator.drugs.furosemide.doseUnit'),
+    indications: t('dosageCalculator.drugs.furosemide.indications'),
+    therapeuticRange: t('dosageCalculator.drugs.furosemide.therapeuticRange'),
+    notes: t('dosageCalculator.drugs.furosemide.notes'),
     precision: 1,
     renalElimination: true,
   },
   digoxin: {
-    name: 'Digossina',
-    class: 'Glicosidi digitalici',
+    name: t('dosageCalculator.drugs.digoxin.name'),
+    class: t('dosageCalculator.drugs.digoxin.class'),
     type: 'weight-based',
-    doseLabel: 'Dose per kg',
-    doseUnit: 'μg/kg',
-    indications: 'Insufficienza cardiaca, FA',
-    therapeuticRange: '8-12 μg/kg loading dose',
-    notes: 'Monitorare livelli ematici e funzione renale',
+    doseLabel: t('dosageCalculator.drugs.digoxin.doseLabel'),
+    doseUnit: t('dosageCalculator.drugs.digoxin.doseUnit'),
+    indications: t('dosageCalculator.drugs.digoxin.indications'),
+    therapeuticRange: t('dosageCalculator.drugs.digoxin.therapeuticRange'),
+    notes: t('dosageCalculator.drugs.digoxin.notes'),
     precision: 1,
     renalElimination: true,
   },
   aspirin: {
-    name: 'Aspirina',
-    class: 'FANS/Antiaggregante',
+    name: t('dosageCalculator.drugs.aspirin.name'),
+    class: t('dosageCalculator.drugs.aspirin.class'),
     type: 'fixed',
-    doseLabel: 'Dose',
-    doseUnit: 'mg',
-    indications: 'Prevenzione cardiovascolare',
-    therapeuticRange: '75-100 mg/die',
-    notes: 'Controindicata in età pediatrica (Sindrome di Reye)',
+    doseLabel: t('dosageCalculator.drugs.aspirin.doseLabel'),
+    doseUnit: t('dosageCalculator.drugs.aspirin.doseUnit'),
+    indications: t('dosageCalculator.drugs.aspirin.indications'),
+    therapeuticRange: t('dosageCalculator.drugs.aspirin.therapeuticRange'),
+    notes: t('dosageCalculator.drugs.aspirin.notes'),
     precision: 0,
     renalElimination: false,
   },
-};
-
-// Drug Options
-const drugOptions = Object.keys(drugs).map((key) => ({
-  label: drugs[key]?.name || '',
-  value: key,
 }));
 
-// Frequency Options
-const frequencyOptions = [
-  { label: 'Una volta al giorno', value: 'qd' },
-  { label: 'Due volte al giorno', value: 'bid' },
-  { label: 'Tre volte al giorno', value: 'tid' },
-  { label: 'Quattro volte al giorno', value: 'qid' },
-  { label: 'Ogni 6 ore', value: 'q6h' },
-  { label: 'Ogni 8 ore', value: 'q8h' },
-  { label: 'Ogni 12 ore', value: 'q12h' },
-];
+// Drug Options (with i18n)
+const drugOptions = computed(() =>
+  Object.keys(drugs.value).map((key) => ({
+    label: drugs.value[key]?.name || '',
+    value: key,
+  })),
+);
+
+// Frequency Options (with i18n)
+const frequencyOptions = computed(() => [
+  { label: t('dosageCalculator.form.frequency.options.qd'), value: 'qd' },
+  { label: t('dosageCalculator.form.frequency.options.bid'), value: 'bid' },
+  { label: t('dosageCalculator.form.frequency.options.tid'), value: 'tid' },
+  { label: t('dosageCalculator.form.frequency.options.qid'), value: 'qid' },
+  { label: t('dosageCalculator.form.frequency.options.q6h'), value: 'q6h' },
+  { label: t('dosageCalculator.form.frequency.options.q8h'), value: 'q8h' },
+  { label: t('dosageCalculator.form.frequency.options.q12h'), value: 'q12h' },
+]);
 
 // Selected Drug Computed
 const selectedDrug = computed(() => {
-  return dosageForm.value.drug ? drugs[dosageForm.value.drug] : null;
+  return dosageForm.value.drug ? drugs.value[dosageForm.value.drug] : null;
 });
 
 // Dosage Form Validation
@@ -409,7 +419,7 @@ const getFrequencyPerDay = (): number => {
  * @returns Human-readable frequency
  */
 const getFrequencyText = (): string => {
-  const option = frequencyOptions.find((opt) => opt.value === dosageForm.value.frequency);
+  const option = frequencyOptions.value.find((opt) => opt.value === dosageForm.value.frequency);
   return option?.label || dosageForm.value.frequency;
 };
 
@@ -444,9 +454,9 @@ const resetDosageForm = () => {
 <template>
   <div class="dosage-calculator">
     <!-- Title & Description -->
-    <div class="text-h5 text-primary q-mb-md">{{ title }}</div>
+    <div class="text-h5 text-primary q-mb-md">{{ title || t('dosageCalculator.title') }}</div>
     <p class="text-body2 text-grey-7 q-mb-lg">
-      Calcolo preciso delle dosi farmacologiche basato su peso, età e funzione renale
+      {{ t('dosageCalculator.subtitle') }}
     </p>
 
     <div class="row q-gutter-lg">
@@ -456,15 +466,15 @@ const resetDosageForm = () => {
       <div class="col-12 col-md-5">
         <q-card class="q-pa-md">
           <q-card-section>
-            <h6 class="text-h6 q-ma-none q-mb-md">📊 Parametri Paziente</h6>
+            <h6 class="text-h6 q-ma-none q-mb-md">{{ t('dosageCalculator.form.weight.label') }}</h6>
 
             <!-- Patient Weight Input -->
             <q-input
               v-model.number="dosageForm.weight"
               type="number"
               step="0.1"
-              label="Peso Corporeo"
-              suffix="kg"
+              :label="t('dosageCalculator.form.weight.label')"
+              :suffix="t('dosageCalculator.form.weight.unit')"
               outlined
               class="q-mb-md"
               :rules="[(val: number) => (val > 0 && val <= 500) || 'Peso tra 1-500 kg']"
@@ -478,8 +488,8 @@ const resetDosageForm = () => {
             <q-input
               v-model.number="dosageForm.age"
               type="number"
-              label="Età"
-              suffix="anni"
+              :label="t('dosageCalculator.form.age.label')"
+              :suffix="t('dosageCalculator.form.age.unit')"
               outlined
               class="q-mb-md"
               :rules="[(val: number) => (val >= 0 && val <= 120) || 'Età tra 0-120 anni']"
@@ -494,11 +504,11 @@ const resetDosageForm = () => {
               v-model.number="dosageForm.creatinine"
               type="number"
               step="0.01"
-              label="Creatinina Sierica (opzionale)"
-              suffix="mg/dL"
+              :label="t('dosageCalculator.form.creatinine.label')"
+              :suffix="t('dosageCalculator.form.creatinine.unit')"
               outlined
               class="q-mb-md"
-              hint="Per aggiustamento in insufficienza renale"
+              :hint="t('dosageCalculator.form.creatinine.hint')"
             >
               <template v-slot:prepend>
                 <q-icon name="science" color="purple" />
@@ -511,7 +521,7 @@ const resetDosageForm = () => {
             <q-select
               v-model="dosageForm.drug"
               :options="drugOptions"
-              label="Seleziona Farmaco"
+              :label="t('dosageCalculator.form.drug.label')"
               outlined
               class="q-mb-md"
               emit-value
@@ -529,8 +539,8 @@ const resetDosageForm = () => {
               v-model.number="dosageForm.dosePerKg"
               type="number"
               step="0.01"
-              :label="selectedDrug?.doseLabel || 'Dose per kg'"
-              :suffix="selectedDrug?.doseUnit || 'mg/kg'"
+              :label="selectedDrug?.doseLabel || t('dosageCalculator.form.dosePerKg.label')"
+              :suffix="selectedDrug?.doseUnit || t('dosageCalculator.form.dosePerKg.unit')"
               outlined
               class="q-mb-md"
               v-if="selectedDrug?.type === 'weight-based'"
@@ -546,8 +556,8 @@ const resetDosageForm = () => {
               v-model.number="dosageForm.fixedDose"
               type="number"
               step="0.01"
-              :label="selectedDrug?.doseLabel || 'Dose'"
-              :suffix="selectedDrug?.doseUnit || 'mg'"
+              :label="selectedDrug?.doseLabel || t('dosageCalculator.form.fixedDose.label')"
+              :suffix="selectedDrug?.doseUnit || t('dosageCalculator.form.fixedDose.unit')"
               outlined
               class="q-mb-md"
               v-if="selectedDrug?.type === 'fixed'"
@@ -562,7 +572,7 @@ const resetDosageForm = () => {
             <q-select
               v-model="dosageForm.frequency"
               :options="frequencyOptions"
-              label="Frequenza Somministrazione"
+              :label="t('dosageCalculator.form.frequency.label')"
               outlined
               class="q-mb-md"
               emit-value
@@ -582,7 +592,7 @@ const resetDosageForm = () => {
               icon="calculate"
               :disable="!isDosageFormValid"
             >
-              {{ calculateButtonText }}
+              {{ calculateButtonText || t('dosageCalculator.buttons.calculate') }}
             </q-btn>
 
             <!-- Reset Button -->
@@ -594,7 +604,7 @@ const resetDosageForm = () => {
               icon="refresh"
               outline
             >
-              {{ resetButtonText }}
+              {{ resetButtonText || t('dosageCalculator.buttons.reset') }}
             </q-btn>
           </q-card-section>
         </q-card>
@@ -606,7 +616,9 @@ const resetDosageForm = () => {
       <div class="col-12 col-md-6">
         <q-card class="q-pa-md">
           <q-card-section>
-            <h6 class="text-h6 q-ma-none q-mb-md">📈 Risultati Dosaggio</h6>
+            <h6 class="text-h6 q-ma-none q-mb-md">
+              {{ t('dosageCalculator.resultsPanel.title') }}
+            </h6>
 
             <!-- Calculated Dose Display -->
             <div class="text-center q-mb-lg" v-if="dosageResult.totalDose > 0">
@@ -614,7 +626,8 @@ const resetDosageForm = () => {
                 {{ dosageResult.totalDose.toFixed(selectedDrug?.precision || 1) }}
               </div>
               <div class="text-subtitle1 text-grey-7">
-                <strong>{{ selectedDrug?.doseUnit || 'mg' }}</strong> per dose
+                <strong>{{ selectedDrug?.doseUnit || 'mg' }}</strong>
+                {{ t('dosageCalculator.resultsPanel.totalDose.subtitle') }}
               </div>
               <div class="text-caption text-grey-6" v-if="selectedDrug?.type === 'weight-based'">
                 {{ dosageForm.dosePerKg }}{{ selectedDrug?.doseUnit || 'mg' }}/kg ×
@@ -627,7 +640,9 @@ const resetDosageForm = () => {
               <div class="col">
                 <q-card flat bordered class="text-center q-pa-sm">
                   <div class="text-h6 text-primary">{{ getFrequencyText() }}</div>
-                  <div class="text-caption">Frequenza</div>
+                  <div class="text-caption">
+                    {{ t('dosageCalculator.resultsPanel.frequency.label') }}
+                  </div>
                 </q-card>
               </div>
               <div class="col">
@@ -635,7 +650,9 @@ const resetDosageForm = () => {
                   <div class="text-h6 text-primary">
                     {{ dosageResult.dailyDose.toFixed(1) }} {{ selectedDrug?.doseUnit || 'mg' }}
                   </div>
-                  <div class="text-caption">Dose Giornaliera</div>
+                  <div class="text-caption">
+                    {{ t('dosageCalculator.resultsPanel.dailyDose.label') }}
+                  </div>
                 </q-card>
               </div>
             </div>
@@ -669,33 +686,45 @@ const resetDosageForm = () => {
             </div>
 
             <!-- Informazioni Farmaco -->
-            <q-expansion-item icon="info" label="📋 Informazioni Farmaco" v-if="selectedDrug">
+            <q-expansion-item
+              icon="info"
+              :label="t('dosageCalculator.drugInfo.title')"
+              v-if="selectedDrug"
+            >
               <q-card class="q-pa-md">
-                <div class="q-mb-sm"><strong>Classe:</strong> {{ selectedDrug.class }}</div>
                 <div class="q-mb-sm">
-                  <strong>Indicazioni:</strong> {{ selectedDrug.indications }}
+                  <strong>{{ t('dosageCalculator.drugInfo.class') }}:</strong>
+                  {{ selectedDrug.class }}
                 </div>
                 <div class="q-mb-sm">
-                  <strong>Range terapeutico:</strong> {{ selectedDrug.therapeuticRange }}
+                  <strong>{{ t('dosageCalculator.drugInfo.indications') }}:</strong>
+                  {{ selectedDrug.indications }}
                 </div>
-                <div><strong>Note:</strong> {{ selectedDrug.notes }}</div>
+                <div class="q-mb-sm">
+                  <strong>{{ t('dosageCalculator.drugInfo.therapeuticRange') }}:</strong>
+                  {{ selectedDrug.therapeuticRange }}
+                </div>
+                <div>
+                  <strong>{{ t('dosageCalculator.drugInfo.notes') }}:</strong>
+                  {{ selectedDrug.notes }}
+                </div>
               </q-card>
             </q-expansion-item>
 
             <!-- Avvertenze -->
             <q-expansion-item
               icon="warning"
-              label="⚠️ Avvertenze Importanti"
+              :label="t('dosageCalculator.warnings.title')"
               class="text-orange q-mt-sm"
               v-if="dosageResult.totalDose > 0"
             >
               <q-card class="q-pa-md bg-orange-1">
                 <ul class="q-ma-none">
-                  <li>Questo è solo un calcolo orientativo</li>
-                  <li>Consultare sempre le linee guida cliniche</li>
-                  <li>Considerare controindicazioni e interazioni</li>
-                  <li>Monitorare risposta clinica e effetti collaterali</li>
-                  <li>Aggiustare dose in base alla risposta del paziente</li>
+                  <li
+                    v-for="(item, index) in 5"
+                    :key="index"
+                    v-html="t(`dosageCalculator.warnings.items[${index}]`)"
+                  ></li>
                 </ul>
               </q-card>
             </q-expansion-item>
@@ -703,18 +732,49 @@ const resetDosageForm = () => {
             <!-- Formule -->
             <q-expansion-item
               icon="functions"
-              label="📐 Formule Utilizzate"
+              :label="t('dosageCalculator.formulas.title')"
               class="text-primary q-mt-sm"
               v-if="dosageResult.totalDose > 0"
             >
               <q-card class="q-pa-md">
                 <div class="q-mb-md" v-if="selectedDrug?.type === 'weight-based'">
-                  <strong>Dose Totale:</strong><br />
-                  <small>Dose per kg × Peso corporeo × Aggiustamenti</small>
+                  <p class="text-weight-bold q-mb-xs">
+                    {{ t('dosageCalculator.formulas.content.weightBasedTitle') }}
+                  </p>
+                  <p
+                    class="text-caption"
+                    v-html="t('dosageCalculator.formulas.content.weightBasedFormula')"
+                  ></p>
+                </div>
+                <div class="q-mb-md" v-if="selectedDrug?.type === 'fixed'">
+                  <p class="text-weight-bold q-mb-xs">
+                    {{ t('dosageCalculator.formulas.content.fixedDoseTitle') }}
+                  </p>
+                  <p
+                    class="text-caption"
+                    v-html="t('dosageCalculator.formulas.content.fixedDoseFormula')"
+                  ></p>
                 </div>
                 <div class="q-mb-md" v-if="dosageForm.creatinine">
-                  <strong>eGFR (Cockcroft-Gault):</strong><br />
-                  <small>((140 - età) × peso) / (72 × creatinina)</small>
+                  <p class="text-weight-bold q-mb-xs">
+                    {{ t('dosageCalculator.formulas.content.egfrTitle') }}
+                  </p>
+                  <p
+                    class="text-caption"
+                    v-html="t('dosageCalculator.formulas.content.egfrFormula')"
+                  ></p>
+                </div>
+                <div class="q-mb-md" v-if="dosageResult.renalAdjustment !== 1.0">
+                  <p class="text-weight-bold q-mb-xs">
+                    {{ t('dosageCalculator.formulas.content.adjustmentTitle') }}
+                  </p>
+                  <ul class="text-caption">
+                    <li
+                      v-for="(item, idx) in 7"
+                      :key="idx"
+                      v-html="t(`dosageCalculator.formulas.content.adjustmentRules[${idx}]`)"
+                    ></li>
+                  </ul>
                 </div>
               </q-card>
             </q-expansion-item>
@@ -726,48 +786,41 @@ const resetDosageForm = () => {
             <!-- Farmacocinetica e Farmacodinamica (PK/PD) -->
             <q-expansion-item
               icon="science"
-              label="Farmacocinetica e Farmacodinamica (PK/PD)"
+              :label="t('dosageCalculator.sections.pharmacokinetics.title')"
               class="q-mt-md"
               header-class="bg-blue-1 text-blue-9"
             >
               <q-card class="q-pa-md">
                 <div class="q-mb-lg">
                   <h6 class="text-subtitle1 text-weight-bold q-mb-sm">
-                    💊 Principi Farmacocinetica (PK/PD)
+                    {{ t('dosageCalculator.sections.pharmacokinetics.content.introTitle') }}
                   </h6>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Farmacocinetica (PK):</strong> Studio di come l'organismo processa il
-                    farmaco attraverso 4 fasi - <strong>ADME</strong>: Assorbimento (Absorption),
-                    Distribuzione (Distribution), Metabolismo (Metabolism), Eliminazione
-                    (Excretion). Determina concentrazioni plasmatiche nel tempo.
-                  </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Farmacodinamica (PD):</strong> Studio degli effetti del farmaco
-                    sull'organismo. Relazione dose-risposta, recettori, meccanismi d'azione, effetti
-                    terapeutici e tossici.
-                  </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Volume di Distribuzione (Vd):</strong> Volume teorico in cui il farmaco
-                    si distribuisce per ottenere la concentrazione plasmatica osservata. Farmaci
-                    lipofili (↑Vd) si distribuiscono nei tessuti, idrofili (↓Vd) rimangono nel
-                    compartimento vascolare. Formula: Vd = Dose / Concentrazione plasmatica.
-                  </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Clearance (CL):</strong> Volume di plasma depurato dal farmaco per unità
-                    di tempo (mL/min). Clearance totale = CL renale + CL epatica + CL altre vie.
-                    Determina dose di mantenimento: Dose maint = CL × C<sub>ss</sub> (steady state).
-                  </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Emivita (t½):</strong> Tempo necessario affinché la concentrazione
-                    plasmatica si riduca del 50%. t½ = 0.693 × Vd / CL. Steady state raggiunto dopo
-                    4-5 emivite. Determina intervallo tra dosi.
-                  </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Steady State (C<sub>ss</sub>):</strong> Equilibrio dinamico tra velocità
-                    di somministrazione e velocità di eliminazione. Concentrazione terapeutica
-                    stabile raggiunta dopo 4-5 emivite. Essenziale per efficacia e sicurezza
-                    terapeutica.
-                  </p>
+                  <p
+                    v-for="(item, idx) in 4"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="t(`dosageCalculator.sections.pharmacokinetics.content.intro[${idx}]`)"
+                  ></p>
+                  <h6 class="text-subtitle1 text-weight-bold q-mb-sm q-mt-md">
+                    {{ t('dosageCalculator.sections.pharmacokinetics.content.pkParametersTitle') }}
+                  </h6>
+                  <p
+                    v-for="(item, idx) in 4"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="
+                      t(`dosageCalculator.sections.pharmacokinetics.content.pkParameters[${idx}]`)
+                    "
+                  ></p>
+                  <h6 class="text-subtitle1 text-weight-bold q-mb-sm q-mt-md">
+                    {{ t('dosageCalculator.sections.pharmacokinetics.content.pkpdTitle') }}
+                  </h6>
+                  <p
+                    v-for="(item, idx) in 2"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="t(`dosageCalculator.sections.pharmacokinetics.content.pkpd[${idx}]`)"
+                  ></p>
                 </div>
               </q-card>
             </q-expansion-item>
@@ -775,38 +828,39 @@ const resetDosageForm = () => {
             <!-- Dosaggi Pediatrici e Neonatali -->
             <q-expansion-item
               icon="child_care"
-              label="Dosaggi Pediatrici e Neonatali"
+              :label="t('dosageCalculator.sections.pediatric.title')"
               class="q-mt-md"
               header-class="bg-green-1 text-green-9"
             >
               <q-card class="q-pa-md">
                 <div class="q-mb-lg">
-                  <p class="text-weight-bold text-h6 q-mb-sm">👶 Principi Dosaggio Pediatrico</p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Dosaggio Weight-Based (mg/kg):</strong> Metodo più comune in pediatria.
-                    Considera che neonati e lattanti hanno ↑Vd/kg (maggior acqua corporea totale
-                    70-80% vs 60% adulto), ↓legame proteine plasmatiche (ipoalbuminemia
-                    fisiologica), immaturità enzimatica epatica (↓metabolismo) e renale (↓GFR: 20-40
-                    mL/min/1.73m² vs 90-120 adulto).
+                  <p class="text-weight-bold text-h6 q-mb-sm">
+                    {{ t('dosageCalculator.sections.pediatric.content.introTitle') }}
                   </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Dosaggio BSA-Based (mg/m²):</strong> Utilizzato per chemioterapici e
-                    farmaci con finestra terapeutica stretta. BSA correla meglio con GFR, cardiac
-                    output e clearance metabolica rispetto al peso. Formula Mosteller: BSA (m²) =
-                    √[(altezza cm × peso kg)/3600].
+                  <p
+                    v-for="(item, idx) in 3"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="t(`dosageCalculator.sections.pediatric.content.intro[${idx}]`)"
+                  ></p>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+                    {{ t('dosageCalculator.sections.pediatric.content.bsaTitle') }}
                   </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Età-Specific Dosing:</strong> Neonati (0-28 giorni): riduzione 50-75%,
-                    immaturità organi. Lattanti (1-12 mesi): riduzione 25-50%, clearance in
-                    sviluppo. Bambini (1-12 anni): spesso dose/kg > adulti per ↑metabolismo.
-                    Adolescenti (>12 anni): dose adulto se peso >50 kg.
+                  <p
+                    v-for="(item, idx) in 3"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="t(`dosageCalculator.sections.pediatric.content.bsa[${idx}]`)"
+                  ></p>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+                    {{ t('dosageCalculator.sections.pediatric.content.ageAdjustmentsTitle') }}
                   </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Farmaci Critici Pediatrici:</strong> Aminoglicosidi (gentamicina 5-7.5
-                    mg/kg/die neonati, TDM obbligatorio), Vancomicina (15 mg/kg ogni 6h, target
-                    trough 10-20 μg/mL), Paracetamolo (15 mg/kg ogni 6h, max 60 mg/kg/die),
-                    Antiepilettici (fenobarbital loading 20 mg/kg IV).
-                  </p>
+                  <p
+                    v-for="(item, idx) in 4"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="t(`dosageCalculator.sections.pediatric.content.ageAdjustments[${idx}]`)"
+                  ></p>
                 </div>
               </q-card>
             </q-expansion-item>
@@ -814,51 +868,50 @@ const resetDosageForm = () => {
             <!-- Aggiustamento Dosaggio in Insufficienza Renale -->
             <q-expansion-item
               icon="medication"
-              label="Aggiustamento Dosaggio in Insufficienza Renale (CKD)"
+              :label="t('dosageCalculator.sections.renalImpairment.title')"
               class="q-mt-md"
               header-class="bg-amber-1 text-amber-9"
             >
               <q-card class="q-pa-md">
                 <div class="q-mb-lg">
-                  <p class="text-weight-bold text-h6 q-mb-sm">🫘 Principi Aggiustamento Renale</p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Principi Generali:</strong> Farmaci renalmente escreti (>50%
-                    eliminazione renale) richiedono aggiustamento dose quando CrCl &lt;60 mL/min.
-                    Utilizzare Cockcroft-Gault (non eGFR CKD-EPI) per dosaggio farmaci. Considerare
-                    Active Body Weight (ABW) in obesità.
+                  <p class="text-weight-bold text-h6 q-mb-sm">
+                    {{ t('dosageCalculator.sections.renalImpairment.content.ckdStagesTitle') }}
                   </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Strategie Aggiustamento:</strong><br />
-                    • <strong>Riduzione Dose:</strong> Mantenere intervallo, ridurre dose singola
-                    (preferibile per farmaci tempo-dipendenti: β-lattamici, vancomicina).<br />
-                    • <strong>Prolungamento Intervallo:</strong> Mantenere dose, aumentare
-                    intervallo (preferibile per farmaci concentrazione-dipendenti: aminoglicosidi,
-                    fluorochinoloni).<br />
-                    • <strong>Approccio Combinato:</strong> Ridurre dose E prolungare intervallo
-                    (digossina, LMWH).
+                  <p
+                    v-for="(item, idx) in 6"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="
+                      t(`dosageCalculator.sections.renalImpairment.content.ckdStages[${idx}]`)
+                    "
+                  ></p>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+                    {{ t('dosageCalculator.sections.renalImpairment.content.adjustmentTitle') }}
                   </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>CKD Staging-Based Dose Reduction:</strong><br />
-                    • <strong>CrCl 50-80 mL/min (CKD 2):</strong> 75-100% dose standard<br />
-                    • <strong>CrCl 30-50 mL/min (CKD 3a-3b):</strong> 50-75% dose<br />
-                    • <strong>CrCl 10-30 mL/min (CKD 4):</strong> 25-50% dose<br />
-                    • <strong>CrCl &lt;10 mL/min (CKD 5):</strong> 10-25% dose, evitare nefrotossici
+                  <p
+                    v-for="(item, idx) in 3"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="
+                      t(`dosageCalculator.sections.renalImpairment.content.adjustment[${idx}]`)
+                    "
+                  ></p>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+                    {{ t('dosageCalculator.sections.renalImpairment.content.dialysisTitle') }}
                   </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Farmaci Nefrotossici da Evitare/Ridurre:</strong> FANS (↓GFR, nefrite
-                    interstiziale), Aminoglicosidi (necrosi tubulare), Contrasti iodati (CIN:
-                    Contrast-Induced Nephropathy), Vancomicina (TDM obbligatorio, target trough
-                    15-20 μg/mL), ACE-I/ARB (↓GFR funzionale, monitorare creatinina), Metformina
-                    (controindicato CrCl &lt;30, rischio acidosi lattica).
+                  <p
+                    v-for="(item, idx) in 3"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="t(`dosageCalculator.sections.renalImpairment.content.dialysis[${idx}]`)"
+                  ></p>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+                    {{ t('dosageCalculator.sections.renalImpairment.content.drugsExamplesTitle') }}
                   </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Dialisi e Dosaggio Farmaci:</strong> Emodialisi (HD) rimuove farmaci
-                    piccoli (&lt;500 Da), idrofili, basso Vd, basso legame proteine. Dose
-                    supplementare post-HD per: Aminoglicosidi, Vancomicina, β-lattamici, Gabapentin.
-                    Dialisi peritoneale (PD) ha minor clearance farmaci vs HD. CRRT (Continuous
-                    Renal Replacement Therapy) in ICU richiede dosaggio intermedio HD-funzione
-                    normale.
-                  </p>
+                  <p
+                    class="text-body2 q-mb-sm"
+                    v-html="t('dosageCalculator.sections.renalImpairment.content.drugsExamples')"
+                  ></p>
                 </div>
               </q-card>
             </q-expansion-item>
@@ -866,39 +919,56 @@ const resetDosageForm = () => {
             <!-- Loading Dose vs Maintenance Dose -->
             <q-expansion-item
               icon="flash_on"
-              label="Loading Dose vs Maintenance Dose"
+              :label="t('dosageCalculator.sections.loadingMaintenance.title')"
               class="q-mt-md"
               header-class="bg-cyan-1 text-cyan-9"
             >
               <q-card class="q-pa-md">
                 <div class="q-mb-lg">
-                  <p class="text-weight-bold text-h6 q-mb-sm">⚡ Strategie Dosaggio Iniziale</p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Loading Dose (Dose di Carico):</strong> Dose iniziale elevata per
-                    raggiungere rapidamente concentrazioni terapeutiche senza attendere steady state
-                    (4-5 emivite). Formula: LD = Vd × C<sub>target</sub>. Indicata per farmaci con
-                    lunga emivita (digossina, amiodarone) o emergenze (fenobarbitale nello stato
-                    epilettico, antibiotici nelle sepsi gravi).
+                  <p class="text-weight-bold text-h6 q-mb-sm">
+                    {{ t('dosageCalculator.sections.loadingMaintenance.content.conceptsTitle') }}
                   </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Maintenance Dose (Dose di Mantenimento):</strong> Dose ripetuta per
-                    mantenere C<sub>ss</sub> nel range terapeutico. Formula: MD = CL × C<sub
-                      >target</sub
-                    >
-                    × τ (intervallo dosaggio). Aggiustare in base a TDM (Therapeutic Drug
-                    Monitoring), risposta clinica, funzione renale/epatica.
+                  <p
+                    v-for="(item, idx) in 3"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="
+                      t(`dosageCalculator.sections.loadingMaintenance.content.concepts[${idx}]`)
+                    "
+                  ></p>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+                    {{ t('dosageCalculator.sections.loadingMaintenance.content.formulasTitle') }}
                   </p>
-                  <p class="text-body2 q-mb-sm">
-                    <strong>Esempi Clinici:</strong><br />
-                    • <strong>Digossina:</strong> LD 0.5-1 mg IV → MD 0.125-0.25 mg/die (↓50% se
-                    CrCl &lt;50)<br />
-                    • <strong>Fenobarbitale (stato epilettico):</strong> LD 20 mg/kg IV lenta (max
-                    60 mg/min) → MD 1-3 mg/kg/die<br />
-                    • <strong>Vancomicina:</strong> LD 25-30 mg/kg × 1 → MD 15-20 mg/kg ogni 8-12h
-                    (TDM-guided)<br />
-                    • <strong>Amiodarone:</strong> LD 150 mg IV in 10 min → infusione 1 mg/min 6h →
-                    0.5 mg/min 18h
+                  <p
+                    v-for="(item, idx) in 3"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="
+                      t(`dosageCalculator.sections.loadingMaintenance.content.formulas[${idx}]`)
+                    "
+                  ></p>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+                    {{ t('dosageCalculator.sections.loadingMaintenance.content.indicationsTitle') }}
                   </p>
+                  <p
+                    v-for="(item, idx) in 4"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="
+                      t(`dosageCalculator.sections.loadingMaintenance.content.indications[${idx}]`)
+                    "
+                  ></p>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+                    {{ t('dosageCalculator.sections.loadingMaintenance.content.examplesTitle') }}
+                  </p>
+                  <p
+                    v-for="(item, idx) in 3"
+                    :key="idx"
+                    class="text-body2 q-mb-sm"
+                    v-html="
+                      t(`dosageCalculator.sections.loadingMaintenance.content.examples[${idx}]`)
+                    "
+                  ></p>
                 </div>
               </q-card>
             </q-expansion-item>
@@ -906,48 +976,35 @@ const resetDosageForm = () => {
             <!-- Riferimenti Scientifici -->
             <q-expansion-item
               icon="menu_book"
-              label="Riferimenti Scientifici ScienceDirect"
+              :label="t('dosageCalculator.sections.bibliography.title')"
               class="q-mt-md"
               header-class="bg-teal-1 text-teal-9"
             >
               <q-card class="q-pa-md">
                 <div class="q-mb-md">
                   <p class="text-weight-bold text-h6 q-mb-sm">
-                    📖 Bibliografia Farmacologia Clinica
+                    {{ t('dosageCalculator.sections.bibliography.content.publicationsTitle') }}
                   </p>
                   <ul class="text-caption">
-                    <li>
-                      <strong>Holford NHG (2013).</strong> "Pharmacokinetics & Pharmacodynamics:
-                      Rational Dosing & the Time Course of Drug Action" in Basic & Clinical
-                      Pharmacology (13th Edition). ScienceDirect. PK/PD principles, Vd, clearance,
-                      half-life, steady state, loading vs maintenance dose calculations.
-                    </li>
-                    <li>
-                      <strong>Kearns GL et al. (2003).</strong> "Developmental Pharmacology—Drug
-                      Disposition, Action, and Therapy in Infants and Children" in New England
-                      Journal of Medicine. ScienceDirect. Pediatric dosing principles, ontogeny of
-                      drug metabolism, age-specific pharmacokinetics, BSA vs weight-based dosing.
-                    </li>
-                    <li>
-                      <strong>Matzke GR, Aronoff GR (2016).</strong> "Drug Dosing in Renal Failure"
-                      in Brenner & Rector's The Kidney (10th Edition). ScienceDirect. CKD
-                      staging-based dose adjustments, dialysis dosing, nephrotoxicity prevention,
-                      Cockcroft-Gault use for drug dosing.
-                    </li>
-                    <li>
-                      <strong>Rybak MJ et al. (2020).</strong> "Therapeutic Monitoring of Vancomycin
-                      for Serious Methicillin-Resistant Staphylococcus aureus Infections" in
-                      American Journal of Health-System Pharmacy. ScienceDirect. TDM strategies,
-                      AUC-guided dosing, renal adjustment, loading dose protocols.
-                    </li>
-                    <li>
-                      <strong>Mouton JW et al. (2011).</strong>
-                      "Pharmacokinetic/Pharmacodynamic Considerations in the Treatment of
-                      Hospitalized Patients with Respiratory Tract Infections" in Clinical
-                      Microbiology and Infection. ScienceDirect. Time-dependent vs
-                      concentration-dependent killing, PK/PD indices (AUC/MIC, Cmax/MIC, T>MIC),
-                      dosing optimization in critically ill patients.
-                    </li>
+                    <li
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      v-html="
+                        t(`dosageCalculator.sections.bibliography.content.publications[${idx}]`)
+                      "
+                    ></li>
+                  </ul>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+                    {{ t('dosageCalculator.sections.bibliography.content.guidelinesTitle') }}
+                  </p>
+                  <ul class="text-caption">
+                    <li
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      v-html="
+                        t(`dosageCalculator.sections.bibliography.content.guidelines[${idx}]`)
+                      "
+                    ></li>
                   </ul>
                 </div>
               </q-card>
@@ -957,7 +1014,7 @@ const resetDosageForm = () => {
             <div v-if="!dosageResult.totalDose" class="text-center text-grey-6 q-pa-xl">
               <q-icon name="info" size="lg" class="q-mb-md" />
               <p class="text-body2">
-                Inserisci parametri paziente e farmaco per calcolare il dosaggio
+                {{ t('dosageCalculator.emptyState') }}
               </p>
             </div>
           </q-card-section>

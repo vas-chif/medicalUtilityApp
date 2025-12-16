@@ -1271,16 +1271,137 @@ const saveScore = (): void => {
 
 ### 4.4 Pattern t() Comuni
 
-| Caso d'uso               | Pattern                                       | Esempio                                  |
-| ------------------------ | --------------------------------------------- | ---------------------------------------- |
-| Testo semplice           | `{{ t('key') }}`                              | `{{ t('nc.title') }}`                    |
-| Attributo HTML           | `:attribute="t('key')"`                       | `:label="t('nc.form.field1Label')"`      |
-| HTML content             | `v-html="t('key')"`                           | `v-html="t('nc.sections.definition')"`   |
-| Interpolazione variabili | `{{ t('key', { var }) }}`                     | `{{ t('nc.buttons.save', { time: 1 })}}` |
-| Conditional key          | `{{ t(\`prefix.${variable}\`) }}`             | `{{ t(\`nc.interp.${result}\`) }}`       |
-| Loop con traduzioni      | `v-for="item in items"` + `{{ t(item.key) }}` | Vedi esempio loop sotto                  |
+| Caso d'uso                        | Pattern                                           | Esempio                                  |
+| --------------------------------- | ------------------------------------------------- | ---------------------------------------- |
+| Testo semplice                    | `{{ t('key') }}`                                  | `{{ t('nc.title') }}`                    |
+| Attributo HTML                    | `:attribute="t('key')"`                           | `:label="t('nc.form.field1Label')"`      |
+| HTML content                      | `v-html="t('key')"`                               | `v-html="t('nc.sections.definition')"`   |
+| Interpolazione variabili          | `{{ t('key', { var }) }}`                         | `{{ t('nc.buttons.save', { time: 1 })}}` |
+| Conditional key                   | `{{ t(\`prefix.${variable}\`) }}`                 | `{{ t(\`nc.interp.${result}\`) }}`       |
+| Loop con traduzioni               | `v-for="item in items"` + `{{ t(item.key) }}`     | Vedi esempio loop sotto                  |
+| **Array i18n (PATTERN STANDARD)** | `v-for="(item, idx) in N"` + `t(\`key[${idx}]\`)` | **Vedi 4.4.1 - OBBLIGATORIO per array**  |
 
-#### 4.4.1 Esempio Loop con Traduzioni
+#### 4.4.1 🔥 Pattern Standard per Array i18n (OBBLIGATORIO)
+
+**⚠️ REGOLA CRITICA**: Per iterare array da file i18n, usa **SEMPRE** questo pattern standard usato in tutti i componenti (BMI, BSA, IBW, eGFR, ecc.):
+
+**✅ PATTERN CORRETTO (Standard Application-Wide)**:
+
+```vue
+<!-- Esempio: Array con 5 elementi in dosageCalculator.warnings.items -->
+<ul>
+  <li
+    v-for="(item, index) in 5"
+    :key="index"
+    v-html="t(`dosageCalculator.warnings.items[${index}]`)"
+  ></li>
+</ul>
+
+<!-- Esempio: Array con 7 elementi in formulas.adjustmentRules -->
+<ul>
+  <li
+    v-for="(item, idx) in 7"
+    :key="idx"
+    v-html="t(`dosageCalculator.formulas.content.adjustmentRules[${idx}]`)"
+  ></li>
+</ul>
+
+<!-- Esempio: Paragraphs invece di list items -->
+<div>
+  <p
+    v-for="(item, idx) in 4"
+    :key="idx"
+    class="text-body2 q-mb-sm"
+    v-html="t(`dosageCalculator.sections.pharmacokinetics.content.intro[${idx}]`)"
+  ></p>
+</div>
+```
+
+**🎯 Caratteristiche Pattern**:
+
+1. **Loop numerico fisso**: `v-for="(item, idx) in N"` dove N è il numero di elementi nell'array i18n
+2. **Template literal con indice**: `t(\`key[${idx}]\`)` accede all'elemento array tramite indice
+3. **v-html per contenuti HTML**: Permette rendering di `<strong>`, `<em>`, ecc.
+4. **Nessun computed**: Non servono computed properties per convertire array
+5. **Nessun tm()**: Non usare `tm()` che restituisce Proxy non iterabili correttamente
+
+**❌ PATTERN SBAGLIATO (DA EVITARE)**:
+
+```vue
+<!-- ❌ ERRORE 1: Usare tm() con computed -->
+<script setup lang="ts">
+const { t, tm } = useI18n();
+const warningsItems = computed(() => Array.from(tm('dosageCalculator.warnings.items')));
+</script>
+<ul>
+  <li v-for="(item, idx) in warningsItems" :key="idx" v-html="item"></li>
+</ul>
+<!-- PROBLEMA: tm() restituisce Proxy, Array.from() non converte correttamente, 
+     Vue mostra "[object Object]" invece del contenuto -->
+
+<!-- ❌ ERRORE 2: Iterare direttamente su tm() senza conversione -->
+<ul>
+  <li v-for="(item, idx) in tm('key')" :key="idx" v-html="item"></li>
+</ul>
+<!-- PROBLEMA: Proxy non è iterabile in modo affidabile, risultati imprevedibili -->
+
+<!-- ❌ ERRORE 3: Usare loop con dati dinamici -->
+<ul>
+  <li v-for="item in dynamicArray" :key="item" v-html="t(item)"></li>
+</ul>
+<!-- PROBLEMA: Più complesso, può fallire con array vuoti o undefined -->
+```
+
+**📊 Confronto Approcci**:
+
+| Aspetto            | tm() + computed (❌)          | Loop numerico + t() (✅)   |
+| ------------------ | ----------------------------- | -------------------------- |
+| **Complessità**    | Alta (computed, Array.from)   | Bassa (loop diretto)       |
+| **Affidabilità**   | Bassa (Proxy issues)          | Alta (testato ovunque)     |
+| **Performance**    | Peggiore (conversione Proxy)  | Migliore (accesso diretto) |
+| **Debugging**      | Difficile (Proxy opaco)       | Facile (indice visibile)   |
+| **Compatibilità**  | Fragile (dipende da vue-i18n) | Robusta (standard Vue)     |
+| **Manutenibilità** | Bassa                         | Alta (pattern consistente) |
+
+**🔍 File i18n corrispondente**:
+
+```typescript
+// src/i18n/it-IT/dosageCalculator.ts
+export default {
+  warnings: {
+    title: 'Avvertenze Importanti',
+    items: [
+      // ← ARRAY con 5 elementi
+      '<strong>Dosaggio stimato:</strong> Questo calcolatore fornisce...',
+      '<strong>Variabilità individuale:</strong> Fattori come...',
+      '<strong>TDM:</strong> Per farmaci a stretto indice...',
+      '<strong>Pediatria:</strong> Dosaggi neonatali...',
+      '<strong>Insufficienza renale:</strong> Aggiustamento eGFR-based...',
+    ],
+  },
+};
+```
+
+**✅ Vantaggi Pattern Standard**:
+
+1. **Consistenza codebase**: Stesso pattern in BMI, BSA, IBW, eGFR, Dosage → manutenibilità
+2. **Semplicità**: Nessun computed, nessun tm(), solo t() con template literal
+3. **Type-safe**: TypeScript controlla correttamente gli indici
+4. **Debugging facile**: Indice visibile nel template, facile identificare quale elemento fallisce
+5. **Performance**: Accesso diretto via t() più veloce di conversione Proxy
+6. **Zero sorprese**: Nessun "[object Object]", nessun Proxy behavior imprevedibile
+
+**🚨 REGOLA OBBLIGATORIA per LLM/AI**:
+
+**QUANDO traduci un componente con array i18n**:
+
+- ❌ **NON** usare mai `tm()` per array
+- ❌ **NON** creare computed properties per convertire array
+- ✅ **USA** sempre pattern `v-for="(item, idx) in N"` con `t(\`key[${idx}]\`)`
+- ✅ **CONTA** elementi in array i18n e usa numero esatto nel v-for
+- ✅ **VERIFICA** che tutti gli altri componenti usano questo pattern (consistenza)
+
+#### 4.4.2 Esempio Loop con Traduzioni Dinamiche
 
 ```vue
 <q-list>
@@ -1315,6 +1436,26 @@ const saveScore = (): void => {
 
 <!-- ✅ CORRETTO: Interpolazione con oggetto -->
 <q-btn>{{ t('nc.buttons.save', { time: currentTime }) }}</q-btn>
+
+<!-- ❌ SBAGLIATO: Array con tm() e computed -->
+<script setup>
+const { t, tm } = useI18n();
+const items = computed(() => Array.from(tm('nc.items')));
+</script>
+<ul>
+  <li v-for="item in items" :key="item" v-html="item"></li>
+</ul>
+<!-- PROBLEMA: tm() restituisce Proxy, mostra "[object Object]" -->
+
+<!-- ✅ CORRETTO: Array con loop numerico e t() -->
+<ul>
+  <li 
+    v-for="(item, idx) in 5" 
+    :key="idx" 
+    v-html="t(`nc.items[${idx}]`)"
+  ></li>
+</ul>
+<!-- SOLUZIONE: Pattern standard usato in tutti i componenti -->
 
 <!-- ❌ SBAGLIATO: Uso console.log (GDPR violation!) -->
 console.log('Calcolo completato', result);

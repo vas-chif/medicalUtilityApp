@@ -458,11 +458,10 @@ onMounted(() => {
                   <strong>{{ t('crcl.sections.definition.content.differenceLabel') }}</strong>
                 </p>
                 <ul class="text-body2 q-mb-sm">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.definition.content.differences')"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 2" :key="idx">
+                    <span
+                      v-html="t(`crcl.sections.definition.content.differences[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
                 <q-banner class="bg-blue-2 text-blue-9 q-mt-md" rounded>
@@ -492,11 +491,10 @@ onMounted(() => {
                   {{ t('crcl.sections.physiology.content.mechanismIntro') }}
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.physiology.content.mechanisms')"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="t(`crcl.sections.physiology.content.mechanisms[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
                 <p class="text-body2 q-mb-sm">
@@ -504,11 +502,8 @@ onMounted(() => {
                   {{ t('crcl.sections.physiology.content.equation') }}
                 </p>
                 <ul class="text-body2">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.physiology.content.equationParams')"
-                    :key="idx"
-                  >
-                    {{ item }}
+                  <li v-for="idx in 3" :key="idx">
+                    {{ t(`crcl.sections.physiology.content.equationParams[${idx - 1}]`) }}
                   </li>
                 </ul>
                 <q-banner class="bg-green-2 text-green-9 q-mt-md" rounded>
@@ -535,22 +530,18 @@ onMounted(() => {
                   {{ t('crcl.sections.calculation.content.methodsTitle') }}
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.calculation.content.methods')"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 2" :key="idx">
+                    <span
+                      v-html="t(`crcl.sections.calculation.content.methods[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
                 <p class="text-body2 text-weight-bold q-mb-sm">
                   {{ t('crcl.sections.calculation.content.whenToUseTitle') }}
                 </p>
                 <ul class="text-body2">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.calculation.content.whenToUse')"
-                    :key="idx"
-                  >
-                    {{ item }}
+                  <li v-for="idx in 4" :key="idx">
+                    {{ t(`crcl.sections.calculation.content.whenToUse[${idx - 1}]`) }}
                   </li>
                 </ul>
                 <q-banner class="bg-amber-2 text-amber-9 q-mt-md" rounded>
@@ -580,11 +571,8 @@ onMounted(() => {
                   {{ t('crcl.sections.formula.content.formulaText') }}
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.formula.content.parameters')"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 4" :key="idx">
+                    <span v-html="t(`crcl.sections.formula.content.parameters[${idx - 1}]`)"></span>
                   </li>
                 </ul>
 
@@ -592,11 +580,8 @@ onMounted(() => {
                   {{ t('crcl.sections.formula.content.limitationsTitle') }}
                 </p>
                 <ul class="text-body2">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.formula.content.limitations')"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 4" :key="idx">
+                    <span v-html="t(`crcl.sections.formula.limitations.items[${idx - 1}]`)"></span>
                   </li>
                 </ul>
 
@@ -624,11 +609,10 @@ onMounted(() => {
                   {{ t('crcl.sections.interpretation.content.classificationTitle') }}
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.interpretation.content.classification')"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 6" :key="idx">
+                    <span
+                      v-html="t(`crcl.sections.interpretation.content.classification[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
 
@@ -636,11 +620,10 @@ onMounted(() => {
                   {{ t('crcl.sections.interpretation.content.criticalDrugsTitle') }}
                 </p>
                 <ul class="text-body2">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.interpretation.content.criticalDrugs')"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 4" :key="idx">
+                    <span
+                      v-html="t(`crcl.sections.interpretation.content.criticalDrugs[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
               </q-card>
@@ -658,11 +641,10 @@ onMounted(() => {
                   {{ t('crcl.sections.applications.content.primaryUseTitle') }}
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.applications.content.primaryUse')"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="t(`crcl.sections.applications.content.primaryUse[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
 
@@ -670,13 +652,12 @@ onMounted(() => {
                   {{ t('crcl.sections.applications.content.specialPopulationsTitle') }}
                 </p>
                 <ul class="text-body2">
-                  <li
-                    v-for="(item, idx) in t(
-                      'crcl.sections.applications.content.specialPopulations',
-                    )"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="
+                        t(`crcl.sections.applications.content.specialPopulations[${idx - 1}]`)
+                      "
+                    ></span>
                   </li>
                 </ul>
               </q-card>
@@ -694,11 +675,10 @@ onMounted(() => {
                   {{ t('crcl.sections.referenceValues.content.criticalValuesTitle') }}
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.referenceValues.content.criticalValues')"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="t(`crcl.sections.referenceValues.content.criticalValues[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
 
@@ -706,11 +686,10 @@ onMounted(() => {
                   {{ t('crcl.sections.referenceValues.content.highRiskDrugsTitle') }}
                 </p>
                 <ul class="text-body2">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.referenceValues.content.highRiskDrugs')"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="t(`crcl.sections.referenceValues.content.highRiskDrugs[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
 
@@ -749,11 +728,8 @@ onMounted(() => {
                   {{ t('crcl.sections.documentation.content.elementsTitle') }}
                 </p>
                 <ul class="text-body2">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.documentation.content.elements')"
-                    :key="idx"
-                  >
-                    {{ item }}
+                  <li v-for="idx in 4" :key="idx">
+                    {{ t(`crcl.sections.documentation.content.elements[${idx - 1}]`) }}
                   </li>
                 </ul>
               </q-card>
@@ -771,11 +747,10 @@ onMounted(() => {
                   {{ t('crcl.sections.bibliography.content.publicationsTitle') }}
                 </p>
                 <ul class="text-body2 q-mb-md">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.bibliography.content.publications')"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="t(`crcl.sections.bibliography.content.publications[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
 
@@ -783,11 +758,10 @@ onMounted(() => {
                   {{ t('crcl.sections.bibliography.content.guidelinesTitle') }}
                 </p>
                 <ul class="text-body2">
-                  <li
-                    v-for="(item, idx) in t('crcl.sections.bibliography.content.guidelines')"
-                    :key="idx"
-                  >
-                    <span v-html="item"></span>
+                  <li v-for="idx in 3" :key="idx">
+                    <span
+                      v-html="t(`crcl.sections.bibliography.content.guidelines[${idx - 1}]`)"
+                    ></span>
                   </li>
                 </ul>
 

@@ -27,9 +27,13 @@ import sofaScoreIT from 'src/i18n/it-IT/sofa';
 import sofaScoreEN from 'src/i18n/en-US/sofa';
 import ibwIT from 'src/i18n/it-IT/ibw';
 import ibwEN from 'src/i18n/en-US/ibw';
+import fluidBalanceIT from 'src/i18n/it-IT/fluidBalance';
+import fluidBalanceEN from 'src/i18n/en-US/fluidBalance';
+import dosageCalculatorIT from 'src/i18n/it-IT/dosageCalculator';
+import dosageCalculatorEN from 'src/i18n/en-US/dosageCalculator';
 
 console.log(
-  '[i18n boot] ✅ ALL NAMESPACES LOADED (bmi + bsa + abw + sofa COMPLETE - all 9 sections + footer + ibw)',
+  '[i18n boot] ✅ ALL NAMESPACES LOADED (bmi + bsa + abw + sofa + ibw + fluidBalance + dosageCalculator COMPLETE)',
 );
 
 // Inject calculator namespaces manually into locales
@@ -48,6 +52,8 @@ const itITWithCalculators = {
   egfr: egfrIT,
   sofa: sofaScoreIT,
   ibw: ibwIT,
+  fluidBalance: fluidBalanceIT,
+  dosageCalculator: dosageCalculatorIT,
 };
 
 const enUSWithCalculators = {
@@ -64,6 +70,8 @@ const enUSWithCalculators = {
   egfr: egfrEN,
   sofa: sofaScoreEN,
   ibw: ibwEN,
+  fluidBalance: fluidBalanceEN,
+  dosageCalculator: dosageCalculatorEN,
 };
 
 const messages = {
