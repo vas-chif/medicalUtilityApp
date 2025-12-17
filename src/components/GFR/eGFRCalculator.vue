@@ -629,387 +629,360 @@ onMounted(() => {
                 </div>
               </q-card>
             </q-expansion-item>
-
-            <!-- ================================================= -->
-            <!-- NEWS-STYLE DOCUMENTATION (9 SECTIONS)             -->
-            <!-- ================================================= -->
-
-            <!-- Definizione e Significato Clinico -->
-            <q-expansion-item
-              icon="info"
-              :label="t('egfr.sections.definition.title')"
-              class="q-mt-sm"
-              header-class="bg-blue-1 text-blue-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 q-mb-sm">
-                  <strong>{{ t('egfr.sections.definition.content.definitionLabel') }}:</strong>
-                  <span v-html="t('egfr.sections.definition.content.definition')"></span>
-                </p>
-                <p class="text-body2 q-mb-sm">
-                  <strong
-                    >{{ t('egfr.sections.definition.content.clinicalSignificanceTitle') }}:</strong
-                  >
-                  {{ t('egfr.sections.definition.content.clinicalSignificanceIntro') }}
-                </p>
-                <ul class="text-body2 q-mb-sm">
-                  <li v-for="(item, index) in 4" :key="index">
-                    <span
-                      v-html="t(`egfr.sections.definition.content.clinicalSignificance[${index}]`)"
-                    ></span>
-                  </li>
-                </ul>
-                <q-banner class="bg-blue-2 text-blue-9 q-mt-md" rounded>
-                  <template v-slot:avatar>
-                    <q-icon name="info" color="blue" size="sm" />
-                  </template>
-                  <div class="text-caption">
-                    <strong>{{ t('egfr.sections.definition.content.note.title') }}:</strong>
-                    {{ t('egfr.sections.definition.content.note.text') }}
-                  </div>
-                </q-banner>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Fisiologia della Filtrazione Glomerulare -->
-            <q-expansion-item
-              icon="biotech"
-              :label="t('egfr.sections.physiology.title')"
-              class="q-mt-sm"
-              header-class="bg-green-1 text-green-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.physiology.content.mechanismTitle') }}:
-                </p>
-                <p class="text-body2 q-mb-sm">
-                  {{ t('egfr.sections.physiology.content.mechanismIntro') }}
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="(item, index) in 3" :key="index">
-                    <span
-                      v-html="t(`egfr.sections.physiology.content.mechanisms[${index}]`)"
-                    ></span>
-                  </li>
-                </ul>
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.physiology.content.determinantsTitle') }}:
-                </p>
-                <p
-                  class="text-body2 q-mb-sm"
-                  v-html="t('egfr.sections.physiology.content.equation')"
-                ></p>
-                <q-banner class="bg-orange-2 text-orange-9 q-mt-md" rounded>
-                  <template v-slot:avatar>
-                    <q-icon name="warning" color="orange" size="sm" />
-                  </template>
-                  <div class="text-caption">
-                    <strong>{{ t('egfr.sections.physiology.content.alert.title') }}:</strong>
-                    {{ t('egfr.sections.physiology.content.alert.text') }}
-                  </div>
-                </q-banner>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Come si Misura/Calcola il GFR -->
-            <q-expansion-item
-              icon="speed"
-              :label="t('egfr.sections.calculation.title')"
-              class="q-mt-sm"
-              header-class="bg-amber-1 text-amber-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.calculation.content.methodsTitle') }}:
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="(item, index) in 4" :key="index">
-                    <span v-html="t(`egfr.sections.calculation.content.methods[${index}]`)"></span>
-                  </li>
-                </ul>
-                <p class="text-body2 q-mb-sm">
-                  <strong>{{ t('egfr.sections.calculation.content.creatinineTitle') }}:</strong>
-                  {{ t('egfr.sections.calculation.content.creatinineIntro') }}
-                </p>
-                <ul class="text-body2">
-                  <li v-for="(limitation, index) in 3" :key="index">
-                    {{ t(`egfr.sections.calculation.content.limitations[${index}]`) }}
-                  </li>
-                </ul>
-                <q-banner class="bg-amber-2 text-amber-9 q-mt-md" rounded>
-                  <template v-slot:avatar>
-                    <q-icon name="tips_and_updates" color="amber" size="sm" />
-                  </template>
-                  <div class="text-caption">
-                    <strong
-                      >{{ t('egfr.sections.calculation.content.bestPractice.title') }}:</strong
-                    >
-                    {{ t('egfr.sections.calculation.content.bestPractice.text') }}
-                  </div>
-                </q-banner>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Formule di Calcolo -->
-            <q-expansion-item
-              icon="functions"
-              :label="t('egfr.sections.formula.title')"
-              class="q-mt-sm"
-              header-class="bg-cyan-1 text-cyan-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.formula.content.mdrdTitle') }}:
-                </p>
-                <p
-                  class="text-body2 q-mb-sm"
-                  v-html="t('egfr.sections.formula.content.mdrdFormula')"
-                ></p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="(item, index) in 3" :key="index">
-                    {{ t(`egfr.sections.formula.content.mdrdLimitations[${index}]`) }}
-                  </li>
-                </ul>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.formula.content.ckdepiTitle') }}:
-                </p>
-                <p
-                  class="text-body2 q-mb-sm"
-                  v-html="t('egfr.sections.formula.content.ckdepiFormula')"
-                ></p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="(item, index) in 4" :key="index">
-                    {{ t(`egfr.sections.formula.content.ckdepiParameters[${index}]`) }}
-                  </li>
-                </ul>
-
-                <q-banner class="bg-cyan-2 text-cyan-9 q-mt-md" rounded>
-                  <template v-slot:avatar>
-                    <q-icon name="recommend" color="cyan" size="sm" />
-                  </template>
-                  <div class="text-caption">
-                    <strong>{{ t('egfr.sections.formula.content.recommendation.title') }}:</strong>
-                    {{ t('egfr.sections.formula.content.recommendation.text') }}
-                  </div>
-                </q-banner>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Interpretazione Risultati -->
-            <q-expansion-item
-              icon="psychology"
-              :label="t('egfr.sections.interpretation.title')"
-              class="q-mt-sm"
-              header-class="bg-orange-1 text-orange-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.interpretation.content.stagingTitle') }}:
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="(stage, index) in 6" :key="index">
-                    <strong
-                      :class="getStageClass(index)"
-                      v-html="t(`egfr.sections.interpretation.content.staging[${index}]`)"
-                    ></strong>
-                  </li>
-                </ul>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.interpretation.content.albuminuriaTitle') }}:
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="(item, index) in 3" :key="index">
-                    <span
-                      v-html="t(`egfr.sections.interpretation.content.albuminuria[${index}]`)"
-                    ></span>
-                  </li>
-                </ul>
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.interpretation.content.progressionTitle') }}:
-                </p>
-                <ul class="text-body2">
-                  <li v-for="(item, index) in 3" :key="index">
-                    <span
-                      v-html="t(`egfr.sections.interpretation.content.progression[${index}]`)"
-                    ></span>
-                  </li>
-                </ul>
-                <q-banner class="bg-orange-2 text-orange-9 q-mt-md" rounded>
-                  <template v-slot:avatar>
-                    <q-icon name="warning" color="orange" size="sm" />
-                  </template>
-                  <div class="text-caption">
-                    <strong>{{ t('egfr.sections.interpretation.content.alert.title') }}:</strong>
-                    <span v-html="t('egfr.sections.interpretation.content.alert.text')"></span>
-                  </div>
-                </q-banner>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Applicazioni Cliniche -->
-            <q-expansion-item
-              icon="local_hospital"
-              :label="t('egfr.sections.applications.title')"
-              class="q-mt-sm"
-              header-class="bg-purple-1 text-purple-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.applications.content.drugDosingTitle') }}:
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="(item, index) in 4" :key="index">
-                    <span
-                      v-html="t(`egfr.sections.applications.content.drugDosing[${index}]`)"
-                    ></span>
-                  </li>
-                </ul>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.applications.content.screeningTitle') }}:
-                </p>
-                <ul class="text-body2">
-                  <li v-for="(item, index) in 5" :key="index">
-                    <span
-                      v-html="t(`egfr.sections.applications.content.screening[${index}]`)"
-                    ></span>
-                  </li>
-                </ul>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Valori Critici e Alert -->
-            <q-expansion-item
-              icon="warning"
-              :label="t('egfr.sections.referenceValues.title')"
-              class="q-mt-sm"
-              header-class="bg-red-1 text-red-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.referenceValues.content.criticalThresholdsTitle') }}:
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="(item, index) in 4" :key="index">
-                    <span
-                      v-html="
-                        t(`egfr.sections.referenceValues.content.criticalThresholds[${index}]`)
-                      "
-                    ></span>
-                  </li>
-                </ul>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.referenceValues.content.rapidDeclineTitle') }}:
-                </p>
-                <ul class="text-body2">
-                  <li v-for="(item, index) in 3" :key="index">
-                    <span
-                      v-html="t(`egfr.sections.referenceValues.content.rapidDecline[${index}]`)"
-                    ></span>
-                  </li>
-                </ul>
-
-                <q-banner class="bg-red-2 text-red-9 q-mt-md" rounded>
-                  <template v-slot:avatar>
-                    <q-icon name="emergency" color="red" size="sm" />
-                  </template>
-                  <div class="text-caption">
-                    <strong
-                      >{{
-                        t('egfr.sections.referenceValues.content.emergencyAlert.title')
-                      }}:</strong
-                    >
-                    {{ t('egfr.sections.referenceValues.content.emergencyAlert.text') }}
-                  </div>
-                </q-banner>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Documentazione Clinica -->
-            <q-expansion-item
-              icon="menu_book"
-              :label="t('egfr.sections.documentation.title')"
-              class="q-mt-sm"
-              header-class="bg-indigo-1 text-indigo-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.documentation.content.elementsTitle') }}:
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="(item, index) in 6" :key="index">
-                    {{ t(`egfr.sections.documentation.content.elements[${index}]`) }}
-                  </li>
-                </ul>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.documentation.content.templateTitle') }}:
-                </p>
-                <div
-                  class="bg-grey-2 q-pa-md rounded-borders text-body2"
-                  v-html="t('egfr.sections.documentation.content.templateExample')"
-                ></div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Riferimenti Scientifici -->
-            <q-expansion-item
-              icon="science"
-              :label="t('egfr.sections.bibliography.title')"
-              class="q-mt-sm"
-              header-class="bg-teal-1 text-teal-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.bibliography.content.guidelinesTitle') }}:
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="(item, index) in 4" :key="index">
-                    <span
-                      v-html="t(`egfr.sections.bibliography.content.guidelines[${index}]`)"
-                    ></span>
-                  </li>
-                </ul>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('egfr.sections.bibliography.content.publicationsTitle') }}:
-                </p>
-                <ul class="text-body2">
-                  <li
-                    v-for="(item, index) in 4"
-                    :key="index"
-                    v-html="t(`egfr.sections.bibliography.content.publications[${index}]`)"
-                  ></li>
-                </ul>
-
-                <q-banner class="bg-teal-2 text-teal-9 q-mt-md" rounded>
-                  <template v-slot:avatar>
-                    <q-icon name="link" color="teal" size="sm" />
-                  </template>
-                  <div class="text-caption">
-                    <strong
-                      >{{ t('egfr.sections.bibliography.content.onlineResources.title') }}:</strong
-                    >
-                    <a href="https://kdigo.org/guidelines/" target="_blank" class="text-teal-9">{{
-                      t('egfr.sections.bibliography.content.onlineResources.kdigo')
-                    }}</a>
-                    |
-                    <a
-                      href="https://www.kidney.org/professionals/guidelines"
-                      target="_blank"
-                      class="text-teal-9"
-                      >{{ t('egfr.sections.bibliography.content.onlineResources.nkf') }}</a
-                    >
-                  </div>
-                </q-banner>
-              </q-card>
-            </q-expansion-item>
           </q-card-section>
         </q-card>
       </div>
+    </div>
+    <div style="min-width: 100%">
+      <!-- ================================================= -->
+      <!-- NEWS-STYLE DOCUMENTATION (9 SECTIONS)             -->
+      <!-- ================================================= -->
+
+      <!-- Definizione e Significato Clinico -->
+      <q-expansion-item
+        icon="info"
+        :label="t('egfr.sections.definition.title')"
+        class="q-mt-sm"
+        header-class="bg-blue-1 text-blue-9"
+      >
+        <q-card class="bg-blue-1 q-pa-md">
+          <p class="text-body2 q-mb-sm">
+            <strong>{{ t('egfr.sections.definition.content.definitionLabel') }}:</strong>
+            <span v-html="t('egfr.sections.definition.content.definition')"></span>
+          </p>
+          <p class="text-body2 q-mb-sm">
+            <strong>{{ t('egfr.sections.definition.content.clinicalSignificanceTitle') }}:</strong>
+            {{ t('egfr.sections.definition.content.clinicalSignificanceIntro') }}
+          </p>
+          <ul class="text-body2 q-mb-sm">
+            <li v-for="(item, index) in 4" :key="index">
+              <span
+                v-html="t(`egfr.sections.definition.content.clinicalSignificance[${index}]`)"
+              ></span>
+            </li>
+          </ul>
+          <q-banner class="bg-blue-2 text-blue-9 q-mt-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="info" color="blue" size="sm" />
+            </template>
+            <div class="text-caption">
+              <strong>{{ t('egfr.sections.definition.content.note.title') }}:</strong>
+              {{ t('egfr.sections.definition.content.note.text') }}
+            </div>
+          </q-banner>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Fisiologia della Filtrazione Glomerulare -->
+      <q-expansion-item
+        icon="biotech"
+        :label="t('egfr.sections.physiology.title')"
+        class="q-mt-sm"
+        header-class="bg-green-1 text-green-9"
+      >
+        <q-card class="bg-green-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.physiology.content.mechanismTitle') }}:
+          </p>
+          <p class="text-body2 q-mb-sm">
+            {{ t('egfr.sections.physiology.content.mechanismIntro') }}
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="(item, index) in 3" :key="index">
+              <span v-html="t(`egfr.sections.physiology.content.mechanisms[${index}]`)"></span>
+            </li>
+          </ul>
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.physiology.content.determinantsTitle') }}:
+          </p>
+          <p class="text-body2 q-mb-sm" v-html="t('egfr.sections.physiology.content.equation')"></p>
+          <q-banner class="bg-orange-2 text-orange-9 q-mt-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="warning" color="orange" size="sm" />
+            </template>
+            <div class="text-caption">
+              <strong>{{ t('egfr.sections.physiology.content.alert.title') }}:</strong>
+              {{ t('egfr.sections.physiology.content.alert.text') }}
+            </div>
+          </q-banner>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Come si Misura/Calcola il GFR -->
+      <q-expansion-item
+        icon="speed"
+        :label="t('egfr.sections.calculation.title')"
+        class="q-mt-sm"
+        header-class="bg-amber-1 text-amber-9"
+      >
+        <q-card class="bg-amber-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.calculation.content.methodsTitle') }}:
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="(item, index) in 4" :key="index">
+              <span v-html="t(`egfr.sections.calculation.content.methods[${index}]`)"></span>
+            </li>
+          </ul>
+          <p class="text-body2 q-mb-sm">
+            <strong>{{ t('egfr.sections.calculation.content.creatinineTitle') }}:</strong>
+            {{ t('egfr.sections.calculation.content.creatinineIntro') }}
+          </p>
+          <ul class="text-body2">
+            <li v-for="(limitation, index) in 3" :key="index">
+              {{ t(`egfr.sections.calculation.content.limitations[${index}]`) }}
+            </li>
+          </ul>
+          <q-banner class="bg-amber-2 text-amber-9 q-mt-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="tips_and_updates" color="amber" size="sm" />
+            </template>
+            <div class="text-caption">
+              <strong>{{ t('egfr.sections.calculation.content.bestPractice.title') }}:</strong>
+              {{ t('egfr.sections.calculation.content.bestPractice.text') }}
+            </div>
+          </q-banner>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Formule di Calcolo -->
+      <q-expansion-item
+        icon="functions"
+        :label="t('egfr.sections.formula.title')"
+        class="q-mt-sm"
+        header-class="bg-cyan-1 text-cyan-9"
+      >
+        <q-card class="bg-cyan-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.formula.content.mdrdTitle') }}:
+          </p>
+          <p class="text-body2 q-mb-sm" v-html="t('egfr.sections.formula.content.mdrdFormula')"></p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="(item, index) in 3" :key="index">
+              {{ t(`egfr.sections.formula.content.mdrdLimitations[${index}]`) }}
+            </li>
+          </ul>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.formula.content.ckdepiTitle') }}:
+          </p>
+          <p
+            class="text-body2 q-mb-sm"
+            v-html="t('egfr.sections.formula.content.ckdepiFormula')"
+          ></p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="(item, index) in 4" :key="index">
+              {{ t(`egfr.sections.formula.content.ckdepiParameters[${index}]`) }}
+            </li>
+          </ul>
+
+          <q-banner class="bg-cyan-2 text-cyan-9 q-mt-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="recommend" color="cyan" size="sm" />
+            </template>
+            <div class="text-caption">
+              <strong>{{ t('egfr.sections.formula.content.recommendation.title') }}:</strong>
+              {{ t('egfr.sections.formula.content.recommendation.text') }}
+            </div>
+          </q-banner>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Interpretazione Risultati -->
+      <q-expansion-item
+        icon="psychology"
+        :label="t('egfr.sections.interpretation.title')"
+        class="q-mt-sm"
+        header-class="bg-orange-1 text-orange-9"
+      >
+        <q-card class="bg-orange-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.interpretation.content.stagingTitle') }}:
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="(stage, index) in 6" :key="index">
+              <strong
+                :class="getStageClass(index)"
+                v-html="t(`egfr.sections.interpretation.content.staging[${index}]`)"
+              ></strong>
+            </li>
+          </ul>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.interpretation.content.albuminuriaTitle') }}:
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="(item, index) in 3" :key="index">
+              <span v-html="t(`egfr.sections.interpretation.content.albuminuria[${index}]`)"></span>
+            </li>
+          </ul>
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.interpretation.content.progressionTitle') }}:
+          </p>
+          <ul class="text-body2">
+            <li v-for="(item, index) in 3" :key="index">
+              <span v-html="t(`egfr.sections.interpretation.content.progression[${index}]`)"></span>
+            </li>
+          </ul>
+          <q-banner class="bg-orange-2 text-orange-9 q-mt-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="warning" color="orange" size="sm" />
+            </template>
+            <div class="text-caption">
+              <strong>{{ t('egfr.sections.interpretation.content.alert.title') }}:</strong>
+              <span v-html="t('egfr.sections.interpretation.content.alert.text')"></span>
+            </div>
+          </q-banner>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Applicazioni Cliniche -->
+      <q-expansion-item
+        icon="local_hospital"
+        :label="t('egfr.sections.applications.title')"
+        class="q-mt-sm"
+        header-class="bg-purple-1 text-purple-9"
+      >
+        <q-card class="bg-purple-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.applications.content.drugDosingTitle') }}:
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="(item, index) in 4" :key="index">
+              <span v-html="t(`egfr.sections.applications.content.drugDosing[${index}]`)"></span>
+            </li>
+          </ul>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.applications.content.screeningTitle') }}:
+          </p>
+          <ul class="text-body2">
+            <li v-for="(item, index) in 5" :key="index">
+              <span v-html="t(`egfr.sections.applications.content.screening[${index}]`)"></span>
+            </li>
+          </ul>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Valori Critici e Alert -->
+      <q-expansion-item
+        icon="warning"
+        :label="t('egfr.sections.referenceValues.title')"
+        class="q-mt-sm"
+        header-class="bg-red-1 text-red-9"
+      >
+        <q-card class="bg-red-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.referenceValues.content.criticalThresholdsTitle') }}:
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="(item, index) in 4" :key="index">
+              <span
+                v-html="t(`egfr.sections.referenceValues.content.criticalThresholds[${index}]`)"
+              ></span>
+            </li>
+          </ul>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.referenceValues.content.rapidDeclineTitle') }}:
+          </p>
+          <ul class="text-body2">
+            <li v-for="(item, index) in 3" :key="index">
+              <span
+                v-html="t(`egfr.sections.referenceValues.content.rapidDecline[${index}]`)"
+              ></span>
+            </li>
+          </ul>
+
+          <q-banner class="bg-red-2 text-red-9 q-mt-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="emergency" color="red" size="sm" />
+            </template>
+            <div class="text-caption">
+              <strong
+                >{{ t('egfr.sections.referenceValues.content.emergencyAlert.title') }}:</strong
+              >
+              {{ t('egfr.sections.referenceValues.content.emergencyAlert.text') }}
+            </div>
+          </q-banner>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Documentazione Clinica -->
+      <q-expansion-item
+        icon="menu_book"
+        :label="t('egfr.sections.documentation.title')"
+        class="q-mt-sm"
+        header-class="bg-indigo-1 text-indigo-9"
+      >
+        <q-card class="bg-indigo-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.documentation.content.elementsTitle') }}:
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="(item, index) in 6" :key="index">
+              {{ t(`egfr.sections.documentation.content.elements[${index}]`) }}
+            </li>
+          </ul>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.documentation.content.templateTitle') }}:
+          </p>
+          <div
+            class="bg-grey-2 q-pa-md rounded-borders text-body2"
+            v-html="t('egfr.sections.documentation.content.templateExample')"
+          ></div>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Riferimenti Scientifici -->
+      <q-expansion-item
+        icon="science"
+        :label="t('egfr.sections.bibliography.title')"
+        class="q-mt-sm"
+        header-class="bg-teal-1 text-teal-9"
+      >
+        <q-card class="bg-teal-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.bibliography.content.guidelinesTitle') }}:
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="(item, index) in 4" :key="index">
+              <span v-html="t(`egfr.sections.bibliography.content.guidelines[${index}]`)"></span>
+            </li>
+          </ul>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('egfr.sections.bibliography.content.publicationsTitle') }}:
+          </p>
+          <ul class="text-body2">
+            <li
+              v-for="(item, index) in 4"
+              :key="index"
+              v-html="t(`egfr.sections.bibliography.content.publications[${index}]`)"
+            ></li>
+          </ul>
+
+          <q-banner class="bg-teal-2 text-teal-9 q-mt-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="link" color="teal" size="sm" />
+            </template>
+            <div class="text-caption">
+              <strong>{{ t('egfr.sections.bibliography.content.onlineResources.title') }}:</strong>
+              <a href="https://kdigo.org/guidelines/" target="_blank" class="text-teal-9">{{
+                t('egfr.sections.bibliography.content.onlineResources.kdigo')
+              }}</a>
+              |
+              <a
+                href="https://www.kidney.org/professionals/guidelines"
+                target="_blank"
+                class="text-teal-9"
+                >{{ t('egfr.sections.bibliography.content.onlineResources.nkf') }}</a
+              >
+            </div>
+          </q-banner>
+        </q-card>
+      </q-expansion-item>
     </div>
   </div>
 </template>

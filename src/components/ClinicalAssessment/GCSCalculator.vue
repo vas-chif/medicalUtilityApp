@@ -342,193 +342,171 @@ const getTBISeverity = (score: number): string => {
                 </div>
               </q-card>
             </q-expansion-item>
-
-            <!-- Definizione e Significato Clinico -->
-            <q-expansion-item
-              icon="info"
-              :label="t('gcs.sections.definition.title')"
-              class="q-mt-sm"
-              header-class="bg-blue-1 text-blue-9"
-            >
-              <q-card class="q-pa-md">
-                <div
-                  class="text-body2 q-mb-sm"
-                  v-html="t('gcs.sections.definition.mainText')"
-                ></div>
-                <div class="text-body2" v-html="t('gcs.sections.definition.applications')"></div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Fisiologia e Meccanismi -->
-            <q-expansion-item
-              icon="science"
-              :label="t('gcs.sections.physiology.title')"
-              class="q-mt-sm"
-              header-class="bg-green-1 text-green-9"
-            >
-              <q-card class="q-pa-md">
-                <div
-                  class="text-body2 q-mb-sm"
-                  v-html="t('gcs.sections.physiology.consciousness')"
-                ></div>
-                <div class="text-body2" v-html="t('gcs.sections.physiology.neuralPathways')"></div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Come si Valuta -->
-            <q-expansion-item
-              icon="calculate"
-              :label="t('gcs.sections.evaluation.title')"
-              class="q-mt-sm"
-              header-class="bg-amber-1 text-amber-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.evaluation.timing')"></div>
-                <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.evaluation.stimuli')"></div>
-                <div class="text-body2" v-html="t('gcs.sections.evaluation.operators')"></div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Formula e Componenti -->
-            <q-expansion-item
-              icon="functions"
-              :label="t('gcs.sections.formula.title')"
-              class="q-mt-sm"
-              header-class="bg-cyan-1 text-cyan-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="text-body2 text-center text-weight-bold q-mb-md">
-                  {{ t('gcs.sections.formula.mainFormula') }}
-                </div>
-                <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.formula.eye')"></div>
-                <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.formula.verbal')"></div>
-                <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.formula.motor')"></div>
-                <div class="text-body2" v-html="t('gcs.sections.formula.range')"></div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Interpretazione Clinica -->
-            <q-expansion-item
-              icon="psychology"
-              :label="t('gcs.sections.clinicalInterpretation.title')"
-              class="q-mt-sm"
-              header-class="bg-orange-1 text-orange-9"
-            >
-              <q-card class="q-pa-md">
-                <div
-                  class="text-body2 q-mb-sm"
-                  v-html="t('gcs.sections.clinicalInterpretation.gcs15')"
-                ></div>
-                <div
-                  class="text-body2 q-mb-sm"
-                  v-html="t('gcs.sections.clinicalInterpretation.mild')"
-                ></div>
-                <div
-                  class="text-body2 q-mb-sm"
-                  v-html="t('gcs.sections.clinicalInterpretation.moderate')"
-                ></div>
-                <div
-                  class="text-body2 q-mb-sm"
-                  v-html="t('gcs.sections.clinicalInterpretation.severe')"
-                ></div>
-                <div
-                  class="text-body2"
-                  v-html="t('gcs.sections.clinicalInterpretation.gcs3')"
-                ></div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Applicazioni Cliniche -->
-            <q-expansion-item
-              icon="medical_services"
-              :label="t('gcs.sections.clinicalApplications.title')"
-              class="q-mt-sm"
-              header-class="bg-purple-1 text-purple-9"
-            >
-              <q-card class="q-pa-md">
-                <div
-                  class="text-body2 q-mb-sm"
-                  v-html="t('gcs.sections.clinicalApplications.triage')"
-                ></div>
-                <div
-                  class="text-body2 q-mb-sm"
-                  v-html="t('gcs.sections.clinicalApplications.monitoring')"
-                ></div>
-                <div
-                  class="text-body2 q-mb-sm"
-                  v-html="t('gcs.sections.clinicalApplications.prognosis')"
-                ></div>
-                <div
-                  class="text-body2"
-                  v-html="t('gcs.sections.clinicalApplications.research')"
-                ></div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Valori di Riferimento e Alert -->
-            <q-expansion-item
-              icon="warning"
-              :label="t('gcs.sections.referenceValues.title')"
-              class="q-mt-sm"
-              header-class="bg-red-1 text-red-9"
-            >
-              <q-card class="q-pa-md">
-                <div
-                  class="text-body2 q-mb-sm"
-                  v-html="t('gcs.sections.referenceValues.classification')"
-                ></div>
-                <div
-                  class="text-body2 q-mb-sm text-weight-bold text-red-9"
-                  v-html="t('gcs.sections.referenceValues.criticalAlerts')"
-                ></div>
-                <div
-                  class="text-body2"
-                  v-html="t('gcs.sections.referenceValues.limitations')"
-                ></div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Documentazione Medica e Linee Guida -->
-            <q-expansion-item
-              icon="menu_book"
-              :label="t('gcs.sections.documentation.title')"
-              class="q-mt-sm"
-              header-class="bg-indigo-1 text-indigo-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.documentation.nice')"></div>
-                <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.documentation.btf')"></div>
-                <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.documentation.who')"></div>
-                <div class="text-body2" v-html="t('gcs.sections.documentation.atls')"></div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Riferimenti Scientifici PMID -->
-            <q-expansion-item
-              icon="library_books"
-              :label="t('gcs.sections.bibliography.title')"
-              class="q-mt-sm"
-              header-class="bg-teal-1 text-teal-9"
-            >
-              <q-card class="q-pa-md">
-                <div
-                  class="text-body2 q-mb-sm"
-                  v-html="t('gcs.sections.bibliography.teasdale')"
-                ></div>
-                <div
-                  class="text-body2 q-mb-sm"
-                  v-html="t('gcs.sections.bibliography.marmarou')"
-                ></div>
-                <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.bibliography.crash')"></div>
-                <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.bibliography.reith')"></div>
-                <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.bibliography.msd')"></div>
-                <div class="text-body2" v-html="t('gcs.sections.bibliography.sciencedirect')"></div>
-              </q-card>
-            </q-expansion-item>
           </q-card-section>
         </q-card>
       </div>
     </div>
+    <!-- Definizione e Significato Clinico -->
+    <q-expansion-item
+      icon="info"
+      :label="t('gcs.sections.definition.title')"
+      class="q-mt-sm"
+      header-class="bg-blue-1 text-blue-9"
+    >
+      <q-card class="bg-blue-1 q-pa-md">
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.definition.mainText')"></div>
+        <div class="text-body2" v-html="t('gcs.sections.definition.applications')"></div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Fisiologia e Meccanismi -->
+    <q-expansion-item
+      icon="science"
+      :label="t('gcs.sections.physiology.title')"
+      class="q-mt-sm"
+      header-class="bg-green-1 text-green-9"
+    >
+      <q-card class="bg-green-1 q-pa-md">
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.physiology.consciousness')"></div>
+        <div class="text-body2" v-html="t('gcs.sections.physiology.neuralPathways')"></div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Come si Valuta -->
+    <q-expansion-item
+      icon="calculate"
+      :label="t('gcs.sections.evaluation.title')"
+      class="q-mt-sm"
+      header-class="bg-amber-1 text-amber-9"
+    >
+      <q-card class="bg-amber-1 q-pa-md">
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.evaluation.timing')"></div>
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.evaluation.stimuli')"></div>
+        <div class="text-body2" v-html="t('gcs.sections.evaluation.operators')"></div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Formula e Componenti -->
+    <q-expansion-item
+      icon="functions"
+      :label="t('gcs.sections.formula.title')"
+      class="q-mt-sm"
+      header-class="bg-cyan-1 text-cyan-9"
+    >
+      <q-card class="bg-cyan-1 q-pa-md">
+        <div class="text-body2 text-center text-weight-bold q-mb-md">
+          {{ t('gcs.sections.formula.mainFormula') }}
+        </div>
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.formula.eye')"></div>
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.formula.verbal')"></div>
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.formula.motor')"></div>
+        <div class="text-body2" v-html="t('gcs.sections.formula.range')"></div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Interpretazione Clinica -->
+    <q-expansion-item
+      icon="psychology"
+      :label="t('gcs.sections.clinicalInterpretation.title')"
+      class="q-mt-sm"
+      header-class="bg-orange-1 text-orange-9"
+    >
+      <q-card class="bg-orange-1 q-pa-md">
+        <div
+          class="text-body2 q-mb-sm"
+          v-html="t('gcs.sections.clinicalInterpretation.gcs15')"
+        ></div>
+        <div
+          class="text-body2 q-mb-sm"
+          v-html="t('gcs.sections.clinicalInterpretation.mild')"
+        ></div>
+        <div
+          class="text-body2 q-mb-sm"
+          v-html="t('gcs.sections.clinicalInterpretation.moderate')"
+        ></div>
+        <div
+          class="text-body2 q-mb-sm"
+          v-html="t('gcs.sections.clinicalInterpretation.severe')"
+        ></div>
+        <div class="text-body2" v-html="t('gcs.sections.clinicalInterpretation.gcs3')"></div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Applicazioni Cliniche -->
+    <q-expansion-item
+      icon="medical_services"
+      :label="t('gcs.sections.clinicalApplications.title')"
+      class="q-mt-sm"
+      header-class="bg-purple-1 text-purple-9"
+    >
+      <q-card class="bg-purple-1 q-pa-md">
+        <div
+          class="text-body2 q-mb-sm"
+          v-html="t('gcs.sections.clinicalApplications.triage')"
+        ></div>
+        <div
+          class="text-body2 q-mb-sm"
+          v-html="t('gcs.sections.clinicalApplications.monitoring')"
+        ></div>
+        <div
+          class="text-body2 q-mb-sm"
+          v-html="t('gcs.sections.clinicalApplications.prognosis')"
+        ></div>
+        <div class="text-body2" v-html="t('gcs.sections.clinicalApplications.research')"></div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Valori di Riferimento e Alert -->
+    <q-expansion-item
+      icon="warning"
+      :label="t('gcs.sections.referenceValues.title')"
+      class="q-mt-sm"
+      header-class="bg-red-1 text-red-9"
+    >
+      <q-card class="bg-red-1 q-pa-md">
+        <div
+          class="text-body2 q-mb-sm"
+          v-html="t('gcs.sections.referenceValues.classification')"
+        ></div>
+        <div
+          class="text-body2 q-mb-sm text-weight-bold text-red-9"
+          v-html="t('gcs.sections.referenceValues.criticalAlerts')"
+        ></div>
+        <div class="text-body2" v-html="t('gcs.sections.referenceValues.limitations')"></div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Documentazione Medica e Linee Guida -->
+    <q-expansion-item
+      icon="menu_book"
+      :label="t('gcs.sections.documentation.title')"
+      class="q-mt-sm"
+      header-class="bg-indigo-1 text-indigo-9"
+    >
+      <q-card class="bg-indigo-1 q-pa-md">
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.documentation.nice')"></div>
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.documentation.btf')"></div>
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.documentation.who')"></div>
+        <div class="text-body2" v-html="t('gcs.sections.documentation.atls')"></div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Riferimenti Scientifici PMID -->
+    <q-expansion-item
+      icon="library_books"
+      :label="t('gcs.sections.bibliography.title')"
+      class="q-mt-sm"
+      header-class="bg-teal-1 text-teal-9"
+    >
+      <q-card class="bg-teal-1 q-pa-md">
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.bibliography.teasdale')"></div>
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.bibliography.marmarou')"></div>
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.bibliography.crash')"></div>
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.bibliography.reith')"></div>
+        <div class="text-body2 q-mb-sm" v-html="t('gcs.sections.bibliography.msd')"></div>
+        <div class="text-body2" v-html="t('gcs.sections.bibliography.sciencedirect')"></div>
+      </q-card>
+    </q-expansion-item>
   </div>
 </template>
 

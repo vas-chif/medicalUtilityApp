@@ -651,7 +651,6 @@ const resetInfusionForm = () => {
               </q-banner>
 
               <q-separator class="q-mb-md" />
-
               <!-- Conversion Details -->
               <div class="q-mb-md">
                 <q-list bordered separator class="rounded-borders">
@@ -691,42 +690,6 @@ const resetInfusionForm = () => {
                   </q-item>
                 </q-list>
               </div>
-
-              <!-- Formula Used -->
-              <q-expansion-item
-                icon="functions"
-                :label="t('infusionRate.formula.title')"
-                class="q-mt-md"
-              >
-                <q-card class="q-pa-md">
-                  <div v-if="infusionForm.direction === 'dose-to-rate'">
-                    <strong>{{ t('infusionRate.formula.doseToRate.title') }}</strong
-                    ><br />
-                    <small v-if="infusionForm.doseUnit === 'mcg/kg/min'">
-                      {{ t('infusionRate.formula.doseToRate.mcgKgMin') }}
-                    </small>
-                    <small v-else-if="infusionForm.doseUnit === 'mcg/min'">
-                      {{ t('infusionRate.formula.doseToRate.mcgMin') }}
-                    </small>
-                    <small v-else-if="infusionForm.doseUnit === 'mg/h'">
-                      {{ t('infusionRate.formula.doseToRate.mgH') }}
-                    </small>
-                  </div>
-                  <div v-else>
-                    <strong>{{ t('infusionRate.formula.rateToDose.title') }}</strong
-                    ><br />
-                    <small v-if="infusionForm.doseUnit === 'mcg/kg/min'">
-                      {{ t('infusionRate.formula.rateToDose.mcgKgMin') }}
-                    </small>
-                    <small v-else-if="infusionForm.doseUnit === 'mcg/min'">
-                      {{ t('infusionRate.formula.rateToDose.mcgMin') }}
-                    </small>
-                    <small v-else-if="infusionForm.doseUnit === 'mg/h'">
-                      {{ t('infusionRate.formula.rateToDose.mgH') }}
-                    </small>
-                  </div>
-                </q-card>
-              </q-expansion-item>
             </div>
 
             <!-- Empty State -->
@@ -736,10 +699,574 @@ const resetInfusionForm = () => {
                 {{ t('infusionRate.emptyState') }}
               </p>
             </div>
+
+            <!-- Formula Used -->
+            <q-expansion-item
+              icon="functions"
+              :label="t('infusionRate.formula.title')"
+              class="q-mt-md"
+            >
+              <q-card class="q-pa-md">
+                <div v-if="infusionForm.direction === 'dose-to-rate'">
+                  <strong>{{ t('infusionRate.formula.doseToRate.title') }}</strong
+                  ><br />
+                  <small v-if="infusionForm.doseUnit === 'mcg/kg/min'">
+                    {{ t('infusionRate.formula.doseToRate.mcgKgMin') }}
+                  </small>
+                  <small v-else-if="infusionForm.doseUnit === 'mcg/min'">
+                    {{ t('infusionRate.formula.doseToRate.mcgMin') }}
+                  </small>
+                  <small v-else-if="infusionForm.doseUnit === 'mg/h'">
+                    {{ t('infusionRate.formula.doseToRate.mgH') }}
+                  </small>
+                </div>
+                <div v-else>
+                  <strong>{{ t('infusionRate.formula.rateToDose.title') }}</strong
+                  ><br />
+                  <small v-if="infusionForm.doseUnit === 'mcg/kg/min'">
+                    {{ t('infusionRate.formula.rateToDose.mcgKgMin') }}
+                  </small>
+                  <small v-else-if="infusionForm.doseUnit === 'mcg/min'">
+                    {{ t('infusionRate.formula.rateToDose.mcgMin') }}
+                  </small>
+                  <small v-else-if="infusionForm.doseUnit === 'mg/h'">
+                    {{ t('infusionRate.formula.rateToDose.mgH') }}
+                  </small>
+                </div>
+              </q-card>
+            </q-expansion-item>
           </q-card-section>
         </q-card>
       </div>
     </div>
+
+    <!-- =============================================== -->
+    <!-- SEZIONI DOCUMENTAZIONE (NEWS STANDARD)          -->
+    <!-- =============================================== -->
+
+    <!-- SECTION 1: DEFINIZIONE CLINICA (BG-BLUE-1) -->
+    <q-expansion-item
+      icon="info"
+      :label="t('infusionRate.sections.definition.title')"
+      header-class="bg-blue-1 text-blue-9"
+      class="q-mt-md"
+    >
+      <q-card class="bg-blue-1 q-pa-md">
+        <!-- Main Definition -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.definition.content.mainDefinition.title')"
+        />
+        <p
+          class="text-body2 q-mb-md"
+          v-html="t('infusionRate.sections.definition.content.mainDefinition.text')"
+        />
+
+        <!-- Key Principles -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.definition.content.keyPrinciples.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="t(`infusionRate.sections.definition.content.keyPrinciples.items[${idx - 1}]`)"
+          />
+        </ul>
+
+        <!-- Clinical Importance -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.definition.content.clinicalImportance.title')"
+        />
+        <p
+          class="text-body2"
+          v-html="t('infusionRate.sections.definition.content.clinicalImportance.description')"
+        />
+        <ul>
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(`infusionRate.sections.definition.content.clinicalImportance.points[${idx - 1}]`)
+            "
+          />
+        </ul>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- SECTION 2: FISIOLOGIA (BG-GREEN-1) -->
+    <q-expansion-item
+      icon="science"
+      :label="t('infusionRate.sections.physiology.title')"
+      header-class="bg-green-1 text-green-9"
+      class="q-mt-md"
+    >
+      <q-card class="bg-green-1 q-pa-md">
+        <!-- Steady State -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.physiology.content.steadyState.title')"
+        />
+        <p
+          class="text-body2"
+          v-html="t('infusionRate.sections.physiology.content.steadyState.description')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="t(`infusionRate.sections.physiology.content.steadyState.equations[${idx - 1}]`)"
+          />
+        </ul>
+
+        <!-- Pharmacokinetics -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.physiology.content.pharmacokinetics.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(`infusionRate.sections.physiology.content.pharmacokinetics.parameters[${idx - 1}]`)
+            "
+          />
+        </ul>
+
+        <!-- Dose Response -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.physiology.content.doseResponse.title')"
+        />
+        <ul>
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(`infusionRate.sections.physiology.content.doseResponse.relationships[${idx - 1}]`)
+            "
+          />
+        </ul>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- SECTION 3: MISURAZIONE (BG-AMBER-1) -->
+    <q-expansion-item
+      icon="straighten"
+      :label="t('infusionRate.sections.measurement.title')"
+      header-class="bg-amber-1 text-amber-9"
+      class="q-mt-md"
+    >
+      <q-card class="bg-amber-1 q-pa-md">
+        <!-- Equipment Required -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.measurement.content.equipmentRequired.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(`infusionRate.sections.measurement.content.equipmentRequired.items[${idx - 1}]`)
+            "
+          />
+        </ul>
+
+        <!-- Preparation Protocol -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.measurement.content.preparationProtocol.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 7"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(`infusionRate.sections.measurement.content.preparationProtocol.steps[${idx - 1}]`)
+            "
+          />
+        </ul>
+
+        <!-- Safety Checks -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.measurement.content.safetyChecks.title')"
+        />
+        <ul>
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="t(`infusionRate.sections.measurement.content.safetyChecks.checks[${idx - 1}]`)"
+          />
+        </ul>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- SECTION 4: FORMULA (BG-CYAN-1) -->
+    <q-expansion-item
+      icon="functions"
+      :label="t('infusionRate.sections.formula.title')"
+      header-class="bg-cyan-1 text-cyan-9"
+      class="q-mt-md"
+    >
+      <q-card class="bg-cyan-1 q-pa-md">
+        <!-- Basic Conversions -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.formula.content.basicConversions.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(`infusionRate.sections.formula.content.basicConversions.formulas[${idx - 1}]`)
+            "
+          />
+        </ul>
+
+        <!-- Practical Example -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.formula.content.practicalExample.title')"
+        />
+        <p
+          class="text-body2"
+          v-html="t('infusionRate.sections.formula.content.practicalExample.scenario')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 5"
+            :key="idx"
+            class="text-body2"
+            v-html="t(`infusionRate.sections.formula.content.practicalExample.steps[${idx - 1}]`)"
+          />
+        </ul>
+
+        <!-- Concentration Calculation -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.formula.content.concentrationCalculation.title')"
+        />
+        <ul>
+          <li
+            v-for="idx in 5"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(
+                `infusionRate.sections.formula.content.concentrationCalculation.standards[${idx - 1}]`,
+              )
+            "
+          />
+        </ul>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- SECTION 5: INTERPRETAZIONE (BG-ORANGE-1) -->
+    <q-expansion-item
+      icon="psychology"
+      :label="t('infusionRate.sections.interpretation.title')"
+      header-class="bg-orange-1 text-orange-9"
+      class="q-mt-md"
+    >
+      <q-card class="bg-orange-1 q-pa-md">
+        <!-- Vasopressor Ranges -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.interpretation.content.vasopressorRanges.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 5"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(`infusionRate.sections.interpretation.content.vasopressorRanges.drugs[${idx - 1}]`)
+            "
+          />
+        </ul>
+
+        <!-- Flow Rate Interpretation -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.interpretation.content.flowRateInterpretation.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(
+                `infusionRate.sections.interpretation.content.flowRateInterpretation.guidelines[${idx - 1}]`,
+              )
+            "
+          />
+        </ul>
+
+        <!-- Clinical Decisions -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.interpretation.content.clinicalDecisions.title')"
+        />
+        <ul>
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(
+                `infusionRate.sections.interpretation.content.clinicalDecisions.decisions[${idx - 1}]`,
+              )
+            "
+          />
+        </ul>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- SECTION 6: APPLICAZIONI (BG-PURPLE-1) -->
+    <q-expansion-item
+      icon="local_hospital"
+      :label="t('infusionRate.sections.applications.title')"
+      header-class="bg-purple-1 text-purple-9"
+      class="q-mt-md"
+    >
+      <q-card class="bg-purple-1 q-pa-md">
+        <!-- Critical Care -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.applications.content.criticalCare.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(`infusionRate.sections.applications.content.criticalCare.applications[${idx - 1}]`)
+            "
+          />
+        </ul>
+
+        <!-- Perioperative -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.applications.content.perioperative.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(`infusionRate.sections.applications.content.perioperative.scenarios[${idx - 1}]`)
+            "
+          />
+        </ul>
+
+        <!-- Emergency -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.applications.content.emergency.title')"
+        />
+        <ul>
+          <li
+            v-for="idx in 4"
+            :key="idx"
+            class="text-body2"
+            v-html="t(`infusionRate.sections.applications.content.emergency.protocols[${idx - 1}]`)"
+          />
+        </ul>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- SECTION 7: ALERT SICUREZZA (BG-RED-1) -->
+    <q-expansion-item
+      icon="warning"
+      :label="t('infusionRate.sections.alerts.title')"
+      header-class="bg-red-1 text-red-9"
+      class="q-mt-md"
+    >
+      <q-card class="bg-red-1 q-pa-md">
+        <!-- High-Alert Drugs -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.alerts.content.highAlertDrugs.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 5"
+            :key="idx"
+            class="text-body2"
+            v-html="t(`infusionRate.sections.alerts.content.highAlertDrugs.drugs[${idx - 1}]`)"
+          />
+        </ul>
+
+        <!-- Common Errors -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.alerts.content.commonErrors.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 5"
+            :key="idx"
+            class="text-body2"
+            v-html="t(`infusionRate.sections.alerts.content.commonErrors.errors[${idx - 1}]`)"
+          />
+        </ul>
+
+        <!-- Monitoring Requirements -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.alerts.content.monitoringRequirements.title')"
+        />
+        <ul>
+          <li
+            v-for="idx in 5"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(
+                `infusionRate.sections.alerts.content.monitoringRequirements.requirements[${idx - 1}]`,
+              )
+            "
+          />
+        </ul>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- SECTION 8: DOCUMENTAZIONE (BG-INDIGO-1) -->
+    <q-expansion-item
+      icon="menu_book"
+      :label="t('infusionRate.sections.documentation.title')"
+      header-class="bg-indigo-1 text-indigo-9"
+      class="q-mt-md"
+    >
+      <q-card class="bg-indigo-1 q-pa-md">
+        <!-- Standard Protocols -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.documentation.content.standardProtocols.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 5"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(
+                `infusionRate.sections.documentation.content.standardProtocols.protocols[${idx - 1}]`,
+              )
+            "
+          />
+        </ul>
+
+        <!-- Calculation Tools -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.documentation.content.calculationTools.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 5"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(`infusionRate.sections.documentation.content.calculationTools.tools[${idx - 1}]`)
+            "
+          />
+        </ul>
+
+        <!-- Documentation Requirements -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.documentation.content.documentationRequirements.title')"
+        />
+        <ul>
+          <li
+            v-for="idx in 5"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(
+                `infusionRate.sections.documentation.content.documentationRequirements.items[${idx - 1}]`,
+              )
+            "
+          />
+        </ul>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- SECTION 9: RIFERIMENTI SCIENTIFICI (BG-TEAL-1) -->
+    <q-expansion-item
+      icon="science"
+      :label="t('infusionRate.sections.references.title')"
+      header-class="bg-teal-1 text-teal-9"
+      class="q-mt-md"
+    >
+      <q-card class="bg-teal-1 q-pa-md">
+        <!-- Guidelines -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.references.content.guidelines.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 6"
+            :key="idx"
+            class="text-body2"
+            v-html="t(`infusionRate.sections.references.content.guidelines.items[${idx - 1}]`)"
+          />
+        </ul>
+
+        <!-- Pharmacokinetics -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.references.content.pharmacokinetics.title')"
+        />
+        <ul class="q-mb-md">
+          <li
+            v-for="idx in 5"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(`infusionRate.sections.references.content.pharmacokinetics.articles[${idx - 1}]`)
+            "
+          />
+        </ul>
+
+        <!-- Clinical Studies -->
+        <p
+          class="text-weight-bold"
+          v-html="t('infusionRate.sections.references.content.clinicalStudies.title')"
+        />
+        <ul>
+          <li
+            v-for="idx in 5"
+            :key="idx"
+            class="text-body2"
+            v-html="
+              t(`infusionRate.sections.references.content.clinicalStudies.studies[${idx - 1}]`)
+            "
+          />
+        </ul>
+      </q-card>
+    </q-expansion-item>
   </div>
 </template>
 

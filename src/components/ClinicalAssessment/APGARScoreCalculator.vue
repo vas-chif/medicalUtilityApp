@@ -406,330 +406,315 @@ const getScoreInterpretation = (score: number): string => {
               size="12px"
               class="q-mb-md"
             />
-
-            <!-- Definizione e Significato Clinico -->
-            <q-expansion-item
-              icon="info"
-              :label="t('apgar.sections.definition.title')"
-              class="q-mt-sm"
-              header-class="bg-blue-1 text-blue-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="text-body2" v-html="t('apgar.sections.definition.content')"></div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Score Salvati -->
-            <q-expansion-item
-              v-if="savedScores.length > 0"
-              icon="history"
-              :label="t('apgar.sections.savedEvaluations.title')"
-              class="q-mt-sm"
-              header-class="bg-grey-3 text-grey-9"
-            >
-              <q-card class="q-pa-md bg-grey-1">
-                <q-list dense>
-                  <q-item v-for="saved in savedScores" :key="saved.time">
-                    <q-item-section avatar>
-                      <q-chip :color="getScoreColor(saved.total)" text-color="white" dense>
-                        {{ t('apgar.sections.savedEvaluations.timeLabel', { time: saved.time }) }}
-                      </q-chip>
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label class="text-weight-bold">
-                        {{
-                          t('apgar.sections.savedEvaluations.scoreLabel', { score: saved.total })
-                        }}
-                      </q-item-label>
-                      <q-item-label caption>
-                        {{ getScoreInterpretation(saved.total) }}
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Fisiologia e Meccanismi -->
-            <q-expansion-item
-              icon="science"
-              :label="t('apgar.sections.physiology.title')"
-              class="q-mt-sm"
-              header-class="bg-green-1 text-green-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.physiology.respiratory.title') }}</strong>
-                  {{ t('apgar.sections.physiology.respiratory.text') }}
-                </div>
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.physiology.cardiovascular.title') }}</strong>
-                  {{ t('apgar.sections.physiology.cardiovascular.text') }}
-                </div>
-                <div class="text-body2">
-                  <strong>{{ t('apgar.sections.physiology.cns.title') }}</strong>
-                  {{ t('apgar.sections.physiology.cns.text') }}
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Come si Calcola -->
-            <q-expansion-item
-              icon="calculate"
-              :label="t('apgar.sections.evaluation.title')"
-              class="q-mt-sm"
-              header-class="bg-amber-1 text-amber-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.evaluation.timing.title') }}</strong>
-                  {{ t('apgar.sections.evaluation.timing.text') }}
-                </div>
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.evaluation.methods.title') }}</strong>
-                  {{ t('apgar.sections.evaluation.methods.text') }}
-                </div>
-                <div class="text-body2">
-                  <strong>{{ t('apgar.sections.evaluation.operators.title') }}</strong>
-                  {{ t('apgar.sections.evaluation.operators.text') }}
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Formula e Componenti -->
-            <q-expansion-item
-              icon="functions"
-              :label="t('apgar.sections.formula.title')"
-              class="q-mt-sm"
-              header-class="bg-cyan-1 text-cyan-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="text-body2 text-weight-bold text-center q-mb-md">
-                  {{ t('apgar.sections.formula.mainFormula') }}
-                </div>
-                <q-list dense separator>
-                  <q-item>
-                    <q-item-section>
-                      <q-item-label
-                        ><div v-html="t('apgar.sections.formula.appearance')"></div
-                      ></q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section>
-                      <q-item-label
-                        ><div v-html="t('apgar.sections.formula.pulse')"></div
-                      ></q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section>
-                      <q-item-label
-                        ><div v-html="t('apgar.sections.formula.grimace')"></div
-                      ></q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section>
-                      <q-item-label
-                        ><div v-html="t('apgar.sections.formula.activity')"></div
-                      ></q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section>
-                      <q-item-label
-                        ><div v-html="t('apgar.sections.formula.respiration')"></div
-                      ></q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Interpretazione Clinica -->
-            <q-expansion-item
-              icon="psychology"
-              :label="t('apgar.sections.clinicalInterpretation.title')"
-              class="q-mt-sm"
-              header-class="bg-orange-1 text-orange-9"
-            >
-              <q-card class="q-pa-md">
-                <q-list separator>
-                  <q-item class="bg-green-1">
-                    <q-item-section>
-                      <q-item-label class="text-weight-bold text-green-9">
-                        {{ t('apgar.sections.clinicalInterpretation.normal.title') }}
-                      </q-item-label>
-                      <q-item-label class="q-mt-xs">
-                        <div
-                          v-html="
-                            t('apgar.sections.clinicalInterpretation.normal.significance') +
-                            ' ' +
-                            t('apgar.sections.clinicalInterpretation.normal.action')
-                          "
-                        ></div>
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item class="bg-orange-2 q-mt-sm">
-                    <q-item-section>
-                      <q-item-label class="text-weight-bold text-orange-9">
-                        {{ t('apgar.sections.clinicalInterpretation.moderate.title') }}
-                      </q-item-label>
-                      <q-item-label class="q-mt-xs">
-                        <div
-                          v-html="
-                            t('apgar.sections.clinicalInterpretation.moderate.significance') +
-                            ' ' +
-                            t('apgar.sections.clinicalInterpretation.moderate.action')
-                          "
-                        ></div>
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item class="bg-red-2 q-mt-sm">
-                    <q-item-section>
-                      <q-item-label class="text-weight-bold text-red-9">
-                        {{ t('apgar.sections.clinicalInterpretation.severe.title') }}
-                      </q-item-label>
-                      <q-item-label class="q-mt-xs">
-                        <div
-                          v-html="
-                            t('apgar.sections.clinicalInterpretation.severe.significance') +
-                            ' ' +
-                            t('apgar.sections.clinicalInterpretation.severe.action')
-                          "
-                        ></div>
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Applicazioni Cliniche -->
-            <q-expansion-item
-              icon="medical_services"
-              :label="t('apgar.sections.clinicalApplications.title')"
-              class="q-mt-sm"
-              header-class="bg-purple-1 text-purple-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{
-                    t('apgar.sections.clinicalApplications.resuscitation.title')
-                  }}</strong>
-                  {{ t('apgar.sections.clinicalApplications.resuscitation.text') }}
-                </div>
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{
-                    t('apgar.sections.clinicalApplications.effectiveness.title')
-                  }}</strong>
-                  {{ t('apgar.sections.clinicalApplications.effectiveness.text') }}
-                </div>
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{
-                    t('apgar.sections.clinicalApplications.communication.title')
-                  }}</strong>
-                  {{ t('apgar.sections.clinicalApplications.communication.text') }}
-                </div>
-                <div class="text-body2">
-                  <strong>{{ t('apgar.sections.clinicalApplications.research.title') }}</strong>
-                  {{ t('apgar.sections.clinicalApplications.research.text') }}
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Valori di Riferimento e Alert -->
-            <q-expansion-item
-              icon="warning"
-              :label="t('apgar.sections.referenceValues.title')"
-              class="q-mt-sm"
-              header-class="bg-red-1 text-red-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.referenceValues.min1.title') }}</strong>
-                  {{ t('apgar.sections.referenceValues.min1.text') }}
-                </div>
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.referenceValues.min5.title') }}</strong>
-                  {{ t('apgar.sections.referenceValues.min5.text') }}
-                </div>
-                <div class="text-body2 q-mb-sm text-weight-bold text-red-9">
-                  <strong>{{ t('apgar.sections.referenceValues.alerts.title') }}</strong>
-                  {{ t('apgar.sections.referenceValues.alerts.text') }}
-                </div>
-                <div class="text-body2">
-                  <strong>{{ t('apgar.sections.referenceValues.confounders.title') }}</strong>
-                  {{ t('apgar.sections.referenceValues.confounders.text') }}
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Documentazione Medica e Linee Guida -->
-            <q-expansion-item
-              icon="menu_book"
-              :label="t('apgar.sections.documentation.title')"
-              class="q-mt-sm"
-              header-class="bg-indigo-1 text-indigo-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.documentation.aap.title') }}</strong>
-                  {{ t('apgar.sections.documentation.aap.text') }}
-                </div>
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.documentation.who.title') }}</strong>
-                  {{ t('apgar.sections.documentation.who.text') }}
-                </div>
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.documentation.ilcor.title') }}</strong>
-                  {{ t('apgar.sections.documentation.ilcor.text') }}
-                </div>
-                <div class="text-body2">
-                  <strong>{{ t('apgar.sections.documentation.acog.title') }}</strong>
-                  {{ t('apgar.sections.documentation.acog.text') }}
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Riferimenti Scientifici PMID -->
-            <q-expansion-item
-              icon="library_books"
-              :label="t('apgar.sections.bibliography.title')"
-              class="q-mt-sm"
-              header-class="bg-teal-1 text-teal-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.bibliography.apgar1953.title') }}</strong>
-                  {{ t('apgar.sections.bibliography.apgar1953.details') }}
-                </div>
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.bibliography.casey2001.title') }}</strong>
-                  {{ t('apgar.sections.bibliography.casey2001.details') }}
-                </div>
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.bibliography.li2019.title') }}</strong>
-                  {{ t('apgar.sections.bibliography.li2019.details') }}
-                </div>
-                <div class="text-body2 q-mb-sm">
-                  <strong>{{ t('apgar.sections.bibliography.msd.title') }}</strong>
-                  {{ t('apgar.sections.bibliography.msd.details') }}
-                </div>
-                <div class="text-body2">
-                  <strong>{{ t('apgar.sections.bibliography.sciencedirect.title') }}</strong>
-                  {{ t('apgar.sections.bibliography.sciencedirect.details') }}
-                </div>
-              </q-card>
-            </q-expansion-item>
           </q-card-section>
         </q-card>
       </div>
     </div>
+    <!-- Definizione e Significato Clinico -->
+    <q-expansion-item
+      icon="info"
+      :label="t('apgar.sections.definition.title')"
+      class="q-mt-sm"
+      header-class="bg-blue-1 text-blue-9"
+    >
+      <q-card class="bg-blue-1 q-pa-md">
+        <div class="text-body2" v-html="t('apgar.sections.definition.content')"></div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Score Salvati -->
+    <q-expansion-item
+      v-if="savedScores.length > 0"
+      icon="history"
+      :label="t('apgar.sections.savedEvaluations.title')"
+      class="q-mt-sm"
+      header-class="bg-grey-3 text-grey-9"
+    >
+      <q-card class="q-pa-md bg-grey-1">
+        <q-list dense>
+          <q-item v-for="saved in savedScores" :key="saved.time">
+            <q-item-section avatar>
+              <q-chip :color="getScoreColor(saved.total)" text-color="white" dense>
+                {{ t('apgar.sections.savedEvaluations.timeLabel', { time: saved.time }) }}
+              </q-chip>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label class="text-weight-bold">
+                {{ t('apgar.sections.savedEvaluations.scoreLabel', { score: saved.total }) }}
+              </q-item-label>
+              <q-item-label caption>
+                {{ getScoreInterpretation(saved.total) }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Fisiologia e Meccanismi -->
+    <q-expansion-item
+      icon="science"
+      :label="t('apgar.sections.physiology.title')"
+      class="q-mt-sm"
+      header-class="bg-green-1 text-green-9"
+    >
+      <q-card class="bg-green-1 q-pa-md">
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.physiology.respiratory.title') }}</strong>
+          {{ t('apgar.sections.physiology.respiratory.text') }}
+        </div>
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.physiology.cardiovascular.title') }}</strong>
+          {{ t('apgar.sections.physiology.cardiovascular.text') }}
+        </div>
+        <div class="text-body2">
+          <strong>{{ t('apgar.sections.physiology.cns.title') }}</strong>
+          {{ t('apgar.sections.physiology.cns.text') }}
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Come si Calcola -->
+    <q-expansion-item
+      icon="calculate"
+      :label="t('apgar.sections.evaluation.title')"
+      class="q-mt-sm"
+      header-class="bg-amber-1 text-amber-9"
+    >
+      <q-card class="bg-amber-1 q-pa-md">
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.evaluation.timing.title') }}</strong>
+          {{ t('apgar.sections.evaluation.timing.text') }}
+        </div>
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.evaluation.methods.title') }}</strong>
+          {{ t('apgar.sections.evaluation.methods.text') }}
+        </div>
+        <div class="text-body2">
+          <strong>{{ t('apgar.sections.evaluation.operators.title') }}</strong>
+          {{ t('apgar.sections.evaluation.operators.text') }}
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Formula e Componenti -->
+    <q-expansion-item
+      icon="functions"
+      :label="t('apgar.sections.formula.title')"
+      class="q-mt-sm"
+      header-class="bg-cyan-1 text-cyan-9"
+    >
+      <q-card class="bg-cyan-1 q-pa-md">
+        <div class="text-body2 text-weight-bold text-center q-mb-md">
+          {{ t('apgar.sections.formula.mainFormula') }}
+        </div>
+        <q-list dense separator>
+          <q-item>
+            <q-item-section>
+              <q-item-label
+                ><div v-html="t('apgar.sections.formula.appearance')"></div
+              ></q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
+              <q-item-label><div v-html="t('apgar.sections.formula.pulse')"></div></q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
+              <q-item-label><div v-html="t('apgar.sections.formula.grimace')"></div></q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
+              <q-item-label><div v-html="t('apgar.sections.formula.activity')"></div></q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
+              <q-item-label
+                ><div v-html="t('apgar.sections.formula.respiration')"></div
+              ></q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Interpretazione Clinica -->
+    <q-expansion-item
+      icon="psychology"
+      :label="t('apgar.sections.clinicalInterpretation.title')"
+      class="q-mt-sm"
+      header-class="bg-orange-1 text-orange-9"
+    >
+      <q-card class="bg-orange-1 q-pa-md">
+        <q-list separator>
+          <q-item class="bg-green-1">
+            <q-item-section>
+              <q-item-label class="text-weight-bold text-green-9">
+                {{ t('apgar.sections.clinicalInterpretation.normal.title') }}
+              </q-item-label>
+              <q-item-label class="q-mt-xs">
+                <div
+                  v-html="
+                    t('apgar.sections.clinicalInterpretation.normal.significance') +
+                    ' ' +
+                    t('apgar.sections.clinicalInterpretation.normal.action')
+                  "
+                ></div>
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item class="bg-orange-2 q-mt-sm">
+            <q-item-section>
+              <q-item-label class="text-weight-bold text-orange-9">
+                {{ t('apgar.sections.clinicalInterpretation.moderate.title') }}
+              </q-item-label>
+              <q-item-label class="q-mt-xs">
+                <div
+                  v-html="
+                    t('apgar.sections.clinicalInterpretation.moderate.significance') +
+                    ' ' +
+                    t('apgar.sections.clinicalInterpretation.moderate.action')
+                  "
+                ></div>
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item class="bg-red-2 q-mt-sm">
+            <q-item-section>
+              <q-item-label class="text-weight-bold text-red-9">
+                {{ t('apgar.sections.clinicalInterpretation.severe.title') }}
+              </q-item-label>
+              <q-item-label class="q-mt-xs">
+                <div
+                  v-html="
+                    t('apgar.sections.clinicalInterpretation.severe.significance') +
+                    ' ' +
+                    t('apgar.sections.clinicalInterpretation.severe.action')
+                  "
+                ></div>
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Applicazioni Cliniche -->
+    <q-expansion-item
+      icon="medical_services"
+      :label="t('apgar.sections.clinicalApplications.title')"
+      class="q-mt-sm"
+      header-class="bg-purple-1 text-purple-9"
+    >
+      <q-card class="bg-purple-1 q-pa-md">
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.clinicalApplications.resuscitation.title') }}</strong>
+          {{ t('apgar.sections.clinicalApplications.resuscitation.text') }}
+        </div>
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.clinicalApplications.effectiveness.title') }}</strong>
+          {{ t('apgar.sections.clinicalApplications.effectiveness.text') }}
+        </div>
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.clinicalApplications.communication.title') }}</strong>
+          {{ t('apgar.sections.clinicalApplications.communication.text') }}
+        </div>
+        <div class="text-body2">
+          <strong>{{ t('apgar.sections.clinicalApplications.research.title') }}</strong>
+          {{ t('apgar.sections.clinicalApplications.research.text') }}
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Valori di Riferimento e Alert -->
+    <q-expansion-item
+      icon="warning"
+      :label="t('apgar.sections.referenceValues.title')"
+      class="q-mt-sm"
+      header-class="bg-red-1 text-red-9"
+    >
+      <q-card class="bg-red-1 q-pa-md">
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.referenceValues.min1.title') }}</strong>
+          {{ t('apgar.sections.referenceValues.min1.text') }}
+        </div>
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.referenceValues.min5.title') }}</strong>
+          {{ t('apgar.sections.referenceValues.min5.text') }}
+        </div>
+        <div class="text-body2 q-mb-sm text-weight-bold text-red-9">
+          <strong>{{ t('apgar.sections.referenceValues.alerts.title') }}</strong>
+          {{ t('apgar.sections.referenceValues.alerts.text') }}
+        </div>
+        <div class="text-body2">
+          <strong>{{ t('apgar.sections.referenceValues.confounders.title') }}</strong>
+          {{ t('apgar.sections.referenceValues.confounders.text') }}
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Documentazione Medica e Linee Guida -->
+    <q-expansion-item
+      icon="menu_book"
+      :label="t('apgar.sections.documentation.title')"
+      class="q-mt-sm"
+      header-class="bg-indigo-1 text-indigo-9"
+    >
+      <q-card class="bg-indigo-1 q-pa-md">
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.documentation.aap.title') }}</strong>
+          {{ t('apgar.sections.documentation.aap.text') }}
+        </div>
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.documentation.who.title') }}</strong>
+          {{ t('apgar.sections.documentation.who.text') }}
+        </div>
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.documentation.ilcor.title') }}</strong>
+          {{ t('apgar.sections.documentation.ilcor.text') }}
+        </div>
+        <div class="text-body2">
+          <strong>{{ t('apgar.sections.documentation.acog.title') }}</strong>
+          {{ t('apgar.sections.documentation.acog.text') }}
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Riferimenti Scientifici PMID -->
+    <q-expansion-item
+      icon="library_books"
+      :label="t('apgar.sections.bibliography.title')"
+      class="q-mt-sm"
+      header-class="bg-teal-1 text-teal-9"
+    >
+      <q-card class="bg-teal-1 q-pa-md">
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.bibliography.apgar1953.title') }}</strong>
+          {{ t('apgar.sections.bibliography.apgar1953.details') }}
+        </div>
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.bibliography.casey2001.title') }}</strong>
+          {{ t('apgar.sections.bibliography.casey2001.details') }}
+        </div>
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.bibliography.li2019.title') }}</strong>
+          {{ t('apgar.sections.bibliography.li2019.details') }}
+        </div>
+        <div class="text-body2 q-mb-sm">
+          <strong>{{ t('apgar.sections.bibliography.msd.title') }}</strong>
+          {{ t('apgar.sections.bibliography.msd.details') }}
+        </div>
+        <div class="text-body2">
+          <strong>{{ t('apgar.sections.bibliography.sciencedirect.title') }}</strong>
+          {{ t('apgar.sections.bibliography.sciencedirect.details') }}
+        </div>
+      </q-card>
+    </q-expansion-item>
   </div>
 </template>

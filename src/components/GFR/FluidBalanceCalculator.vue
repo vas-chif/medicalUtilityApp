@@ -425,387 +425,360 @@ const getFluidBalanceClinicalNotes = (balance: number): string => {
                 </div>
               </div>
             </div>
-
-            <!-- ================================================= -->
-            <!-- NEWS-STYLE DOCUMENTATION (9 SECTIONS)             -->
-            <!-- ================================================= -->
-
-            <!-- Definizione e Significato Clinico -->
-            <q-expansion-item
-              icon="info"
-              :label="t('fluidBalance.sections.definition.title')"
-              class="q-mt-sm"
-              header-class="bg-blue-1 text-blue-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 q-mb-sm">
-                  <strong>{{
-                    t('fluidBalance.sections.definition.content.definitionLabel')
-                  }}</strong>
-                  {{ t('fluidBalance.sections.definition.content.definition') }}
-                </p>
-                <p class="text-body2 q-mb-sm">
-                  <strong>{{
-                    t('fluidBalance.sections.definition.content.interpretationLabel')
-                  }}</strong>
-                </p>
-                <ul class="text-body2 q-mb-sm">
-                  <li v-for="idx in 3" :key="idx">
-                    <span
-                      v-html="
-                        t(`fluidBalance.sections.definition.content.interpretation[${idx - 1}]`)
-                      "
-                    ></span>
-                  </li>
-                </ul>
-                <q-banner class="bg-blue-2 text-blue-9 q-mt-md" rounded>
-                  <template v-slot:avatar>
-                    <q-icon name="info" color="blue" size="sm" />
-                  </template>
-                  <div class="text-caption">
-                    <strong>{{ t('fluidBalance.sections.definition.content.note.title') }}</strong>
-                    {{ t('fluidBalance.sections.definition.content.note.text') }}
-                  </div>
-                </q-banner>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Fisiologia del Bilancio Idrico -->
-            <q-expansion-item
-              icon="biotech"
-              :label="t('fluidBalance.sections.physiology.title')"
-              class="q-mt-sm"
-              header-class="bg-green-1 text-green-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.physiology.content.distributionTitle') }}
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="idx in 3" :key="idx">
-                    <span
-                      v-html="
-                        t(`fluidBalance.sections.physiology.content.distribution[${idx - 1}]`)
-                      "
-                    ></span>
-                  </li>
-                </ul>
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.physiology.content.regulationTitle') }}
-                </p>
-                <ul class="text-body2">
-                  <li v-for="idx in 3" :key="idx">
-                    <span
-                      v-html="t(`fluidBalance.sections.physiology.content.regulation[${idx - 1}]`)"
-                    ></span>
-                  </li>
-                </ul>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Come si Misura -->
-            <q-expansion-item
-              icon="speed"
-              :label="t('fluidBalance.sections.measurement.title')"
-              class="q-mt-sm"
-              header-class="bg-amber-1 text-amber-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.measurement.content.intakeTitle') }}
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="idx in 4" :key="idx">
-                    <span
-                      v-html="t(`fluidBalance.sections.measurement.content.intake[${idx - 1}]`)"
-                    ></span>
-                  </li>
-                </ul>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.measurement.content.outputTitle') }}
-                </p>
-                <ul class="text-body2">
-                  <li v-for="idx in 6" :key="idx">
-                    <span
-                      v-html="t(`fluidBalance.sections.measurement.content.output[${idx - 1}]`)"
-                    ></span>
-                  </li>
-                </ul>
-                <q-banner class="bg-amber-2 text-amber-9 q-mt-md" rounded>
-                  <template v-slot:avatar>
-                    <q-icon name="tips_and_updates" color="amber" size="sm" />
-                  </template>
-                  <div class="text-caption">
-                    <strong>{{ t('fluidBalance.sections.measurement.content.note.title') }}</strong>
-                    {{ t('fluidBalance.sections.measurement.content.note.text') }}
-                  </div>
-                </q-banner>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Formula di Calcolo -->
-            <q-expansion-item
-              icon="functions"
-              :label="t('fluidBalance.sections.formula.title')"
-              class="q-mt-sm"
-              header-class="bg-cyan-1 text-cyan-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.formula.content.mainFormulaLabel') }}
-                </p>
-                <p
-                  class="text-body2 q-mb-md"
-                  v-html="t('fluidBalance.sections.formula.content.mainFormula')"
-                ></p>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.formula.content.exampleTitle') }}
-                </p>
-                <div
-                  class="bg-grey-2 q-pa-md rounded-borders text-body2"
-                  v-html="t('fluidBalance.sections.formula.content.example')"
-                ></div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Interpretazione Risultati -->
-            <q-expansion-item
-              icon="psychology"
-              :label="t('fluidBalance.sections.clinicalInterpretation.title')"
-              class="q-mt-sm"
-              header-class="bg-orange-1 text-orange-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.clinicalInterpretation.content.euvolemicTitle') }}
-                </p>
-                <p
-                  class="text-body2 q-mb-md"
-                  v-html="t('fluidBalance.sections.clinicalInterpretation.content.euvolemic')"
-                ></p>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.clinicalInterpretation.content.mildOverloadTitle') }}
-                </p>
-                <p
-                  class="text-body2 q-mb-md"
-                  v-html="t('fluidBalance.sections.clinicalInterpretation.content.mildOverload')"
-                ></p>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{
-                    t(
-                      'fluidBalance.sections.clinicalInterpretation.content.significantOverloadTitle',
-                    )
-                  }}
-                </p>
-                <p
-                  class="text-body2 q-mb-md"
-                  v-html="
-                    t('fluidBalance.sections.clinicalInterpretation.content.significantOverload')
-                  "
-                ></p>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.clinicalInterpretation.content.mildDepletionTitle') }}
-                </p>
-                <p
-                  class="text-body2 q-mb-md"
-                  v-html="t('fluidBalance.sections.clinicalInterpretation.content.mildDepletion')"
-                ></p>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{
-                    t(
-                      'fluidBalance.sections.clinicalInterpretation.content.significantDepletionTitle',
-                    )
-                  }}
-                </p>
-                <p
-                  class="text-body2"
-                  v-html="
-                    t('fluidBalance.sections.clinicalInterpretation.content.significantDepletion')
-                  "
-                ></p>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Applicazioni Cliniche -->
-            <q-expansion-item
-              icon="local_hospital"
-              :label="t('fluidBalance.sections.applications.title')"
-              class="q-mt-sm"
-              header-class="bg-purple-1 text-purple-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.applications.content.icuTitle') }}
-                </p>
-                <p class="text-body2 q-mb-md">
-                  {{ t('fluidBalance.sections.applications.content.icu') }}
-                </p>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.applications.content.ckdTitle') }}
-                </p>
-                <p class="text-body2 q-mb-md">
-                  {{ t('fluidBalance.sections.applications.content.ckd') }}
-                </p>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.applications.content.heartFailureTitle') }}
-                </p>
-                <p class="text-body2 q-mb-md">
-                  {{ t('fluidBalance.sections.applications.content.heartFailure') }}
-                </p>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.applications.content.postOpTitle') }}
-                </p>
-                <p class="text-body2">
-                  {{ t('fluidBalance.sections.applications.content.postOp') }}
-                </p>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Valori Critici e Alert -->
-            <q-expansion-item
-              icon="warning"
-              :label="t('fluidBalance.sections.referenceValues.title')"
-              class="q-mt-sm"
-              header-class="bg-red-1 text-red-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.referenceValues.content.criticalValuesTitle') }}
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="idx in 4" :key="idx">
-                    <span
-                      v-html="
-                        t(
-                          `fluidBalance.sections.referenceValues.content.criticalValues[${idx - 1}]`,
-                        )
-                      "
-                    ></span>
-                  </li>
-                </ul>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.referenceValues.content.populationsTitle') }}
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="idx in 3" :key="idx">
-                    <span
-                      v-html="
-                        t(`fluidBalance.sections.referenceValues.content.populations[${idx - 1}]`)
-                      "
-                    ></span>
-                  </li>
-                </ul>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.referenceValues.content.monitoringTitle') }}
-                </p>
-                <p class="text-body2">
-                  {{ t('fluidBalance.sections.referenceValues.content.monitoring') }}
-                </p>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Documentazione Clinica -->
-            <q-expansion-item
-              icon="menu_book"
-              :label="t('fluidBalance.sections.documentation.title')"
-              class="q-mt-sm"
-              header-class="bg-indigo-1 text-indigo-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.documentation.content.templateTitle') }}
-                </p>
-                <div
-                  class="bg-grey-2 q-pa-md rounded-borders text-body2 q-mb-md"
-                  v-html="t('fluidBalance.sections.documentation.content.templateExample')"
-                ></div>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.documentation.content.elementsTitle') }}
-                </p>
-                <ul class="text-body2">
-                  <li v-for="idx in 6" :key="idx">
-                    {{ t(`fluidBalance.sections.documentation.content.elements[${idx - 1}]`) }}
-                  </li>
-                </ul>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Riferimenti Scientifici -->
-            <q-expansion-item
-              icon="science"
-              :label="t('fluidBalance.sections.bibliography.title')"
-              class="q-mt-sm"
-              header-class="bg-teal-1 text-teal-9"
-            >
-              <q-card class="q-pa-md">
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.bibliography.content.publicationsTitle') }}
-                </p>
-                <ul class="text-body2 q-mb-md">
-                  <li v-for="idx in 3" :key="idx">
-                    <span
-                      v-html="
-                        t(`fluidBalance.sections.bibliography.content.publications[${idx - 1}]`)
-                      "
-                    ></span>
-                  </li>
-                </ul>
-
-                <p class="text-body2 text-weight-bold q-mb-sm">
-                  {{ t('fluidBalance.sections.bibliography.content.guidelinesTitle') }}
-                </p>
-                <ul class="text-body2">
-                  <li v-for="idx in 3" :key="idx">
-                    <span
-                      v-html="
-                        t(`fluidBalance.sections.bibliography.content.guidelines[${idx - 1}]`)
-                      "
-                    ></span>
-                  </li>
-                </ul>
-
-                <q-banner class="bg-teal-2 text-teal-9 q-mt-md" rounded>
-                  <template v-slot:avatar>
-                    <q-icon name="link" color="teal" size="sm" />
-                  </template>
-                  <div class="text-caption">
-                    <strong>{{
-                      t('fluidBalance.sections.bibliography.content.onlineResources.title')
-                    }}</strong>
-                    <a
-                      href="https://www.sccm.org/SurvivingSepsisCampaign"
-                      target="_blank"
-                      class="text-teal-9"
-                      >{{ t('fluidBalance.sections.bibliography.content.onlineResources.ssc') }}</a
-                    >
-                    |
-                    <a
-                      href="https://kdigo.org/guidelines/acute-kidney-injury/"
-                      target="_blank"
-                      class="text-teal-9"
-                      >{{
-                        t('fluidBalance.sections.bibliography.content.onlineResources.kdigo')
-                      }}</a
-                    >
-                  </div>
-                </q-banner>
-              </q-card>
-            </q-expansion-item>
           </q-card-section>
         </q-card>
       </div>
+    </div>
+    <div style="min-width: 100%">
+      <!-- ================================================= -->
+      <!-- NEWS-STYLE DOCUMENTATION (9 SECTIONS)             -->
+      <!-- ================================================= -->
+
+      <!-- Definizione e Significato Clinico -->
+      <q-expansion-item
+        icon="info"
+        :label="t('fluidBalance.sections.definition.title')"
+        class="q-mt-sm"
+        header-class="bg-blue-1 text-blue-9"
+      >
+        <q-card class="bg-blue-1 q-pa-md">
+          <p class="text-body2 q-mb-sm">
+            <strong>{{ t('fluidBalance.sections.definition.content.definitionLabel') }}</strong>
+            {{ t('fluidBalance.sections.definition.content.definition') }}
+          </p>
+          <p class="text-body2 q-mb-sm">
+            <strong>{{ t('fluidBalance.sections.definition.content.interpretationLabel') }}</strong>
+          </p>
+          <ul class="text-body2 q-mb-sm">
+            <li v-for="idx in 3" :key="idx">
+              <span
+                v-html="t(`fluidBalance.sections.definition.content.interpretation[${idx - 1}]`)"
+              ></span>
+            </li>
+          </ul>
+          <q-banner class="bg-blue-2 text-blue-9 q-mt-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="info" color="blue" size="sm" />
+            </template>
+            <div class="text-caption">
+              <strong>{{ t('fluidBalance.sections.definition.content.note.title') }}</strong>
+              {{ t('fluidBalance.sections.definition.content.note.text') }}
+            </div>
+          </q-banner>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Fisiologia del Bilancio Idrico -->
+      <q-expansion-item
+        icon="biotech"
+        :label="t('fluidBalance.sections.physiology.title')"
+        class="q-mt-sm"
+        header-class="bg-green-1 text-green-9"
+      >
+        <q-card class="bg-green-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.physiology.content.distributionTitle') }}
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="idx in 3" :key="idx">
+              <span
+                v-html="t(`fluidBalance.sections.physiology.content.distribution[${idx - 1}]`)"
+              ></span>
+            </li>
+          </ul>
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.physiology.content.regulationTitle') }}
+          </p>
+          <ul class="text-body2">
+            <li v-for="idx in 3" :key="idx">
+              <span
+                v-html="t(`fluidBalance.sections.physiology.content.regulation[${idx - 1}]`)"
+              ></span>
+            </li>
+          </ul>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Come si Misura -->
+      <q-expansion-item
+        icon="speed"
+        :label="t('fluidBalance.sections.measurement.title')"
+        class="q-mt-sm"
+        header-class="bg-amber-1 text-amber-9"
+      >
+        <q-card class="bg-amber-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.measurement.content.intakeTitle') }}
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="idx in 4" :key="idx">
+              <span
+                v-html="t(`fluidBalance.sections.measurement.content.intake[${idx - 1}]`)"
+              ></span>
+            </li>
+          </ul>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.measurement.content.outputTitle') }}
+          </p>
+          <ul class="text-body2">
+            <li v-for="idx in 6" :key="idx">
+              <span
+                v-html="t(`fluidBalance.sections.measurement.content.output[${idx - 1}]`)"
+              ></span>
+            </li>
+          </ul>
+          <q-banner class="bg-amber-2 text-amber-9 q-mt-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="tips_and_updates" color="amber" size="sm" />
+            </template>
+            <div class="text-caption">
+              <strong>{{ t('fluidBalance.sections.measurement.content.note.title') }}</strong>
+              {{ t('fluidBalance.sections.measurement.content.note.text') }}
+            </div>
+          </q-banner>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Formula di Calcolo -->
+      <q-expansion-item
+        icon="functions"
+        :label="t('fluidBalance.sections.formula.title')"
+        class="q-mt-sm"
+        header-class="bg-cyan-1 text-cyan-9"
+      >
+        <q-card class="bg-cyan-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.formula.content.mainFormulaLabel') }}
+          </p>
+          <p
+            class="text-body2 q-mb-md"
+            v-html="t('fluidBalance.sections.formula.content.mainFormula')"
+          ></p>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.formula.content.exampleTitle') }}
+          </p>
+          <div
+            class="bg-grey-2 q-pa-md rounded-borders text-body2"
+            v-html="t('fluidBalance.sections.formula.content.example')"
+          ></div>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Interpretazione Risultati -->
+      <q-expansion-item
+        icon="psychology"
+        :label="t('fluidBalance.sections.clinicalInterpretation.title')"
+        class="q-mt-sm"
+        header-class="bg-orange-1 text-orange-9"
+      >
+        <q-card class="bg-orange-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.clinicalInterpretation.content.euvolemicTitle') }}
+          </p>
+          <p
+            class="text-body2 q-mb-md"
+            v-html="t('fluidBalance.sections.clinicalInterpretation.content.euvolemic')"
+          ></p>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.clinicalInterpretation.content.mildOverloadTitle') }}
+          </p>
+          <p
+            class="text-body2 q-mb-md"
+            v-html="t('fluidBalance.sections.clinicalInterpretation.content.mildOverload')"
+          ></p>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.clinicalInterpretation.content.significantOverloadTitle') }}
+          </p>
+          <p
+            class="text-body2 q-mb-md"
+            v-html="t('fluidBalance.sections.clinicalInterpretation.content.significantOverload')"
+          ></p>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.clinicalInterpretation.content.mildDepletionTitle') }}
+          </p>
+          <p
+            class="text-body2 q-mb-md"
+            v-html="t('fluidBalance.sections.clinicalInterpretation.content.mildDepletion')"
+          ></p>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{
+              t('fluidBalance.sections.clinicalInterpretation.content.significantDepletionTitle')
+            }}
+          </p>
+          <p
+            class="text-body2"
+            v-html="t('fluidBalance.sections.clinicalInterpretation.content.significantDepletion')"
+          ></p>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Applicazioni Cliniche -->
+      <q-expansion-item
+        icon="local_hospital"
+        :label="t('fluidBalance.sections.applications.title')"
+        class="q-mt-sm"
+        header-class="bg-purple-1 text-purple-9"
+      >
+        <q-card class="bg-purple-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.applications.content.icuTitle') }}
+          </p>
+          <p class="text-body2 q-mb-md">
+            {{ t('fluidBalance.sections.applications.content.icu') }}
+          </p>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.applications.content.ckdTitle') }}
+          </p>
+          <p class="text-body2 q-mb-md">
+            {{ t('fluidBalance.sections.applications.content.ckd') }}
+          </p>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.applications.content.heartFailureTitle') }}
+          </p>
+          <p class="text-body2 q-mb-md">
+            {{ t('fluidBalance.sections.applications.content.heartFailure') }}
+          </p>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.applications.content.postOpTitle') }}
+          </p>
+          <p class="text-body2">
+            {{ t('fluidBalance.sections.applications.content.postOp') }}
+          </p>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Valori Critici e Alert -->
+      <q-expansion-item
+        icon="warning"
+        :label="t('fluidBalance.sections.referenceValues.title')"
+        class="q-mt-sm"
+        header-class="bg-red-1 text-red-9"
+      >
+        <q-card class="bg-red-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.referenceValues.content.criticalValuesTitle') }}
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="idx in 4" :key="idx">
+              <span
+                v-html="
+                  t(`fluidBalance.sections.referenceValues.content.criticalValues[${idx - 1}]`)
+                "
+              ></span>
+            </li>
+          </ul>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.referenceValues.content.populationsTitle') }}
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="idx in 3" :key="idx">
+              <span
+                v-html="t(`fluidBalance.sections.referenceValues.content.populations[${idx - 1}]`)"
+              ></span>
+            </li>
+          </ul>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.referenceValues.content.monitoringTitle') }}
+          </p>
+          <p class="text-body2">
+            {{ t('fluidBalance.sections.referenceValues.content.monitoring') }}
+          </p>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Documentazione Clinica -->
+      <q-expansion-item
+        icon="menu_book"
+        :label="t('fluidBalance.sections.documentation.title')"
+        class="q-mt-sm"
+        header-class="bg-indigo-1 text-indigo-9"
+      >
+        <q-card class="bg-indigo-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.documentation.content.templateTitle') }}
+          </p>
+          <div
+            class="bg-grey-2 q-pa-md rounded-borders text-body2 q-mb-md"
+            v-html="t('fluidBalance.sections.documentation.content.templateExample')"
+          ></div>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.documentation.content.elementsTitle') }}
+          </p>
+          <ul class="text-body2">
+            <li v-for="idx in 6" :key="idx">
+              {{ t(`fluidBalance.sections.documentation.content.elements[${idx - 1}]`) }}
+            </li>
+          </ul>
+        </q-card>
+      </q-expansion-item>
+
+      <!-- Riferimenti Scientifici -->
+      <q-expansion-item
+        icon="science"
+        :label="t('fluidBalance.sections.bibliography.title')"
+        class="q-mt-sm"
+        header-class="bg-teal-1 text-teal-9"
+      >
+        <q-card class="bg-teal-1 q-pa-md">
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.bibliography.content.publicationsTitle') }}
+          </p>
+          <ul class="text-body2 q-mb-md">
+            <li v-for="idx in 3" :key="idx">
+              <span
+                v-html="t(`fluidBalance.sections.bibliography.content.publications[${idx - 1}]`)"
+              ></span>
+            </li>
+          </ul>
+
+          <p class="text-body2 text-weight-bold q-mb-sm">
+            {{ t('fluidBalance.sections.bibliography.content.guidelinesTitle') }}
+          </p>
+          <ul class="text-body2">
+            <li v-for="idx in 3" :key="idx">
+              <span
+                v-html="t(`fluidBalance.sections.bibliography.content.guidelines[${idx - 1}]`)"
+              ></span>
+            </li>
+          </ul>
+
+          <q-banner class="bg-teal-2 text-teal-9 q-mt-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="link" color="teal" size="sm" />
+            </template>
+            <div class="text-caption">
+              <strong>{{
+                t('fluidBalance.sections.bibliography.content.onlineResources.title')
+              }}</strong>
+              <a
+                href="https://www.sccm.org/SurvivingSepsisCampaign"
+                target="_blank"
+                class="text-teal-9"
+                >{{ t('fluidBalance.sections.bibliography.content.onlineResources.ssc') }}</a
+              >
+              |
+              <a
+                href="https://kdigo.org/guidelines/acute-kidney-injury/"
+                target="_blank"
+                class="text-teal-9"
+                >{{ t('fluidBalance.sections.bibliography.content.onlineResources.kdigo') }}</a
+              >
+            </div>
+          </q-banner>
+        </q-card>
+      </q-expansion-item>
     </div>
   </div>
 </template>

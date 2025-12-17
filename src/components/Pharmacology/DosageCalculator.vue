@@ -779,505 +779,6 @@ const resetDosageForm = () => {
               </q-card>
             </q-expansion-item>
 
-            <!-- ============================================================ -->
-            <!-- DOCUMENTAZIONE MEDICA - 5 SEZIONI                            -->
-            <!-- ============================================================ -->
-
-            <!-- Farmacocinetica e Farmacodinamica (PK/PD) -->
-            <q-expansion-item
-              icon="science"
-              :label="t('dosageCalculator.sections.pharmacokinetics.title')"
-              class="q-mt-md"
-              header-class="bg-blue-1 text-blue-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="q-mb-lg">
-                  <h6 class="text-subtitle1 text-weight-bold q-mb-sm">
-                    {{ t('dosageCalculator.sections.pharmacokinetics.content.introTitle') }}
-                  </h6>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.pharmacokinetics.content.intro[${idx}]`)"
-                  ></p>
-                  <h6 class="text-subtitle1 text-weight-bold q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.pharmacokinetics.content.pkParametersTitle') }}
-                  </h6>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.pharmacokinetics.content.pkParameters[${idx}]`)
-                    "
-                  ></p>
-                  <h6 class="text-subtitle1 text-weight-bold q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.pharmacokinetics.content.pkpdTitle') }}
-                  </h6>
-                  <p
-                    v-for="(item, idx) in 2"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.pharmacokinetics.content.pkpd[${idx}]`)"
-                  ></p>
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Dosaggi Pediatrici e Neonatali -->
-            <q-expansion-item
-              icon="child_care"
-              :label="t('dosageCalculator.sections.pediatric.title')"
-              class="q-mt-md"
-              header-class="bg-green-1 text-green-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="q-mb-lg">
-                  <p class="text-weight-bold text-h6 q-mb-sm">
-                    {{ t('dosageCalculator.sections.pediatric.content.introTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 3"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.pediatric.content.intro[${idx}]`)"
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.pediatric.content.bsaTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 3"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.pediatric.content.bsa[${idx}]`)"
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.pediatric.content.ageAdjustmentsTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.pediatric.content.ageAdjustments[${idx}]`)"
-                  ></p>
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Aggiustamento Dosaggio in Insufficienza Renale -->
-            <q-expansion-item
-              icon="medication"
-              :label="t('dosageCalculator.sections.renalImpairment.title')"
-              class="q-mt-md"
-              header-class="bg-amber-1 text-amber-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="q-mb-lg">
-                  <p class="text-weight-bold text-h6 q-mb-sm">
-                    {{ t('dosageCalculator.sections.renalImpairment.content.ckdStagesTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 6"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.renalImpairment.content.ckdStages[${idx}]`)
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.renalImpairment.content.adjustmentTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 3"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.renalImpairment.content.adjustment[${idx}]`)
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.renalImpairment.content.dialysisTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 3"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.renalImpairment.content.dialysis[${idx}]`)"
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.renalImpairment.content.drugsExamplesTitle') }}
-                  </p>
-                  <p
-                    class="text-body2 q-mb-sm"
-                    v-html="t('dosageCalculator.sections.renalImpairment.content.drugsExamples')"
-                  ></p>
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Loading Dose vs Maintenance Dose -->
-            <q-expansion-item
-              icon="flash_on"
-              :label="t('dosageCalculator.sections.loadingMaintenance.title')"
-              class="q-mt-md"
-              header-class="bg-cyan-1 text-cyan-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="q-mb-lg">
-                  <p class="text-weight-bold text-h6 q-mb-sm">
-                    {{ t('dosageCalculator.sections.loadingMaintenance.content.conceptsTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 3"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.loadingMaintenance.content.concepts[${idx}]`)
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.loadingMaintenance.content.formulasTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 3"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.loadingMaintenance.content.formulas[${idx}]`)
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.loadingMaintenance.content.indicationsTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.loadingMaintenance.content.indications[${idx}]`)
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.loadingMaintenance.content.examplesTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 3"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.loadingMaintenance.content.examples[${idx}]`)
-                    "
-                  ></p>
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Sezione 5: Interpretazione Dosaggi -->
-            <q-expansion-item
-              icon="psychology"
-              :label="t('dosageCalculator.sections.interpretation.title')"
-              class="q-mt-md"
-              header-class="bg-orange-1 text-orange-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="q-mb-lg">
-                  <p class="text-weight-bold text-h6 q-mb-sm">
-                    {{ t('dosageCalculator.sections.interpretation.content.conceptsTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.interpretation.content.concepts[${idx}]`)"
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.interpretation.content.rangesTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 6"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.interpretation.content.ranges[${idx}]`)"
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.interpretation.content.doseResponseTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.interpretation.content.doseResponse[${idx}]`)
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.interpretation.content.steadyStateTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 3"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.interpretation.content.steadyState[${idx}]`)
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{
-                      t('dosageCalculator.sections.interpretation.content.clinicalMonitoringTitle')
-                    }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(
-                        `dosageCalculator.sections.interpretation.content.clinicalMonitoring[${idx}]`,
-                      )
-                    "
-                  ></p>
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Sezione 6: Applicazioni Cliniche -->
-            <q-expansion-item
-              icon="local_hospital"
-              :label="t('dosageCalculator.sections.applications.title')"
-              class="q-mt-md"
-              header-class="bg-purple-1 text-purple-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="q-mb-lg">
-                  <p class="text-weight-bold text-h6 q-mb-sm">
-                    {{ t('dosageCalculator.sections.applications.content.cardiologyTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.applications.content.cardiology[${idx}]`)"
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.applications.content.infectiousDiseaseTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.applications.content.infectiousDisease[${idx}]`)
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.applications.content.nephrologyTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.applications.content.nephrology[${idx}]`)"
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.applications.content.pediatricsTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.applications.content.pediatrics[${idx}]`)"
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{
-                      t('dosageCalculator.sections.applications.content.specialPopulationsTitle')
-                    }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.applications.content.specialPopulations[${idx}]`)
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.applications.content.emergencyTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.applications.content.emergency[${idx}]`)"
-                  ></p>
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Sezione 7: Alert e Valori Critici -->
-            <q-expansion-item
-              icon="warning"
-              :label="t('dosageCalculator.sections.alerts.title')"
-              class="q-mt-md"
-              header-class="bg-red-1 text-red-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="q-mb-lg">
-                  <p class="text-weight-bold text-h6 q-mb-sm">
-                    {{ t('dosageCalculator.sections.alerts.content.highAlertTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 6"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.alerts.content.highAlert[${idx}]`)"
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.alerts.content.contraindicationsTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.alerts.content.contraindications[${idx}]`)"
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.alerts.content.drugInteractionsTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 5"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.alerts.content.drugInteractions[${idx}]`)"
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.alerts.content.overdoseTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 5"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="t(`dosageCalculator.sections.alerts.content.overdose[${idx}]`)"
-                  ></p>
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Sezione 8: Documentazione Clinica -->
-            <q-expansion-item
-              icon="menu_book"
-              :label="t('dosageCalculator.sections.documentation.title')"
-              class="q-mt-md"
-              header-class="bg-indigo-1 text-indigo-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="q-mb-lg">
-                  <p class="text-weight-bold text-h6 q-mb-sm">
-                    {{
-                      t(
-                        'dosageCalculator.sections.documentation.content.internationalGuidelinesTitle',
-                      )
-                    }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 5"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(
-                        `dosageCalculator.sections.documentation.content.internationalGuidelines[${idx}]`,
-                      )
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.documentation.content.renalDosingTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.documentation.content.renalDosing[${idx}]`)
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{
-                      t('dosageCalculator.sections.documentation.content.pediatricFormulariesTitle')
-                    }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 4"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(
-                        `dosageCalculator.sections.documentation.content.pediatricFormularies[${idx}]`,
-                      )
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.documentation.content.tdmProtocolsTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 5"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.documentation.content.tdmProtocols[${idx}]`)
-                    "
-                  ></p>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.documentation.content.clinicalToolsTitle') }}
-                  </p>
-                  <p
-                    v-for="(item, idx) in 5"
-                    :key="idx"
-                    class="text-body2 q-mb-sm"
-                    v-html="
-                      t(`dosageCalculator.sections.documentation.content.clinicalTools[${idx}]`)
-                    "
-                  ></p>
-                </div>
-              </q-card>
-            </q-expansion-item>
-
-            <!-- Riferimenti Scientifici -->
-            <q-expansion-item
-              icon="science"
-              :label="t('dosageCalculator.sections.bibliography.title')"
-              class="q-mt-md"
-              header-class="bg-teal-1 text-teal-9"
-            >
-              <q-card class="q-pa-md">
-                <div class="q-mb-md">
-                  <p class="text-weight-bold text-h6 q-mb-sm">
-                    {{ t('dosageCalculator.sections.bibliography.content.publicationsTitle') }}
-                  </p>
-                  <ul class="text-caption">
-                    <li
-                      v-for="(item, idx) in 5"
-                      :key="idx"
-                      v-html="
-                        t(`dosageCalculator.sections.bibliography.content.publications[${idx}]`)
-                      "
-                    ></li>
-                  </ul>
-                  <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
-                    {{ t('dosageCalculator.sections.bibliography.content.guidelinesTitle') }}
-                  </p>
-                  <ul class="text-caption">
-                    <li
-                      v-for="(item, idx) in 4"
-                      :key="idx"
-                      v-html="
-                        t(`dosageCalculator.sections.bibliography.content.guidelines[${idx}]`)
-                      "
-                    ></li>
-                  </ul>
-                </div>
-              </q-card>
-            </q-expansion-item>
-
             <!-- Empty State -->
             <div v-if="!dosageResult.totalDose" class="text-center text-grey-6 q-pa-xl">
               <q-icon name="info" size="lg" class="q-mb-md" />
@@ -1289,6 +790,456 @@ const resetDosageForm = () => {
         </q-card>
       </div>
     </div>
+    <!-- ============================================================ -->
+    <!-- DOCUMENTAZIONE MEDICA - 5 SEZIONI                            -->
+    <!-- ============================================================ -->
+
+    <!-- Farmacocinetica e Farmacodinamica (PK/PD) -->
+    <q-expansion-item
+      icon="science"
+      :label="t('dosageCalculator.sections.pharmacokinetics.title')"
+      class="q-mt-md"
+      header-class="bg-blue-1 text-blue-9"
+    >
+      <q-card class="bg-blue-1 q-pa-md">
+        <div class="q-mb-lg">
+          <h6 class="text-subtitle1 text-weight-bold q-mb-sm">
+            {{ t('dosageCalculator.sections.pharmacokinetics.content.introTitle') }}
+          </h6>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.pharmacokinetics.content.intro[${idx}]`)"
+          ></p>
+          <h6 class="text-subtitle1 text-weight-bold q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.pharmacokinetics.content.pkParametersTitle') }}
+          </h6>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.pharmacokinetics.content.pkParameters[${idx}]`)"
+          ></p>
+          <h6 class="text-subtitle1 text-weight-bold q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.pharmacokinetics.content.pkpdTitle') }}
+          </h6>
+          <p
+            v-for="(item, idx) in 2"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.pharmacokinetics.content.pkpd[${idx}]`)"
+          ></p>
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Dosaggi Pediatrici e Neonatali -->
+    <q-expansion-item
+      icon="child_care"
+      :label="t('dosageCalculator.sections.pediatric.title')"
+      class="q-mt-md"
+      header-class="bg-green-1 text-green-9"
+    >
+      <q-card class="bg-green-1 q-pa-md">
+        <div class="q-mb-lg">
+          <p class="text-weight-bold text-h6 q-mb-sm">
+            {{ t('dosageCalculator.sections.pediatric.content.introTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 3"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.pediatric.content.intro[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.pediatric.content.bsaTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 3"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.pediatric.content.bsa[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.pediatric.content.ageAdjustmentsTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.pediatric.content.ageAdjustments[${idx}]`)"
+          ></p>
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Aggiustamento Dosaggio in Insufficienza Renale -->
+    <q-expansion-item
+      icon="medication"
+      :label="t('dosageCalculator.sections.renalImpairment.title')"
+      class="q-mt-md"
+      header-class="bg-amber-1 text-amber-9"
+    >
+      <q-card class="bg-amber-1 q-pa-md">
+        <div class="q-mb-lg">
+          <p class="text-weight-bold text-h6 q-mb-sm">
+            {{ t('dosageCalculator.sections.renalImpairment.content.ckdStagesTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 6"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.renalImpairment.content.ckdStages[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.renalImpairment.content.adjustmentTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 3"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.renalImpairment.content.adjustment[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.renalImpairment.content.dialysisTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 3"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.renalImpairment.content.dialysis[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.renalImpairment.content.drugsExamplesTitle') }}
+          </p>
+          <p
+            class="text-body2 q-mb-sm"
+            v-html="t('dosageCalculator.sections.renalImpairment.content.drugsExamples')"
+          ></p>
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Loading Dose vs Maintenance Dose -->
+    <q-expansion-item
+      icon="flash_on"
+      :label="t('dosageCalculator.sections.loadingMaintenance.title')"
+      class="q-mt-md"
+      header-class="bg-cyan-1 text-cyan-9"
+    >
+      <q-card class="bg-cyan-1 q-pa-md">
+        <div class="q-mb-lg">
+          <p class="text-weight-bold text-h6 q-mb-sm">
+            {{ t('dosageCalculator.sections.loadingMaintenance.content.conceptsTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 3"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.loadingMaintenance.content.concepts[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.loadingMaintenance.content.formulasTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 3"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.loadingMaintenance.content.formulas[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.loadingMaintenance.content.indicationsTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.loadingMaintenance.content.indications[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.loadingMaintenance.content.examplesTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 3"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.loadingMaintenance.content.examples[${idx}]`)"
+          ></p>
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Sezione 5: Interpretazione Dosaggi -->
+    <q-expansion-item
+      icon="psychology"
+      :label="t('dosageCalculator.sections.interpretation.title')"
+      class="q-mt-md"
+      header-class="bg-orange-1 text-orange-9"
+    >
+      <q-card class="bg-orange-1 q-pa-md">
+        <div class="q-mb-lg">
+          <p class="text-weight-bold text-h6 q-mb-sm">
+            {{ t('dosageCalculator.sections.interpretation.content.conceptsTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.interpretation.content.concepts[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.interpretation.content.rangesTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 6"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.interpretation.content.ranges[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.interpretation.content.doseResponseTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.interpretation.content.doseResponse[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.interpretation.content.steadyStateTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 3"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.interpretation.content.steadyState[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.interpretation.content.clinicalMonitoringTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="
+              t(`dosageCalculator.sections.interpretation.content.clinicalMonitoring[${idx}]`)
+            "
+          ></p>
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Sezione 6: Applicazioni Cliniche -->
+    <q-expansion-item
+      icon="local_hospital"
+      :label="t('dosageCalculator.sections.applications.title')"
+      class="q-mt-md"
+      header-class="bg-purple-1 text-purple-9"
+    >
+      <q-card class="bg-purple-1 q-pa-md">
+        <div class="q-mb-lg">
+          <p class="text-weight-bold text-h6 q-mb-sm">
+            {{ t('dosageCalculator.sections.applications.content.cardiologyTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.applications.content.cardiology[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.applications.content.infectiousDiseaseTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.applications.content.infectiousDisease[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.applications.content.nephrologyTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.applications.content.nephrology[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.applications.content.pediatricsTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.applications.content.pediatrics[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.applications.content.specialPopulationsTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.applications.content.specialPopulations[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.applications.content.emergencyTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.applications.content.emergency[${idx}]`)"
+          ></p>
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Sezione 7: Alert e Valori Critici -->
+    <q-expansion-item
+      icon="warning"
+      :label="t('dosageCalculator.sections.alerts.title')"
+      class="q-mt-md"
+      header-class="bg-red-1 text-red-9"
+    >
+      <q-card class="bg-red-1 q-pa-md">
+        <div class="q-mb-lg">
+          <p class="text-weight-bold text-h6 q-mb-sm">
+            {{ t('dosageCalculator.sections.alerts.content.highAlertTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 6"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.alerts.content.highAlert[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.alerts.content.contraindicationsTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.alerts.content.contraindications[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.alerts.content.drugInteractionsTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 5"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.alerts.content.drugInteractions[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.alerts.content.overdoseTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 5"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.alerts.content.overdose[${idx}]`)"
+          ></p>
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Sezione 8: Documentazione Clinica -->
+    <q-expansion-item
+      icon="menu_book"
+      :label="t('dosageCalculator.sections.documentation.title')"
+      class="q-mt-md"
+      header-class="bg-indigo-1 text-indigo-9"
+    >
+      <q-card class="bg-indigo-1 q-pa-md">
+        <div class="q-mb-lg">
+          <p class="text-weight-bold text-h6 q-mb-sm">
+            {{ t('dosageCalculator.sections.documentation.content.internationalGuidelinesTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 5"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="
+              t(`dosageCalculator.sections.documentation.content.internationalGuidelines[${idx}]`)
+            "
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.documentation.content.renalDosingTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.documentation.content.renalDosing[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.documentation.content.pediatricFormulariesTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 4"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="
+              t(`dosageCalculator.sections.documentation.content.pediatricFormularies[${idx}]`)
+            "
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.documentation.content.tdmProtocolsTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 5"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.documentation.content.tdmProtocols[${idx}]`)"
+          ></p>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.documentation.content.clinicalToolsTitle') }}
+          </p>
+          <p
+            v-for="(item, idx) in 5"
+            :key="idx"
+            class="text-body2 q-mb-sm"
+            v-html="t(`dosageCalculator.sections.documentation.content.clinicalTools[${idx}]`)"
+          ></p>
+        </div>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Riferimenti Scientifici -->
+    <q-expansion-item
+      icon="science"
+      :label="t('dosageCalculator.sections.bibliography.title')"
+      class="q-mt-md"
+      header-class="bg-teal-1 text-teal-9"
+    >
+      <q-card class="bg-teal-1 q-pa-md">
+        <div class="q-mb-md">
+          <p class="text-weight-bold text-h6 q-mb-sm">
+            {{ t('dosageCalculator.sections.bibliography.content.publicationsTitle') }}
+          </p>
+          <ul class="text-caption">
+            <li
+              v-for="(item, idx) in 5"
+              :key="idx"
+              v-html="t(`dosageCalculator.sections.bibliography.content.publications[${idx}]`)"
+            ></li>
+          </ul>
+          <p class="text-weight-bold text-subtitle1 q-mb-sm q-mt-md">
+            {{ t('dosageCalculator.sections.bibliography.content.guidelinesTitle') }}
+          </p>
+          <ul class="text-caption">
+            <li
+              v-for="(item, idx) in 4"
+              :key="idx"
+              v-html="t(`dosageCalculator.sections.bibliography.content.guidelines[${idx}]`)"
+            ></li>
+          </ul>
+        </div>
+      </q-card>
+    </q-expansion-item>
   </div>
 </template>
 

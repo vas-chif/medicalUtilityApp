@@ -436,233 +436,213 @@ const resetForm = (): void => {
               </ul>
             </div>
           </q-expansion-item>
-
-          <!-- ============================================================ -->
-          <!-- PROFESSIONAL DOCUMENTATION: 9 EXPANSION SECTIONS -->
-          <!-- ============================================================ -->
-
-          <!-- DEFINITION AND CLINICAL SIGNIFICANCE -->
-          <q-expansion-item
-            icon="info"
-            :label="t('news.sections.definition.title')"
-            header-class="bg-blue-1 text-primary"
-            class="q-mt-md"
-          >
-            <q-card flat class="q-pa-md bg-blue-1">
-              <div class="text-body2">
-                <p class="q-mb-sm" v-html="t('news.sections.definition.newsDefinition')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.definition.objectives')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.definition.whenToUse')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.definition.whenNotToUse')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.definition.limitations')"></p>
-              </div>
-            </q-card>
-          </q-expansion-item>
-
-          <!-- PHYSIOLOGY OF VITAL SIGNS -->
-          <q-expansion-item
-            icon="science"
-            :label="t('news.sections.physiology.title')"
-            header-class="bg-green-1 text-green-9"
-            class="q-mt-sm"
-          >
-            <q-card flat class="q-pa-md bg-green-1">
-              <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">
-                  {{ t('news.sections.physiology.title') }}
-                </p>
-                <p class="q-mb-sm" v-html="t('news.sections.physiology.respiratoryRate')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.physiology.oxygenSaturation')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.physiology.supplementalOxygen')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.physiology.temperature')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.physiology.systolicBP')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.physiology.heartRate')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.physiology.consciousness')"></p>
-              </div>
-            </q-card>
-          </q-expansion-item>
-
-          <!-- HOW TO CALCULATE NEWS -->
-          <q-expansion-item
-            icon="calculate"
-            :label="t('news.sections.evaluation.title')"
-            header-class="bg-amber-1 text-amber-9"
-            class="q-mt-sm"
-          >
-            <q-card flat class="q-pa-md bg-amber-1">
-              <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">
-                  {{ t('news.sections.evaluation.title') }}
-                </p>
-                <p class="q-mb-sm" v-html="t('news.sections.evaluation.requiredParameters')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.evaluation.step1')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.evaluation.step2')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.evaluation.step3')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.evaluation.step4')"></p>
-              </div>
-            </q-card>
-          </q-expansion-item>
-
-          <!-- FORMULA AND SCORING TABLES -->
-          <q-expansion-item
-            icon="table_chart"
-            :label="t('news.sections.formula.title')"
-            header-class="bg-cyan-1 text-cyan-9"
-            class="q-mt-sm"
-          >
-            <q-card flat class="q-pa-md bg-cyan-1">
-              <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">
-                  {{ t('news.sections.formula.title') }}
-                </p>
-                <p class="q-mb-sm">
-                  <strong>{{ t('news.sections.formula.mainFormula') }}</strong>
-                </p>
-                <p class="q-mb-sm">{{ t('news.sections.formula.explanation') }}</p>
-                <ul class="q-pl-md">
-                  <li>{{ t('news.sections.formula.respiratoryRate') }}</li>
-                  <li>{{ t('news.sections.formula.oxygenSaturation') }}</li>
-                  <li>{{ t('news.sections.formula.oxygenTherapy') }}</li>
-                  <li>{{ t('news.sections.formula.temperature') }}</li>
-                  <li>{{ t('news.sections.formula.systolicBP') }}</li>
-                  <li>{{ t('news.sections.formula.heartRate') }}</li>
-                  <li>{{ t('news.sections.formula.consciousness') }}</li>
-                </ul>
-              </div>
-            </q-card>
-          </q-expansion-item>
-
-          <!-- CLINICAL INTERPRETATION -->
-          <q-expansion-item
-            icon="assignment"
-            :label="t('news.sections.clinicalInterpretation.title')"
-            header-class="bg-orange-1 text-orange-9"
-            class="q-mt-sm"
-          >
-            <q-card flat class="q-pa-md bg-orange-1">
-              <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">
-                  {{ t('news.sections.clinicalInterpretation.title') }}
-                </p>
-                <p class="q-mb-sm" v-html="t('news.sections.clinicalInterpretation.score0')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.clinicalInterpretation.score1_4')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.clinicalInterpretation.score5_6')"></p>
-                <p
-                  class="q-mb-sm"
-                  v-html="t('news.sections.clinicalInterpretation.score7plus')"
-                ></p>
-                <p class="q-mb-sm" v-html="t('news.sections.clinicalInterpretation.redFlags')"></p>
-              </div>
-            </q-card>
-          </q-expansion-item>
-
-          <!-- CLINICAL APPLICATIONS -->
-          <q-expansion-item
-            icon="medical_services"
-            :label="t('news.sections.clinicalApplications.title')"
-            header-class="bg-purple-1 text-purple-9"
-            class="q-mt-sm"
-          >
-            <q-card flat class="q-pa-md bg-purple-1">
-              <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">
-                  {{ t('news.sections.clinicalApplications.title') }}
-                </p>
-                <p class="q-mb-sm" v-html="t('news.sections.clinicalApplications.sepsis')"></p>
-                <p
-                  class="q-mb-sm"
-                  v-html="t('news.sections.clinicalApplications.postOperative')"
-                ></p>
-                <p
-                  class="q-mb-sm"
-                  v-html="t('news.sections.clinicalApplications.emergencyDepartment')"
-                ></p>
-                <p
-                  class="q-mb-sm"
-                  v-html="t('news.sections.clinicalApplications.rapidResponse')"
-                ></p>
-                <p class="q-mb-sm" v-html="t('news.sections.clinicalApplications.covid19')"></p>
-              </div>
-            </q-card>
-          </q-expansion-item>
-
-          <!-- REFERENCE VALUES AND ALERTS -->
-          <q-expansion-item
-            icon="warning"
-            :label="t('news.sections.referenceValues.title')"
-            header-class="bg-red-1 text-red-9"
-            class="q-mt-sm"
-          >
-            <q-card flat class="q-pa-md bg-red-1">
-              <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">
-                  {{ t('news.sections.referenceValues.title') }}
-                </p>
-                <p class="q-mb-sm" v-html="t('news.sections.referenceValues.normalRanges')"></p>
-                <p
-                  class="q-mb-sm"
-                  v-html="t('news.sections.referenceValues.criticalThresholds')"
-                ></p>
-                <p
-                  class="q-mb-sm"
-                  v-html="t('news.sections.referenceValues.specialPopulations')"
-                ></p>
-                <p class="q-mb-sm" v-html="t('news.sections.referenceValues.monitoringTiming')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.referenceValues.criticalAlerts')"></p>
-              </div>
-            </q-card>
-          </q-expansion-item>
-
-          <!-- MEDICAL DOCUMENTATION AND GUIDELINES -->
-          <q-expansion-item
-            icon="description"
-            :label="t('news.sections.documentation.title')"
-            header-class="bg-indigo-1 text-indigo-9"
-            class="q-mt-sm"
-          >
-            <q-card flat class="q-pa-md bg-indigo-1">
-              <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">
-                  {{ t('news.sections.documentation.title') }}
-                </p>
-                <p class="q-mb-sm" v-html="t('news.sections.documentation.royalCollege')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.documentation.news2')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.documentation.nice')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.documentation.survivingSepsis')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.documentation.nhs')"></p>
-                <p class="q-mb-sm" v-html="t('news.sections.documentation.erc')"></p>
-              </div>
-            </q-card>
-          </q-expansion-item>
-
-          <!-- SCIENTIFIC REFERENCES (PMID) -->
-          <q-expansion-item
-            icon="menu_book"
-            :label="t('news.sections.bibliography.title')"
-            header-class="bg-teal-1 text-teal-9"
-            class="q-mt-sm"
-          >
-            <q-card flat class="q-pa-md bg-teal-1">
-              <div class="text-body2">
-                <p class="text-weight-bold text-h6 q-mb-sm">
-                  {{ t('news.sections.bibliography.title') }}
-                </p>
-                <ul class="q-pl-md">
-                  <li class="q-mb-sm" v-html="t('news.sections.bibliography.smith2013')"></li>
-                  <li class="q-mb-sm" v-html="t('news.sections.bibliography.abbott2018')"></li>
-                  <li class="q-mb-sm" v-html="t('news.sections.bibliography.keep2016')"></li>
-                  <li class="q-mb-sm" v-html="t('news.sections.bibliography.pimentel2019')"></li>
-                  <li class="q-mb-sm" v-html="t('news.sections.bibliography.churpek2016')"></li>
-                  <li class="q-mb-sm" v-html="t('news.sections.bibliography.subbe2017')"></li>
-                </ul>
-              </div>
-            </q-card>
-          </q-expansion-item>
         </q-card-section>
       </q-card>
     </div>
   </div>
+  <!-- ============================================================ -->
+  <!-- PROFESSIONAL DOCUMENTATION: 9 EXPANSION SECTIONS -->
+  <!-- ============================================================ -->
 
+  <!-- DEFINITION AND CLINICAL SIGNIFICANCE -->
+  <q-expansion-item
+    icon="info"
+    :label="t('news.sections.definition.title')"
+    header-class="bg-blue-1 text-primary"
+    class="q-mt-md"
+  >
+    <q-card flat class="q-pa-md bg-blue-1">
+      <div class="text-body2">
+        <p class="q-mb-sm" v-html="t('news.sections.definition.newsDefinition')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.definition.objectives')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.definition.whenToUse')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.definition.whenNotToUse')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.definition.limitations')"></p>
+      </div>
+    </q-card>
+  </q-expansion-item>
+
+  <!-- PHYSIOLOGY OF VITAL SIGNS -->
+  <q-expansion-item
+    icon="science"
+    :label="t('news.sections.physiology.title')"
+    header-class="bg-green-1 text-green-9"
+    class="q-mt-sm"
+  >
+    <q-card flat class="q-pa-md bg-green-1">
+      <div class="text-body2">
+        <p class="text-weight-bold text-h6 q-mb-sm">
+          {{ t('news.sections.physiology.title') }}
+        </p>
+        <p class="q-mb-sm" v-html="t('news.sections.physiology.respiratoryRate')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.physiology.oxygenSaturation')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.physiology.supplementalOxygen')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.physiology.temperature')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.physiology.systolicBP')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.physiology.heartRate')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.physiology.consciousness')"></p>
+      </div>
+    </q-card>
+  </q-expansion-item>
+
+  <!-- HOW TO CALCULATE NEWS -->
+  <q-expansion-item
+    icon="calculate"
+    :label="t('news.sections.evaluation.title')"
+    header-class="bg-amber-1 text-amber-9"
+    class="q-mt-sm"
+  >
+    <q-card flat class="q-pa-md bg-amber-1">
+      <div class="text-body2">
+        <p class="text-weight-bold text-h6 q-mb-sm">
+          {{ t('news.sections.evaluation.title') }}
+        </p>
+        <p class="q-mb-sm" v-html="t('news.sections.evaluation.requiredParameters')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.evaluation.step1')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.evaluation.step2')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.evaluation.step3')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.evaluation.step4')"></p>
+      </div>
+    </q-card>
+  </q-expansion-item>
+
+  <!-- FORMULA AND SCORING TABLES -->
+  <q-expansion-item
+    icon="table_chart"
+    :label="t('news.sections.formula.title')"
+    header-class="bg-cyan-1 text-cyan-9"
+    class="q-mt-sm"
+  >
+    <q-card flat class="q-pa-md bg-cyan-1">
+      <div class="text-body2">
+        <p class="text-weight-bold text-h6 q-mb-sm">
+          {{ t('news.sections.formula.title') }}
+        </p>
+        <p class="q-mb-sm">
+          <strong>{{ t('news.sections.formula.mainFormula') }}</strong>
+        </p>
+        <p class="q-mb-sm">{{ t('news.sections.formula.explanation') }}</p>
+        <ul class="q-pl-md">
+          <li>{{ t('news.sections.formula.respiratoryRate') }}</li>
+          <li>{{ t('news.sections.formula.oxygenSaturation') }}</li>
+          <li>{{ t('news.sections.formula.oxygenTherapy') }}</li>
+          <li>{{ t('news.sections.formula.temperature') }}</li>
+          <li>{{ t('news.sections.formula.systolicBP') }}</li>
+          <li>{{ t('news.sections.formula.heartRate') }}</li>
+          <li>{{ t('news.sections.formula.consciousness') }}</li>
+        </ul>
+      </div>
+    </q-card>
+  </q-expansion-item>
+
+  <!-- CLINICAL INTERPRETATION -->
+  <q-expansion-item
+    icon="assignment"
+    :label="t('news.sections.clinicalInterpretation.title')"
+    header-class="bg-orange-1 text-orange-9"
+    class="q-mt-sm"
+  >
+    <q-card flat class="q-pa-md bg-orange-1">
+      <div class="text-body2">
+        <p class="text-weight-bold text-h6 q-mb-sm">
+          {{ t('news.sections.clinicalInterpretation.title') }}
+        </p>
+        <p class="q-mb-sm" v-html="t('news.sections.clinicalInterpretation.score0')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.clinicalInterpretation.score1_4')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.clinicalInterpretation.score5_6')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.clinicalInterpretation.score7plus')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.clinicalInterpretation.redFlags')"></p>
+      </div>
+    </q-card>
+  </q-expansion-item>
+
+  <!-- CLINICAL APPLICATIONS -->
+  <q-expansion-item
+    icon="medical_services"
+    :label="t('news.sections.clinicalApplications.title')"
+    header-class="bg-purple-1 text-purple-9"
+    class="q-mt-sm"
+  >
+    <q-card flat class="q-pa-md bg-purple-1">
+      <div class="text-body2">
+        <p class="text-weight-bold text-h6 q-mb-sm">
+          {{ t('news.sections.clinicalApplications.title') }}
+        </p>
+        <p class="q-mb-sm" v-html="t('news.sections.clinicalApplications.sepsis')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.clinicalApplications.postOperative')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.clinicalApplications.emergencyDepartment')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.clinicalApplications.rapidResponse')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.clinicalApplications.covid19')"></p>
+      </div>
+    </q-card>
+  </q-expansion-item>
+
+  <!-- REFERENCE VALUES AND ALERTS -->
+  <q-expansion-item
+    icon="warning"
+    :label="t('news.sections.referenceValues.title')"
+    header-class="bg-red-1 text-red-9"
+    class="q-mt-sm"
+  >
+    <q-card flat class="q-pa-md bg-red-1">
+      <div class="text-body2">
+        <p class="text-weight-bold text-h6 q-mb-sm">
+          {{ t('news.sections.referenceValues.title') }}
+        </p>
+        <p class="q-mb-sm" v-html="t('news.sections.referenceValues.normalRanges')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.referenceValues.criticalThresholds')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.referenceValues.specialPopulations')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.referenceValues.monitoringTiming')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.referenceValues.criticalAlerts')"></p>
+      </div>
+    </q-card>
+  </q-expansion-item>
+
+  <!-- MEDICAL DOCUMENTATION AND GUIDELINES -->
+  <q-expansion-item
+    icon="description"
+    :label="t('news.sections.documentation.title')"
+    header-class="bg-indigo-1 text-indigo-9"
+    class="q-mt-sm"
+  >
+    <q-card flat class="q-pa-md bg-indigo-1">
+      <div class="text-body2">
+        <p class="text-weight-bold text-h6 q-mb-sm">
+          {{ t('news.sections.documentation.title') }}
+        </p>
+        <p class="q-mb-sm" v-html="t('news.sections.documentation.royalCollege')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.documentation.news2')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.documentation.nice')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.documentation.survivingSepsis')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.documentation.nhs')"></p>
+        <p class="q-mb-sm" v-html="t('news.sections.documentation.erc')"></p>
+      </div>
+    </q-card>
+  </q-expansion-item>
+
+  <!-- SCIENTIFIC REFERENCES (PMID) -->
+  <q-expansion-item
+    icon="menu_book"
+    :label="t('news.sections.bibliography.title')"
+    header-class="bg-teal-1 text-teal-9"
+    class="q-mt-sm"
+  >
+    <q-card flat class="q-pa-md bg-teal-1">
+      <div class="text-body2">
+        <p class="text-weight-bold text-h6 q-mb-sm">
+          {{ t('news.sections.bibliography.title') }}
+        </p>
+        <ul class="q-pl-md">
+          <li class="q-mb-sm" v-html="t('news.sections.bibliography.smith2013')"></li>
+          <li class="q-mb-sm" v-html="t('news.sections.bibliography.abbott2018')"></li>
+          <li class="q-mb-sm" v-html="t('news.sections.bibliography.keep2016')"></li>
+          <li class="q-mb-sm" v-html="t('news.sections.bibliography.pimentel2019')"></li>
+          <li class="q-mb-sm" v-html="t('news.sections.bibliography.churpek2016')"></li>
+          <li class="q-mb-sm" v-html="t('news.sections.bibliography.subbe2017')"></li>
+        </ul>
+      </div>
+    </q-card>
+  </q-expansion-item>
   <!-- Clinical Disclaimer -->
   <div class="q-mt-lg">
     <q-banner class="bg-orange-1" rounded>
