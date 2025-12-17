@@ -31,10 +31,10 @@ import fluidBalanceIT from 'src/i18n/it-IT/fluidBalance';
 import fluidBalanceEN from 'src/i18n/en-US/fluidBalance';
 import dosageCalculatorIT from 'src/i18n/it-IT/dosageCalculator';
 import dosageCalculatorEN from 'src/i18n/en-US/dosageCalculator';
-
-console.log(
-  '[i18n boot] ✅ ALL NAMESPACES LOADED (bmi + bsa + abw + sofa + ibw + fluidBalance + dosageCalculator COMPLETE)',
-);
+import drugDilutionIT from 'src/i18n/it-IT/drugDilution';
+import drugDilutionEN from 'src/i18n/en-US/drugDilution';
+import infusionRateIT from 'src/i18n/it-IT/infusionRate';
+import infusionRateEN from 'src/i18n/en-US/infusionRate';
 
 // Inject calculator namespaces manually into locales
 // This is REQUIRED for vue-i18n to load the translations (see I18N_SETUP_GUIDE.md)
@@ -54,6 +54,8 @@ const itITWithCalculators = {
   ibw: ibwIT,
   fluidBalance: fluidBalanceIT,
   dosageCalculator: dosageCalculatorIT,
+  drugDilution: drugDilutionIT,
+  infusionRate: infusionRateIT,
 };
 
 const enUSWithCalculators = {
@@ -72,6 +74,8 @@ const enUSWithCalculators = {
   ibw: ibwEN,
   fluidBalance: fluidBalanceEN,
   dosageCalculator: dosageCalculatorEN,
+  drugDilution: drugDilutionEN,
+  infusionRate: infusionRateEN,
 };
 
 const messages = {
@@ -98,26 +102,14 @@ declare module 'vue-i18n' {
 /* eslint-enable @typescript-eslint/no-empty-object-type */
 
 export default defineBoot(({ app }) => {
-  console.log('[i18n boot] Starting i18n initialization...');
-  console.log('[i18n boot] Messages object:', Object.keys(messages));
+  const i18n = createI18n({
+    locale: 'it-IT',
+    fallbackLocale: 'it-IT',
+    legacy: false,
+    messages,
+    missingWarn: false,
+    fallbackWarn: false,
+  });
 
-  try {
-    const i18n = createI18n({
-      locale: 'it-IT',
-      fallbackLocale: 'it-IT',
-      legacy: false,
-      messages,
-      missingWarn: false,
-      fallbackWarn: false,
-    });
-
-    console.log('[i18n boot] i18n instance created successfully');
-
-    // Set i18n instance on app
-    app.use(i18n);
-    console.log('[i18n boot] ✅ i18n installed on app successfully');
-  } catch (error) {
-    console.error('[i18n boot] ❌ Error during i18n initialization:', error);
-    throw error;
-  }
+  app.use(i18n);
 });

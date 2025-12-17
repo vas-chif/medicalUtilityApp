@@ -31,7 +31,13 @@
  */
 
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSecureLogger } from 'src/composables/useSecureLogger';
+
+// ============================================================
+// I18N
+// ============================================================
+const { t } = useI18n();
 
 // ============================================================
 // LOGGING
@@ -52,9 +58,9 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  calculateButtonText: 'Calcola Diluizione',
-  resetButtonText: 'Reset',
-  title: '💧 Drug Dilution Calculator',
+  calculateButtonText: '',
+  resetButtonText: '',
+  title: '',
 });
 
 interface DilutionCalculatedPayload {
@@ -207,9 +213,9 @@ const resetDilutionForm = () => {
 <template>
   <div class="drug-dilution">
     <!-- Title & Description -->
-    <div class="text-h5 text-primary q-mb-md">{{ title }}</div>
+    <div class="text-h5 text-primary q-mb-md">{{ title || t('drugDilution.title') }}</div>
     <p class="text-body2 text-grey-7 q-mb-lg">
-      Calcolo diluizioni farmaci, concentrazioni finali e volumi da prelevare
+      {{ t('drugDilution.subtitle') }}
     </p>
 
     <div class="row q-gutter-lg">
@@ -219,18 +225,18 @@ const resetDilutionForm = () => {
       <div class="col-12 col-md-5">
         <q-card class="q-pa-md">
           <q-card-section>
-            <h6 class="text-h6 q-ma-none q-mb-md">📊 Parametri Diluizione</h6>
+            <h6 class="text-h6 q-ma-none q-mb-md">{{ t('drugDilution.form.sectionTitle') }}</h6>
 
             <!-- Dose Farmaco -->
             <q-input
               v-model.number="dilutionForm.dose"
               type="number"
               step="0.1"
-              label="Dose Farmaco"
-              suffix="mg"
+              :label="t('drugDilution.form.dose.label')"
+              :suffix="t('drugDilution.form.dose.unit')"
               outlined
               class="q-mb-md"
-              :rules="[(val: number) => val > 0 || 'Dose deve essere > 0']"
+              :rules="[(val: number) => val > 0 || t('drugDilution.form.dose.validation')]"
             >
               <template v-slot:prepend>
                 <q-icon name="medication" color="red" />
@@ -242,11 +248,11 @@ const resetDilutionForm = () => {
               v-model.number="dilutionForm.volume"
               type="number"
               step="1"
-              label="Volume Finale Soluzione"
-              suffix="mL"
+              :label="t('drugDilution.form.volume.label')"
+              :suffix="t('drugDilution.form.volume.unit')"
               outlined
               class="q-mb-md"
-              :rules="[(val: number) => val > 0 || 'Volume deve essere > 0']"
+              :rules="[(val: number) => val > 0 || t('drugDilution.form.volume.validation')]"
             >
               <template v-slot:prepend>
                 <q-icon name="local_drink" color="blue" />
@@ -258,11 +264,11 @@ const resetDilutionForm = () => {
               v-model.number="dilutionForm.stockConcentration"
               type="number"
               step="0.1"
-              label="Concentrazione Stock (opzionale)"
-              suffix="mg/mL"
+              :label="t('drugDilution.form.stockConcentration.label')"
+              :suffix="t('drugDilution.form.stockConcentration.unit')"
               outlined
               class="q-mb-md"
-              hint="Per calcolare volume da prelevare"
+              :hint="t('drugDilution.form.stockConcentration.hint')"
             >
               <template v-slot:prepend>
                 <q-icon name="science" color="purple" />
@@ -274,11 +280,11 @@ const resetDilutionForm = () => {
               v-model.number="dilutionForm.targetConcentration"
               type="number"
               step="0.01"
-              label="Concentrazione Desiderata (opzionale)"
-              suffix="mg/mL"
+              :label="t('drugDilution.form.targetConcentration.label')"
+              :suffix="t('drugDilution.form.targetConcentration.unit')"
               outlined
               class="q-mb-md"
-              hint="Per calcolare volume finale necessario"
+              :hint="t('drugDilution.form.targetConcentration.hint')"
             >
               <template v-slot:prepend>
                 <q-icon name="straighten" color="green" />
@@ -294,7 +300,7 @@ const resetDilutionForm = () => {
               icon="calculate"
               :disable="!isDilutionFormValid"
             >
-              {{ calculateButtonText }}
+              {{ calculateButtonText || t('drugDilution.buttons.calculate') }}
             </q-btn>
 
             <!-- Reset Button -->
@@ -306,7 +312,7 @@ const resetDilutionForm = () => {
               icon="refresh"
               outline
             >
-              {{ resetButtonText }}
+              {{ resetButtonText || t('drugDilution.buttons.reset') }}
             </q-btn>
           </q-card-section>
         </q-card>
@@ -318,7 +324,7 @@ const resetDilutionForm = () => {
       <div class="col-12 col-md-6">
         <q-card class="q-pa-md">
           <q-card-section>
-            <h6 class="text-h6 q-ma-none q-mb-md">📊 Risultati Diluizione</h6>
+            <h6 class="text-h6 q-ma-none q-mb-md">{{ t('drugDilution.resultsPanel.title') }}</h6>
 
             <!-- Results Display -->
             <div v-if="dilutionResult.finalConcentration > 0">
@@ -328,7 +334,8 @@ const resetDilutionForm = () => {
                   {{ dilutionResult.finalConcentration.toFixed(2) }}
                 </div>
                 <div class="text-subtitle1 text-grey-7">
-                  <strong>mg/mL</strong> (Concentrazione Finale)
+                  <strong>{{ t('drugDilution.resultsPanel.finalConcentration.label') }}</strong>
+                  ({{ t('drugDilution.resultsPanel.finalConcentration.subtitle') }})
                 </div>
               </div>
 
@@ -339,19 +346,25 @@ const resetDilutionForm = () => {
                 <q-list bordered separator class="rounded-borders">
                   <q-item>
                     <q-item-section>
-                      <q-item-label overline>Dose Totale</q-item-label>
+                      <q-item-label overline>{{
+                        t('drugDilution.resultsPanel.details.totalDose')
+                      }}</q-item-label>
                       <q-item-label class="text-h6">{{ dilutionForm.dose }} mg</q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-item>
                     <q-item-section>
-                      <q-item-label overline>Volume Finale</q-item-label>
+                      <q-item-label overline>{{
+                        t('drugDilution.resultsPanel.details.finalVolume')
+                      }}</q-item-label>
                       <q-item-label class="text-h6">{{ dilutionForm.volume }} mL</q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-item v-if="dilutionResult.volumeToWithdraw > 0">
                     <q-item-section>
-                      <q-item-label overline>Volume da Prelevare (da stock)</q-item-label>
+                      <q-item-label overline>{{
+                        t('drugDilution.resultsPanel.details.volumeToWithdraw')
+                      }}</q-item-label>
                       <q-item-label class="text-h6 text-orange">
                         {{ dilutionResult.volumeToWithdraw.toFixed(2) }} mL
                       </q-item-label>
@@ -359,7 +372,9 @@ const resetDilutionForm = () => {
                   </q-item>
                   <q-item v-if="dilutionResult.dilutionRatio">
                     <q-item-section>
-                      <q-item-label overline>Rapporto Diluizione</q-item-label>
+                      <q-item-label overline>{{
+                        t('drugDilution.resultsPanel.details.dilutionRatio')
+                      }}</q-item-label>
                       <q-item-label class="text-h6 text-green">
                         {{ dilutionResult.dilutionRatio }}
                       </q-item-label>
@@ -368,39 +383,442 @@ const resetDilutionForm = () => {
                 </q-list>
               </div>
 
-              <!-- Formula Used -->
-              <q-expansion-item icon="functions" label="📐 Formula Utilizzata" class="q-mt-md">
+              <!-- 9 DOCUMENTATION SECTIONS - NEWS STYLE -->
+
+              <!-- SECTION 1: DEFINITION (bg-blue-1) -->
+              <q-expansion-item
+                icon="info"
+                :label="t('drugDilution.sections.definition.title')"
+                class="q-mt-md"
+                header-class="bg-blue-1 text-blue-9"
+              >
                 <q-card class="q-pa-md">
-                  <div class="q-mb-sm">
-                    <strong>Concentrazione Finale:</strong><br />
-                    <small>C = Dose (mg) / Volume (mL)</small>
-                  </div>
-                  <div class="q-mb-sm" v-if="dilutionResult.volumeToWithdraw > 0">
-                    <strong>Volume da Prelevare:</strong><br />
-                    <small>V = Dose / Concentrazione Stock</small>
-                  </div>
-                  <div v-if="dilutionResult.dilutionRatio">
-                    <strong>Rapporto Diluizione:</strong><br />
-                    <small>Ratio = Volume Finale / Volume Prelevato</small>
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-h6 q-mb-sm">
+                      {{ t('drugDilution.sections.definition.content.mainDefinition.title') }}
+                    </p>
+                    <p
+                      class="text-body2 q-mb-md"
+                      v-html="t('drugDilution.sections.definition.content.mainDefinition.text')"
+                    ></p>
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.definition.content.principles.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.definition.content.principles.items[${idx}]`)
+                      "
+                    ></div>
                   </div>
                 </q-card>
               </q-expansion-item>
 
-              <!-- Safety Guidelines -->
+              <!-- SECTION 2: PHYSIOLOGY (bg-green-1) -->
+              <q-expansion-item
+                icon="science"
+                :label="t('drugDilution.sections.physiology.title')"
+                class="q-mt-sm"
+                header-class="bg-green-1 text-green-9"
+              >
+                <q-card class="q-pa-md">
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-h6 q-mb-sm">
+                      {{ t('drugDilution.sections.physiology.content.osmolarity.title') }}
+                    </p>
+                    <p
+                      class="text-body2 q-mb-sm"
+                      v-html="t('drugDilution.sections.physiology.content.osmolarity.description')"
+                    ></p>
+                    <p
+                      class="text-body2 text-italic q-mb-sm"
+                      v-html="t('drugDilution.sections.physiology.content.osmolarity.formula')"
+                    ></p>
+                    <div
+                      v-for="(item, idx) in 3"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.physiology.content.osmolarity.ranges[${idx}]`)
+                      "
+                    ></div>
+                  </div>
+                  <div>
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{
+                        t('drugDilution.sections.physiology.content.concentrationDynamics.title')
+                      }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.physiology.content.concentrationDynamics.principles[${idx}]`,
+                        )
+                      "
+                    ></div>
+                  </div>
+                </q-card>
+              </q-expansion-item>
+
+              <!-- SECTION 3: MEASUREMENT (bg-amber-1) -->
+              <q-expansion-item
+                icon="straighten"
+                :label="t('drugDilution.sections.measurement.title')"
+                class="q-mt-sm"
+                header-class="bg-amber-1 text-amber-9"
+              >
+                <q-card class="q-pa-md">
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.measurement.content.steps.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="t(`drugDilution.sections.measurement.content.steps.list[${idx}]`)"
+                    ></div>
+                  </div>
+                  <div>
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.measurement.content.practicalExample.title') }}
+                    </p>
+                    <p
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t('drugDilution.sections.measurement.content.practicalExample.scenario')
+                      "
+                    ></p>
+                    <p
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t('drugDilution.sections.measurement.content.practicalExample.solution')
+                      "
+                    ></p>
+                    <p
+                      class="text-body2 q-mb-none"
+                      v-html="
+                        t('drugDilution.sections.measurement.content.practicalExample.verification')
+                      "
+                    ></p>
+                  </div>
+                </q-card>
+              </q-expansion-item>
+
+              <!-- SECTION 4: FORMULA (bg-cyan-1) -->
+              <q-expansion-item
+                icon="functions"
+                :label="t('drugDilution.sections.formula.title')"
+                class="q-mt-sm"
+                header-class="bg-cyan-1 text-cyan-9"
+              >
+                <q-card class="q-pa-md">
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.formula.content.basicFormulas.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.formula.content.basicFormulas.formulas[${idx}]`)
+                      "
+                    ></div>
+                  </div>
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.formula.content.stockCalculations.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 3"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.formula.content.stockCalculations.formulas[${idx}]`,
+                        )
+                      "
+                    ></div>
+                  </div>
+                  <div>
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.formula.content.targetConcentration.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 3"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.formula.content.targetConcentration.formulas[${idx}]`,
+                        )
+                      "
+                    ></div>
+                  </div>
+                </q-card>
+              </q-expansion-item>
+
+              <!-- SECTION 5: INTERPRETATION (bg-orange-1) -->
+              <q-expansion-item
+                icon="psychology"
+                :label="t('drugDilution.sections.interpretation.title')"
+                class="q-mt-sm"
+                header-class="bg-orange-1 text-orange-9"
+              >
+                <q-card class="q-pa-md">
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.interpretation.content.safeRanges.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.interpretation.content.safeRanges.routes[${idx}]`)
+                      "
+                    ></div>
+                  </div>
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{
+                        t('drugDilution.sections.interpretation.content.clinicalSignificance.title')
+                      }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.interpretation.content.clinicalSignificance.considerations[${idx}]`,
+                        )
+                      "
+                    ></div>
+                  </div>
+                  <div>
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.interpretation.content.whenToUse.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 3"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.interpretation.content.whenToUse.guidance[${idx}]`)
+                      "
+                    ></div>
+                  </div>
+                </q-card>
+              </q-expansion-item>
+
+              <!-- SECTION 6: APPLICATIONS (bg-purple-1) -->
+              <q-expansion-item
+                icon="local_hospital"
+                :label="t('drugDilution.sections.applications.title')"
+                class="q-mt-sm"
+                header-class="bg-purple-1 text-purple-9"
+              >
+                <q-card class="q-pa-md">
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.applications.content.highRiskDrugs.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 6"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.applications.content.highRiskDrugs.drugs[${idx}]`)
+                      "
+                    ></div>
+                  </div>
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.applications.content.pediatrics.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.applications.content.pediatrics.considerations[${idx}]`,
+                        )
+                      "
+                    ></div>
+                  </div>
+                  <div>
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.applications.content.icu.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="t(`drugDilution.sections.applications.content.icu.protocols[${idx}]`)"
+                    ></div>
+                  </div>
+                </q-card>
+              </q-expansion-item>
+
+              <!-- SECTION 7: ALERTS (bg-red-1) -->
               <q-expansion-item
                 icon="warning"
-                label="⚠️ Linee Guida Sicurezza"
-                class="text-orange q-mt-sm"
+                :label="t('drugDilution.sections.alerts.title')"
+                class="q-mt-sm"
+                header-class="bg-red-1 text-red-9"
               >
-                <q-card class="q-pa-md bg-orange-1">
-                  <ul class="q-ma-none">
-                    <li>Verificare sempre il farmaco e la concentrazione prima della diluizione</li>
-                    <li>Utilizzare tecnica asettica per preparazioni sterili</li>
-                    <li>Controllare compatibilità farmaco-solvente</li>
-                    <li>Etichettare chiaramente la soluzione finale</li>
-                    <li>Rispettare tempi di stabilità della soluzione diluita</li>
-                    <li>Double-check da parte di due operatori per farmaci ad alto rischio</li>
-                  </ul>
+                <q-card class="q-pa-md">
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.alerts.content.ismpGuidelines.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 7"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.alerts.content.ismpGuidelines.recommendations[${idx}]`,
+                        )
+                      "
+                    ></div>
+                  </div>
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.alerts.content.commonErrors.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 6"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="t(`drugDilution.sections.alerts.content.commonErrors.errors[${idx}]`)"
+                    ></div>
+                  </div>
+                  <div>
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.alerts.content.safeguards.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.alerts.content.safeguards.protocols[${idx}]`)
+                      "
+                    ></div>
+                  </div>
+                </q-card>
+              </q-expansion-item>
+
+              <!-- SECTION 8: DOCUMENTATION (bg-indigo-1) -->
+              <q-expansion-item
+                icon="menu_book"
+                :label="t('drugDilution.sections.documentation.title')"
+                class="q-mt-sm"
+                header-class="bg-indigo-1 text-indigo-9"
+              >
+                <q-card class="q-pa-md">
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.documentation.content.compatibility.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.documentation.content.compatibility.solvents[${idx}]`,
+                        )
+                      "
+                    ></div>
+                  </div>
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.documentation.content.stabilityData.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.documentation.content.stabilityData.categories[${idx}]`,
+                        )
+                      "
+                    ></div>
+                  </div>
+                  <div>
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.documentation.content.labeling.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 10"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.documentation.content.labeling.requirements[${idx}]`,
+                        )
+                      "
+                    ></div>
+                  </div>
+                </q-card>
+              </q-expansion-item>
+
+              <!-- SECTION 9: REFERENCES (bg-teal-1) -->
+              <q-expansion-item
+                icon="science"
+                :label="t('drugDilution.sections.references.title')"
+                class="q-mt-sm"
+                header-class="bg-teal-1 text-teal-9"
+              >
+                <q-card class="q-pa-md">
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.references.content.guidelines.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 6"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="t(`drugDilution.sections.references.content.guidelines.list[${idx}]`)"
+                    ></div>
+                  </div>
+                  <div class="q-mb-lg">
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.references.content.research.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.references.content.research.articles[${idx}]`)
+                      "
+                    ></div>
+                  </div>
+                  <div>
+                    <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                      {{ t('drugDilution.sections.references.content.onlineTools.title') }}
+                    </p>
+                    <div
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.references.content.onlineTools.tools[${idx}]`)
+                      "
+                    ></div>
+                  </div>
                 </q-card>
               </q-expansion-item>
             </div>
@@ -408,8 +826,540 @@ const resetDilutionForm = () => {
             <!-- Empty State -->
             <div v-else class="text-center text-grey-6 q-pa-xl">
               <q-icon name="info" size="lg" class="q-mb-md" />
-              <p class="text-body2">Inserisci dose e volume per calcolare la diluizione</p>
+              <p class="text-body2">{{ t('drugDilution.emptyState') }}</p>
             </div>
+          </q-card-section>
+        </q-card>
+
+        <!-- 9 DOCUMENTATION SECTIONS - ALWAYS VISIBLE -->
+        <q-card class="q-pa-md q-mt-md">
+          <q-card-section>
+            <h6 class="text-h6 q-ma-none q-mb-md">Documentazione Clinica</h6>
+
+            <!-- SECTION 1: DEFINITION -->
+            <q-expansion-item
+              icon="info"
+              :label="t('drugDilution.sections.definition.title')"
+              class="q-mb-sm"
+              header-class="bg-blue-1 text-blue-9"
+            >
+              <q-card class="q-pa-md">
+                <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                  {{ t('drugDilution.sections.definition.content.mainDefinition.title') }}
+                </p>
+                <p class="text-body2 q-mb-md">
+                  {{ t('drugDilution.sections.definition.content.mainDefinition.text') }}
+                </p>
+                <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                  {{ t('drugDilution.sections.definition.content.principles.title') }}
+                </p>
+                <ul>
+                  <li
+                    v-for="(item, idx) in 4"
+                    :key="idx"
+                    class="text-body2"
+                    v-html="t(`drugDilution.sections.definition.content.principles.items[${idx}]`)"
+                  ></li>
+                </ul>
+              </q-card>
+            </q-expansion-item>
+
+            <!-- SECTION 2-9: Placeholders -->
+            <q-expansion-item
+              icon="science"
+              :label="t('drugDilution.sections.physiology.title')"
+              class="q-mb-sm"
+              header-class="bg-green-1 text-green-9"
+            >
+              <q-card class="q-pa-md">
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.physiology.content.pharmacokinetics.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.physiology.content.pharmacokinetics.principles[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.physiology.content.concentration.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.physiology.content.concentration.relationships[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.physiology.content.osmolarity.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2"
+                      v-html="
+                        t(
+                          `drugDilution.sections.physiology.content.osmolarity.considerations[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+              </q-card>
+            </q-expansion-item>
+
+            <q-expansion-item
+              icon="straighten"
+              :label="t('drugDilution.sections.measurement.title')"
+              class="q-mb-sm"
+              header-class="bg-amber-1 text-amber-9"
+            >
+              <q-card class="q-pa-md">
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.measurement.content.equipment.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.measurement.content.equipment.items[${idx}]`)
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.measurement.content.asepticTechnique.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.measurement.content.asepticTechnique.steps[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.measurement.content.dilutionProcedure.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 7"
+                      :key="idx"
+                      class="text-body2"
+                      v-html="
+                        t(
+                          `drugDilution.sections.measurement.content.dilutionProcedure.procedure[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+              </q-card>
+            </q-expansion-item>
+
+            <q-expansion-item
+              icon="functions"
+              :label="t('drugDilution.sections.formula.title')"
+              class="q-mb-sm"
+              header-class="bg-cyan-1 text-cyan-9"
+            >
+              <q-card class="q-pa-md">
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.formula.content.basicFormulas.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.formula.content.basicFormulas.formulas[${idx}]`)
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.formula.content.advancedFormulas.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 3"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.formula.content.advancedFormulas.calculations[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.formula.content.practicalExample.title') }}
+                  </p>
+                  <p class="text-body2 text-italic q-mb-md">
+                    {{ t('drugDilution.sections.formula.content.practicalExample.scenario') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2"
+                      v-html="
+                        t(`drugDilution.sections.formula.content.practicalExample.steps[${idx}]`)
+                      "
+                    ></li>
+                  </ul>
+                </div>
+              </q-card>
+            </q-expansion-item>
+
+            <q-expansion-item
+              icon="psychology"
+              :label="t('drugDilution.sections.interpretation.title')"
+              class="q-mb-sm"
+              header-class="bg-orange-1 text-orange-9"
+            >
+              <q-card class="q-pa-md">
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{
+                      t('drugDilution.sections.interpretation.content.concentrationRanges.title')
+                    }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 6"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.interpretation.content.concentrationRanges.drugs[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.interpretation.content.verificationChecks.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 6"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.interpretation.content.verificationChecks.checks[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.interpretation.content.clinicalGuidance.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2"
+                      v-html="
+                        t(
+                          `drugDilution.sections.interpretation.content.clinicalGuidance.guidance[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+              </q-card>
+            </q-expansion-item>
+
+            <q-expansion-item
+              icon="local_hospital"
+              :label="t('drugDilution.sections.applications.title')"
+              class="q-mb-sm"
+              header-class="bg-purple-1 text-purple-9"
+            >
+              <q-card class="q-pa-md">
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.applications.content.pediatrics.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.applications.content.pediatrics.considerations[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.applications.content.criticalCare.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.applications.content.criticalCare.protocols[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.applications.content.oncology.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 4"
+                      :key="idx"
+                      class="text-body2"
+                      v-html="
+                        t(
+                          `drugDilution.sections.applications.content.oncology.chemotherapy[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+              </q-card>
+            </q-expansion-item>
+
+            <q-expansion-item
+              icon="warning"
+              :label="t('drugDilution.sections.alerts.title')"
+              class="q-mb-sm"
+              header-class="bg-red-1 text-red-9"
+            >
+              <q-card class="q-pa-md">
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.alerts.content.highAlertMedications.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 7"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.alerts.content.highAlertMedications.categories[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.alerts.content.criticalConcentrations.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.alerts.content.criticalConcentrations.limits[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.alerts.content.incompatibilities.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.alerts.content.incompatibilities.combinations[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.alerts.content.emergencyProtocols.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.alerts.content.emergencyProtocols.procedures[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+              </q-card>
+            </q-expansion-item>
+
+            <q-expansion-item
+              icon="menu_book"
+              :label="t('drugDilution.sections.documentation.title')"
+              class="q-mb-sm"
+              header-class="bg-indigo-1 text-indigo-9"
+            >
+              <q-card class="q-pa-md">
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.documentation.content.compatibility.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.documentation.content.compatibility.solvents[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.documentation.content.stabilityData.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.documentation.content.stabilityData.categories[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.documentation.content.labeling.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 9"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(
+                          `drugDilution.sections.documentation.content.labeling.requirements[${idx}]`,
+                        )
+                      "
+                    ></li>
+                  </ul>
+                </div>
+              </q-card>
+            </q-expansion-item>
+
+            <q-expansion-item
+              icon="science"
+              :label="t('drugDilution.sections.references.title')"
+              class="q-mb-sm"
+              header-class="bg-teal-1 text-teal-9"
+            >
+              <q-card class="q-pa-md">
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.references.content.guidelines.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 6"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="t(`drugDilution.sections.references.content.guidelines.list[${idx}]`)"
+                    ></li>
+                  </ul>
+                </div>
+                <div class="q-mb-lg">
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.references.content.research.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.references.content.research.articles[${idx}]`)
+                      "
+                    ></li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="text-weight-bold text-subtitle1 q-mb-sm">
+                    {{ t('drugDilution.sections.references.content.onlineTools.title') }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="(item, idx) in 5"
+                      :key="idx"
+                      class="text-body2 q-mb-sm"
+                      v-html="
+                        t(`drugDilution.sections.references.content.onlineTools.tools[${idx}]`)
+                      "
+                    ></li>
+                  </ul>
+                </div>
+              </q-card>
+            </q-expansion-item>
           </q-card-section>
         </q-card>
       </div>
