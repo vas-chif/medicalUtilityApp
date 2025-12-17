@@ -15,6 +15,8 @@ import respiratoryQuotient from './respiratoryQuotient';
 import savedCalculations from './savedCalculations';
 import fluidBalance from './fluidBalance';
 import dosageCalculator from './dosageCalculator';
+import drugDilution from './drugDilution';
+import infusionRate from './infusionRate';
 // import ibw from './ibw';
 
 export default {
@@ -87,4 +89,8 @@ export default {
 
   // Dosage Calculator
   dosageCalculator,
+
+  // Drug Dilution Calculator
+  drugDilution,
+  infusionRate,
 };

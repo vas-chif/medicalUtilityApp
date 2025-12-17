@@ -6,17 +6,17 @@
 
 ## 📋 Color Scheme Standard
 
-| Sezione            | BG            | Text            | Icon             |
-| ------------------ | ------------- | --------------- | ---------------- |
-| 1️⃣ Definizione     | `bg-blue-1`   | `text-blue-9`   | `info`           |
-| 2️⃣ Fisiologia      | `bg-green-1`  | `text-green-9`  | `science`        |
-| 3️⃣ Misurazione     | `bg-amber-1`  | `text-amber-9`  | `straighten`     |
-| 4️⃣ Formula         | `bg-cyan-1`   | `text-cyan-9`   | `functions`      |
-| 5️⃣ Interpretazione | `bg-orange-1` | `text-orange-9` | `psychology`     |
-| 6️⃣ Applicazioni    | `bg-purple-1` | `text-purple-9` | `local_hospital` |
-| 7️⃣ Valori/Alert    | `bg-red-1`    | `text-red-9`    | `warning`        |
-| 8️⃣ Docs            | `bg-indigo-1` | `text-indigo-9` | `menu_book`      |
-| 9️⃣ Riferimenti     | `bg-teal-1`   | `text-teal-9`   | `science`        |
+| Sezione         | BG            | Text            | Icon             |
+| --------------- | ------------- | --------------- | ---------------- |
+| Definizione     | `bg-blue-1`   | `text-blue-9`   | `info`           |
+| Fisiologia      | `bg-green-1`  | `text-green-9`  | `science`        |
+| Misurazione     | `bg-amber-1`  | `text-amber-9`  | `straighten`     |
+| Formula         | `bg-cyan-1`   | `text-cyan-9`   | `functions`      |
+| Interpretazione | `bg-orange-1` | `text-orange-9` | `psychology`     |
+| Applicazioni    | `bg-purple-1` | `text-purple-9` | `local_hospital` |
+| Valori/Alert    | `bg-red-1`    | `text-red-9`    | `warning`        |
+| Docs            | `bg-indigo-1` | `text-indigo-9` | `menu_book`      |
+| Riferimenti     | `bg-teal-1`   | `text-teal-9`   | `science`        |
 
 ---
 

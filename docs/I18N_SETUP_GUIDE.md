@@ -573,7 +573,7 @@ export default {
 /**
  * @file en-US/nomeComponente.ts
  * @description English translations for NomeComponente
- * @author [Author Name]
+egi * @author [Author Name]
  * @created YYYY-MM-DD
  */
 

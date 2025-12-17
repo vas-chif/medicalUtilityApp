@@ -1,0 +1,427 @@
+/**
+ * @file en-US/drugDilution.ts
+ * @description English translations for Drug Dilution Calculator
+ * @author Vasile Chifeac
+ * @created 2025-12-16
+ * @updated 2025-01-07 - Complete 9-section NEWS-style documentation
+ *
+ * @references
+ * - ISMP (Institute for Safe Medication Practices) - High-Alert Medications
+ * - ASHP Guidelines on Compounding Sterile Preparations
+ * - USP <797> Pharmaceutical Compounding Standards
+ * - Micromedex Drug Information (IV Compatibility, Stability)
+ */
+
+export default {
+  // 1. MAIN TITLES
+  title: 'Drug Dilution Calculator',
+  subtitle: 'Calculate drug dilutions, final concentrations and volumes to withdraw',
+
+  // 2. FORM INPUT
+  form: {
+    sectionTitle: 'Dilution Parameters',
+    dose: {
+      label: 'Drug Dose',
+      unit: 'mg',
+      validation: 'Dose must be > 0',
+    },
+    volume: {
+      label: 'Final Solution Volume',
+      unit: 'mL',
+      validation: 'Volume must be > 0',
+    },
+    stockConcentration: {
+      label: 'Stock Concentration (optional)',
+      unit: 'mg/mL',
+      hint: 'To calculate volume to withdraw',
+    },
+    targetConcentration: {
+      label: 'Target Concentration (optional)',
+      unit: 'mg/mL',
+      hint: 'To calculate required final volume',
+    },
+  },
+
+  // 3. BUTTONS
+  buttons: {
+    calculate: 'Calculate Dilution',
+    reset: 'Reset',
+  },
+
+  // 4. RESULTS PANEL
+  resultsPanel: {
+    title: 'Dilution Results',
+    finalConcentration: {
+      label: 'mg/mL',
+      subtitle: 'Final Concentration',
+    },
+    details: {
+      totalDose: 'Total Dose',
+      finalVolume: 'Final Volume',
+      volumeToWithdraw: 'Volume to Withdraw (from stock)',
+      dilutionRatio: 'Dilution Ratio',
+    },
+  },
+
+  // 5. FORMULA
+  formula: {
+    title: 'Formula Used',
+    finalConcentration: {
+      label: 'Final Concentration:',
+      formula: 'C = Dose (mg) / Volume (mL)',
+    },
+    volumeToWithdraw: {
+      label: 'Volume to Withdraw:',
+      formula: 'V = Dose / Stock Concentration',
+    },
+    dilutionRatio: {
+      label: 'Dilution Ratio:',
+      formula: 'Ratio = Final Volume / Withdrawn Volume',
+    },
+  },
+
+  // 6. SAFETY GUIDELINES
+  safety: {
+    title: 'Safety Guidelines',
+    guidelines: [
+      'Always verify drug and concentration before dilution',
+      'Use aseptic technique for sterile preparations',
+      'Check drug-solvent compatibility',
+      'Clearly label the final solution',
+      'Respect stability times of diluted solution',
+      'Double-check by two operators for high-risk drugs',
+    ],
+  },
+
+  // 7. EMPTY STATE
+  emptyState: 'Enter dose and volume to calculate dilution',
+
+  // 8. DOCUMENTATION SECTIONS - NEWS-STYLE 9-SECTION STRUCTURE
+  sections: {
+    // SECTION 1: DEFINITION (bg-blue-1)
+    definition: {
+      title: 'Clinical Definition',
+      icon: 'info',
+      color: 'bg-blue-1',
+      textColor: 'text-blue-9',
+      content: {
+        mainDefinition: {
+          title: 'Definition:',
+          text: 'Drug dilution is the pharmaceutical process of reducing the concentration of a drug by adding a compatible solvent (typically 0.9% NaCl saline or water for injection). Correct calculation of dilutions is essential for administering safe and effective doses, particularly for high-risk medications that require precise concentrations.',
+        },
+        principles: {
+          title: 'Fundamental Principles:',
+          items: [
+            '<strong>Concentration = Dose / Volume (C = D/V):</strong> Final concentration depends on the total amount of drug (mg) divided by the total volume of solution (mL). This relationship is fundamental to all dilution calculations.',
+            '<strong>Mass Conservation Law:</strong> The total mass (amount) of drug remains constant during dilution - only the volume changes. If you have 100 mg of drug, after dilution you still have 100 mg, but in a larger volume.',
+            '<strong>Dilution Ratio:</strong> Expresses how many times the final volume is greater than the initial volume or withdrawal volume (e.g., 1:10 means the final volume is 10 times the initial volume - a tenfold dilution).',
+            '<strong>Stock Solution:</strong> The starting concentrated solution, typically supplied in ampules or vials (e.g., morphine ampoule 100 mg in 2 mL = stock concentration of 50 mg/mL).',
+          ],
+        },
+      },
+    },
+
+    // SECTION 2: PHYSIOLOGY (bg-green-1)
+    physiology: {
+      title: 'Pharmacokinetic Principles',
+      icon: 'science',
+      color: 'bg-green-1',
+      textColor: 'text-green-9',
+      content: {
+        osmolarity: {
+          title: 'Osmolarity and Tonicity:',
+          description:
+            '<strong>Osmolarity</strong> is the concentration of osmotically active particles in a solution, measured in milliosmoles per liter (mOsm/L). It critically affects red blood cell integrity and tissue tolerance to IV solutions.',
+          formula: 'Osmolarity (mOsm/L) = (mEq/L) × (ionic valence) × (osmotic coefficient)',
+          ranges: [
+            "<strong>Isotonic (280-320 mOsm/L):</strong> Equivalent to plasma osmolarity. Ideal for peripheral IV administration. Examples: 0.9% NaCl (308 mOsm/L), Lactated Ringer's (273 mOsm/L).",
+            '<strong>Hypertonic (>320 mOsm/L):</strong> Higher osmolarity than plasma. Risk of vein irritation, phlebitis, hemolysis if administered peripherally. May require central venous access. Examples: 3% NaCl (1027 mOsm/L), 10% Dextrose (505 mOsm/L).',
+            '<strong>Hypotonic (<280 mOsm/L):</strong> Lower osmolarity than plasma. Risk of cell swelling and hemolysis. Examples: 0.45% NaCl (154 mOsm/L), pure water for injection (0 mOsm/L - NEVER administer IV alone).',
+          ],
+        },
+        concentrationDynamics: {
+          title: 'Concentration Gradients and Distribution:',
+          principles: [
+            '<strong>Dilution Effect on Pharmacokinetics:</strong> Lowering concentration slows infusion rate and peak plasma concentration (C<sub>max</sub>), reducing risk of bolus effect and toxicity. Example: Morphine at 10 mg/mL infused at 1 mL/h = 10 mg/h; diluted to 1 mg/mL requires 10 mL/h for same dose but with more gradual absorption.',
+            '<strong>Volume of Distribution (V<sub>d</sub>):</strong> Total administered volume affects V<sub>d</sub>, particularly for hydrophilic drugs. Larger volumes may delay time to peak effect (T<sub>max</sub>) but prolong duration of action.',
+            '<strong>Tissue Tolerance:</strong> Local tissue concentration matters for peripheral administration. High concentrations (>600 mOsm/L) cause chemical phlebitis. Dilution reduces local tissue exposure and improves tolerability.',
+            '<strong>Incompatibility Risk:</strong> Incorrect osmolarity or pH after dilution can cause drug precipitation or hemolysis. Always verify compatibility of drug-solvent combination (see Documentation section).',
+          ],
+        },
+      },
+    },
+
+    // SECTION 3: MEASUREMENT (bg-amber-1)
+    measurement: {
+      title: 'Calculation Method',
+      icon: 'straighten',
+      color: 'bg-amber-1',
+      textColor: 'text-amber-9',
+      content: {
+        steps: {
+          title: 'Step-by-Step Calculation Process:',
+          list: [
+            '<strong>Step 1 - Identify Required Parameters:</strong> (a) Required total dose (mg or mcg), (b) Desired final volume (mL), (c) Stock concentration available (mg/mL or mcg/mL).',
+            '<strong>Step 2 - Calculate Volume to Withdraw from Stock:</strong> V<sub>withdraw</sub> = Total Dose (mg) / Stock Concentration (mg/mL). Example: To obtain 100 mg from stock 50 mg/mL → V<sub>withdraw</sub> = 100 mg / 50 mg/mL = 2 mL.',
+            '<strong>Step 3 - Calculate Solvent to Add:</strong> Solvent Volume = Final Volume - Withdrawn Volume. Example: To reach final volume 10 mL → Solvent = 10 mL - 2 mL = 8 mL of 0.9% NaCl.',
+            '<strong>Step 4 - Calculate Final Concentration:</strong> C<sub>final</sub> = Total Dose (mg) / Final Volume (mL). Example: 100 mg in 10 mL → C<sub>final</sub> = 100 mg / 10 mL = 10 mg/mL.',
+            '<strong>Step 5 - Verify Dilution Ratio:</strong> Ratio = V<sub>final</sub> / V<sub>withdraw</sub>. Example: 10 mL / 2 mL = 5 → This is a 1:5 dilution (final volume is 5 times the withdrawal volume).',
+          ],
+        },
+        practicalExample: {
+          title: 'Detailed Practical Example:',
+          scenario:
+            '<strong>Clinical Scenario:</strong> You need to prepare 50 mL of morphine solution at a final concentration of 1 mg/mL for continuous PCA infusion. You have available stock ampoules of morphine 10 mg/mL.',
+          solution:
+            '<strong>Step-by-Step Solution:</strong><br/>' +
+            '<strong>1. Total Dose:</strong> 50 mL × 1 mg/mL = 50 mg of morphine needed<br/>' +
+            '<strong>2. Volume to Withdraw:</strong> V<sub>withdraw</sub> = 50 mg / 10 mg/mL = 5 mL from stock ampoule<br/>' +
+            '<strong>3. Solvent to Add:</strong> 50 mL (final) - 5 mL (withdrawn) = 45 mL of 0.9% NaCl<br/>' +
+            '<strong>4. Final Concentration:</strong> C<sub>final</sub> = 50 mg / 50 mL = 1 mg/mL ✓<br/>' +
+            '<strong>5. Dilution Ratio:</strong> 50 mL / 5 mL = 10 → This is a 1:10 dilution',
+          verification:
+            '<strong>Double Check:</strong> Draw 5 mL from morphine 10 mg/mL ampoule + add 45 mL saline = 50 mL total at 1 mg/mL. Label syringe: "Morphine 50 mg / 50 mL (1 mg/mL), Date, Time, Operator".',
+        },
+      },
+    },
+
+    // SECTION 4: FORMULA (bg-cyan-1)
+    formula: {
+      title: 'Mathematical Formulas',
+      icon: 'functions',
+      color: 'bg-cyan-1',
+      textColor: 'text-cyan-9',
+      content: {
+        basicFormulas: {
+          title: 'Fundamental Formulas:',
+          formulas: [
+            '<strong>Final Concentration:</strong> C<sub>final</sub> (mg/mL) = Total Dose (mg) / Final Volume (mL)',
+            '<strong>Volume to Withdraw:</strong> V<sub>withdraw</sub> (mL) = Total Dose (mg) / Stock Concentration (mg/mL)',
+            '<strong>Solvent to Add:</strong> V<sub>solvent</sub> (mL) = Final Volume (mL) - Withdrawn Volume (mL)',
+            '<strong>Dilution Ratio:</strong> Ratio = V<sub>final</sub> / V<sub>withdraw</sub> (expressed as 1:X where X = V<sub>final</sub>/V<sub>withdraw</sub>)',
+          ],
+        },
+        stockCalculations: {
+          title: 'Stock Solution Calculations:',
+          formulas: [
+            '<strong>Stock Concentration:</strong> C<sub>stock</sub> (mg/mL) = Total mg in Ampoule / Ampoule Volume (mL). Example: Ampoule 100 mg in 2 mL → C<sub>stock</sub> = 100 mg / 2 mL = 50 mg/mL.',
+            '<strong>Total Dose from Stock:</strong> Dose (mg) = C<sub>stock</sub> (mg/mL) × V<sub>withdrawn</sub> (mL). Example: 2 mL withdrawn from 50 mg/mL → Dose = 50 mg/mL × 2 mL = 100 mg.',
+            '<strong>Number of Ampoules Needed:</strong> N<sub>ampoules</sub> = Total Dose Required (mg) / mg per Ampoule. Example: Need 150 mg, ampoules contain 100 mg each → N = 150/100 = 1.5 → round up to 2 ampoules.',
+          ],
+        },
+        targetConcentration: {
+          title: 'Target Concentration Calculations:',
+          formulas: [
+            '<strong>Final Volume from Target Concentration:</strong> V<sub>final</sub> (mL) = Total Dose (mg) / Target Concentration (mg/mL). Example: 100 mg to dilute to 5 mg/mL → V<sub>final</sub> = 100 mg / 5 mg/mL = 20 mL.',
+            '<strong>Dose from Volume and Concentration:</strong> Dose (mg) = Volume (mL) × Concentration (mg/mL). Example: 10 mL of 2 mg/mL solution → Dose = 10 mL × 2 mg/mL = 20 mg.',
+            '<strong>Serial Dilution:</strong> For extreme dilutions (e.g., 1:10000), perform serial dilutions: 1:10 then 1:10 again then 1:100. Example: Epinephrine 1 mg/mL → dilute 1:10 to 0.1 mg/mL → dilute 1:100 to 0.001 mg/mL (1:1000 final).',
+          ],
+        },
+      },
+    },
+
+    // SECTION 5: INTERPRETATION (bg-orange-1)
+    interpretation: {
+      title: 'Clinical Interpretation',
+      icon: 'psychology',
+      color: 'bg-orange-1',
+      textColor: 'text-orange-9',
+      content: {
+        safeRanges: {
+          title: 'Safe Concentration Ranges by Administration Route:',
+          routes: [
+            '<strong>Peripheral Intravenous (IV):</strong> Maximum osmolarity 600 mOsm/L (preferably <500 mOsm/L). Higher concentrations cause chemical phlebitis, pain, vein sclerosis. Examples: Morphine ≤5 mg/mL, Potassium ≤40 mEq/L.',
+            '<strong>Central Venous Catheter (CVC):</strong> Can tolerate up to 900 mOsm/L due to rapid dilution in large blood flow of vena cava. Examples: Total Parenteral Nutrition (TPN) with 10% dextrose (505 mOsm/L) + amino acids + electrolytes.',
+            '<strong>Intramuscular (IM):</strong> Volume limitations (adults max 5 mL/site deltoid, 2 mL gluteus). High concentrations preferred to minimize injection volume. Example: Ceftriaxone IM 250 mg/mL (1 g in 4 mL lidocaine 1%).',
+            '<strong>Subcutaneous (SC):</strong> Very dilute solutions, isotonic, max 1.5 mL/site. Example: Insulin 100 IU/mL for SC injection, NOT for IV (requires dilution to 1-10 IU/mL for IV).',
+          ],
+        },
+        clinicalSignificance: {
+          title: 'Clinical Significance of Dilution:',
+          considerations: [
+            '<strong>Pediatric vs Adult Concentrations:</strong> Pediatrics require lower concentrations for safety. Example: Morphine for neonates 0.05-0.1 mg/mL vs adults 1-2 mg/mL. Rationale: Small dosing errors in neonates (0.1 mL overdose = 0.1 mg at 1 mg/mL = 1000% overdose for 0.1 mg dose).',
+            '<strong>High-Alert Drug Dilutions:</strong> ISMP recommends standard concentrations for high-alert drugs to prevent 10-fold errors. Example: Heparin infusions ALWAYS 100 units/mL (not 1000 units/mL) to avoid accidental bolus.',
+            '<strong>Infusion Rate Impact:</strong> Dilute drugs allow slower, more controlled infusion rates compatible with IV pump capabilities (most pumps min rate 0.1 mL/h). Example: Norepinephrine 4 mg in 250 mL (16 mcg/mL) allows titration 0.05-0.5 mcg/kg/min at practical pump rates.',
+            '<strong>Volume Overload Risk:</strong> Over-dilution increases infusion volume. Risk for heart failure, renal failure, neonates. Example: 100 mg drug diluted to 0.1 mg/mL = 1000 mL volume vs 10 mg/mL = 10 mL volume.',
+          ],
+        },
+        whenToUse: {
+          title: 'When to Use High vs Low Concentrations:',
+          guidance: [
+            '<strong>High Concentrations (5-50 mg/mL):</strong> Fluid restriction (heart failure, ARDS), limited central venous access, drugs requiring slow infusion rates (vasoactives). Example: Norepinephrine 4 mg in 50 mL (80 mcg/mL) in shock patient with fluid restriction.',
+            '<strong>Low Concentrations (0.1-2 mg/mL):</strong> Peripheral IV, pediatrics/neonates, drugs with narrow therapeutic index, long-term infusions (PCA). Example: Morphine PCA 1 mg/mL, allows precise 0.5-1 mg boluses with 0.5-1 mL volumes.',
+            '<strong>Standard Concentrations:</strong> Most institutions have standard concentration protocols for commonly used drugs to reduce errors. Always consult institutional guidelines before preparing non-standard dilutions.',
+          ],
+        },
+      },
+    },
+
+    // SECTION 6: APPLICATIONS (bg-purple-1)
+    applications: {
+      title: 'Clinical Applications',
+      icon: 'local_hospital',
+      color: 'bg-purple-1',
+      textColor: 'text-purple-9',
+      content: {
+        highRiskDrugs: {
+          title: 'ISMP High-Alert Medications - Standard Dilutions:',
+          drugs: [
+            '<strong>Insulin (Regular):</strong> Stock 100 IU/mL → Dilute 1:10 for continuous IV infusion (100 IU in 100 mL 0.9% NaCl = 1 IU/mL). NEVER administer concentrated insulin IV. SC injection uses undiluted 100 IU/mL.',
+            '<strong>Epinephrine:</strong> Stock 1 mg/mL (1:1000) → IV push requires 1:10000 dilution (0.1 mg/mL). Example: 1 mL epinephrine 1 mg/mL + 9 mL saline = 10 mL at 0.1 mg/mL (1 mg total). For cardiac arrest: 1 mg IV (10 mL of 1:10000 solution).',
+            '<strong>Potassium Chloride (KCl):</strong> Stock 2 mEq/mL → NEVER IV push undiluted (fatal cardiac arrest). Peripheral IV MAX 40 mEq/L (20 mEq in 500 mL). Central line MAX 80 mEq/L. Infusion MAX rate 10 mEq/hour (20 mEq/h central with cardiac monitoring).',
+            '<strong>Morphine PCA (Patient-Controlled Analgesia):</strong> Standard 1 mg/mL (100 mg morphine in 100 mL saline). Allows 0.5-2 mg bolus doses (0.5-2 mL). Alternative concentrations: 0.5 mg/mL (pediatrics), 2 mg/mL (opioid-tolerant patients).',
+            '<strong>Heparin Infusion:</strong> Standard 100 units/mL (25,000 units in 250 mL D5W or NS). For pediatrics: 50 units/mL. Loading dose 80 units/kg IV push (from undiluted 1000 units/mL vial), then infusion 18 units/kg/h.',
+            '<strong>Chemotherapeutic Agents:</strong> <em>Carboplatin</em> 10 mg/mL (max), dilute in 250-1000 mL D5W (final concentration 0.5-2 mg/mL). <em>Cisplatin</em> 1 mg/mL, dilute in 1000 mL NS 0.9% (final 0.05-0.2 mg/mL). <em>Vincristine</em> 1 mg/10 mL NS (0.1 mg/mL) - FATAL if given intrathecally.',
+          ],
+        },
+        pediatrics: {
+          title: 'Pediatric and Neonatal Applications:',
+          considerations: [
+            '<strong>Small Volume Requirements:</strong> Neonates and infants require dilutions to obtain measurable, accurate volumes. Example: Neonatal morphine dose 0.05 mg requires dilution to 0.1 mg/mL for 0.5 mL measurable volume (vs 0.005 mL from 10 mg/mL stock - impossible to measure accurately).',
+            '<strong>Reduced Concentrations for Safety:</strong> Lower concentrations reduce risk of overdose from small volume errors. Standard pediatric morphine 0.1 mg/mL vs adult 1-2 mg/mL. Rationale: 0.1 mL dosing error = 0.01 mg error at 0.1 mg/mL vs 0.2 mg error at 2 mg/mL (20-fold difference).',
+            '<strong>Osmolarity Constraints:</strong> Neonates are highly sensitive to osmolarity changes. Maintain 280-320 mOsm/L (isotonic) for peripheral IV. Use dilute electrolytes: KCl max 20 mEq/L (vs adult 40 mEq/L), CaCl<sub>2</sub> max 20 mg/mL.',
+            '<strong>Stability Considerations:</strong> Pediatric dilutions often have shorter stability times due to lower drug concentrations and smaller volumes (increased surface-to-volume ratio). Example: Diluted antibiotics in 10 mL syringes stable 4-12 hours vs adult bags (100-250 mL) stable 24 hours at 2-8°C.',
+            '<strong>Weight-Based Dosing:</strong> Pediatric doses are weight-based (mg/kg). Dilutions must be calculated for individual patient. Example: Gentamicin 5 mg/kg for 3 kg neonate = 15 mg dose. Dilute to 15 mg in 3 mL (5 mg/mL) for 3 mL IV infusion over 30 minutes.',
+          ],
+        },
+        icu: {
+          title: 'Intensive Care Unit (ICU) Applications:',
+          protocols: [
+            '<strong>Vasoactive Drugs:</strong> <em>Norepinephrine</em> 4-16 mg in 250 mL (16-64 mcg/mL), titrated 0.05-3 mcg/kg/min. <em>Dopamine</em> 400-800 mg in 250 mL (1600-3200 mcg/mL), titrated 2-20 mcg/kg/min. <em>Vasopressin</em> 20 units in 100 mL (0.2 units/mL), fixed rate 0.03-0.04 units/min.',
+            '<strong>Sedation Protocols:</strong> <em>Propofol</em> undiluted 10 mg/mL (high lipid content, cannot dilute). <em>Midazolam</em> 50 mg in 50 mL (1 mg/mL), titrated 0.5-4 mg/h. <em>Dexmedetomidine</em> 200 mcg in 50 mL (4 mcg/mL), loading 1 mcg/kg over 10 min then 0.2-1.5 mcg/kg/h.',
+            '<strong>Analgesia Protocols:</strong> <em>Fentanyl infusion</em> 2500 mcg (2.5 mg) in 50 mL (50 mcg/mL), titrated 25-200 mcg/h. <em>Remifentanil</em> 5 mg in 50 mL (100 mcg/mL), titrated 0.05-2 mcg/kg/min (ultra-short acting, context-sensitive half-time 3-5 min regardless of infusion duration).',
+            '<strong>Electrolyte Replacement:</strong> <em>Magnesium sulfate</em> 4-6 g in 100 mL (40-60 mg/mL) over 20-30 minutes for eclampsia. <em>Calcium gluconate</em> 1-2 g in 100 mL (10-20 mg/mL) over 10 minutes for hypocalcemia. <em>Sodium bicarbonate</em> 8.4% (1 mEq/mL) diluted 1:1 with D5W for continuous infusion in metabolic acidosis.',
+          ],
+        },
+      },
+    },
+
+    // SECTION 7: VALUES/ALERTS (bg-red-1)
+    alerts: {
+      title: 'Safety Alerts',
+      icon: 'warning',
+      color: 'bg-red-1',
+      textColor: 'text-red-9',
+      content: {
+        ismpGuidelines: {
+          title: 'ISMP Safety Guidelines for High-Risk Dilutions:',
+          recommendations: [
+            '<strong>Independent Double Check:</strong> For high-alert medications (insulin, heparin, chemotherapeutics, KCl, vasoactives), TWO healthcare providers must independently calculate and verify the dilution before preparation. Both sign documentation.',
+            '<strong>Standardized Concentrations:</strong> Institutions should adopt standard concentration protocols for frequently used drugs to reduce cognitive load and calculation errors. Example: All morphine PCA at 1 mg/mL, all heparin infusions at 100 units/mL.',
+            '<strong>Clear, Complete Labeling:</strong> Every prepared dilution must be labeled with: (1) Drug name, (2) Total dose (e.g., 100 mg), (3) Final concentration (e.g., 10 mg/mL), (4) Total volume (e.g., 10 mL), (5) Date and time of preparation, (6) Preparer initials, (7) Expiration date/time, (8) Route if applicable (IV only).',
+            '<strong>Aseptic Technique:</strong> All dilutions must be prepared using strict aseptic technique. Chemotherapeutics require biological safety cabinet (Class II BSC). High-risk sterile preparations require ISO Class 5 environment (laminar flow hood). Use sterile syringes, needles, alcohol wipes.',
+            '<strong>Written Calculation Documentation:</strong> NEVER perform mental calculations for critical dilutions. Write out each step: (1) Dose needed, (2) Volume to withdraw, (3) Solvent to add, (4) Final concentration check. Keep documentation in patient record.',
+            '<strong>Pre-Administration Verification:</strong> Before administering diluted solution, inspect for: (1) Clarity (no cloudiness), (2) Color (compare to reference - some drugs change color when degraded), (3) Particulate matter (visible particles = contamination or precipitation), (4) Label accuracy (drug, concentration, date).',
+            '<strong>Use of Technology:</strong> Barcode verification systems reduce wrong-drug errors by 86% (ISMP data). Smart infusion pumps with drug libraries prevent concentration and rate errors. Electronic calculators with built-in drug libraries reduce mathematical errors.',
+          ],
+        },
+        commonErrors: {
+          title: 'Common Calculation Errors to Avoid:',
+          errors: [
+            '<strong>Unit Confusion (Most Common Error):</strong> mg vs mcg (μg) - 1000-fold difference, mL vs L - 1000-fold difference, % concentration vs mg/mL (1% = 10 mg/mL, 0.9% NaCl = 9 mg/mL = 154 mEq/L Na+). Example error: Order "Epinephrine 1 mg" but administer 1 mL of 1:1000 solution thinking it\'s 1:10000 → 10-fold overdose.',
+            '<strong>Inverted Calculation:</strong> Dividing when should multiply or vice versa. Example: To withdraw 100 mg from 50 mg/mL, error = 50/100 = 0.5 mL (WRONG) instead of 100/50 = 2 mL (CORRECT). Always check if answer makes sense (need more than 1 mL for 100 mg from 50 mg/mL concentration).',
+            '<strong>Added Volume vs Final Volume:</strong> Final volume = Withdrawn volume + Added solvent volume (NOT just added solvent). Example: To make 10 mL final, withdraw 2 mL, must ADD 8 mL solvent (not 10 mL). Common error adds 10 mL making actual final volume 12 mL → concentration error.',
+            '<strong>Excessive Rounding:</strong> Premature rounding causes cumulative errors. Use at least 2 decimal places for concentrations (10.25 mg/mL not 10 mg/mL). Example: 100 mg / 9.8 mL = 10.20 mg/mL; if rounded to 10 mg/mL at each step, final error can be >5%.',
+            "<strong>Solvent Incompatibility:</strong> Not all drugs dissolve in all solvents. Diazepam and phenytoin precipitate in NaCl (use D5W). Amphotericin precipitates in saline (use D5W only). Ceftriaxone precipitates with calcium-containing solutions (Lactated Ringer's). ALWAYS check compatibility tables before diluting.",
+            '<strong>Expired Stock or Dilution:</strong> Using expired ampoules or using dilutions beyond stability time. Example: Most diluted antibiotics stable only 24 hours at 2-8°C. Ampicillin stable only 4-6 hours diluted. Check expiry dates on stock AND calculate expiry of dilution.',
+          ],
+        },
+        safeguards: {
+          title: 'Safety Protocols and Safeguards:',
+          protocols: [
+            '<strong>Barcode Verification:</strong> Scan drug barcode before preparation to confirm correct drug, concentration, and patient. Reduces wrong-drug errors by 86% (JAMA 2010).',
+            '<strong>Smart Infusion Pumps:</strong> Use pumps with drug libraries that prevent concentration errors, rate errors, and dose limit violations. Hard limits prevent override for high-alert drugs.',
+            '<strong>Pre-Mixed Solutions:</strong> Whenever possible, use pharmacy-prepared or commercially pre-mixed solutions instead of bedside dilutions to eliminate calculation and preparation errors.',
+            '<strong>Independent Double Check Process:</strong> First nurse calculates and prepares, second nurse independently calculates and verifies WITHOUT seeing first calculation, then compare results. Both sign documentation.',
+            '<strong>Forcing Functions:</strong> Remove concentrated electrolytes (KCl, NaCl 3%) from patient care areas. Stock only diluted, ready-to-use formulations. Requires pharmacy preparation for concentrated formulations.',
+          ],
+        },
+      },
+    },
+
+    // SECTION 8: DOCUMENTATION (bg-indigo-1)
+    documentation: {
+      title: 'Compatibility & Stability',
+      icon: 'menu_book',
+      color: 'bg-indigo-1',
+      textColor: 'text-indigo-9',
+      content: {
+        compatibility: {
+          title: 'IV Solvent Compatibility Matrix:',
+          solvents: [
+            '<strong>Normal Saline 0.9% (NaCl 0.9%, NS):</strong> Most commonly used solvent. Compatible with majority of IV drugs including most antibiotics, analgesics, antiemetics. Osmolarity 308 mOsm/L (isotonic). <em>Incompatible with:</em> Amphotericin B (precipitates), Diazepam (precipitates), Fat emulsions.',
+            '<strong>5% Dextrose in Water (D5W, Glucose 5%):</strong> Second-line solvent for drugs incompatible with NaCl. Osmolarity 252 mOsm/L (hypotonic but acceptable). Compatible with amphotericin B, phenytoin, many chemotherapeutics. <em>Incompatible with:</em> Whole blood products, ertapenem, some cephalosporins.',
+            '<strong>Sterile Water for Injection (SWFI, WFI):</strong> ONLY for diluting stock concentrates or reconstituting powders. Osmolarity 0 mOsm/L (hypotonic). <strong>NEVER administer IV directly</strong> - causes hemolysis. Must be further diluted in NS or D5W for IV administration.',
+            "<strong>Lactated Ringer's Solution (LR, Hartmann's Solution):</strong> Contains Na+ 130 mEq/L, K+ 4 mEq/L, Ca<sup>2+</sup> 3 mEq/L, Cl- 109 mEq/L, Lactate 28 mEq/L. Osmolarity 273 mOsm/L (isotonic). Used for fluid resuscitation. <em>Incompatible with:</em> Ceftriaxone (Ca<sup>2+</sup> precipitates), Amphotericin B, blood products.",
+            '<strong>Bacteriostatic Water (with benzyl alcohol preservative):</strong> For multiple-dose vials. <strong>NEVER use in neonates</strong> - benzyl alcohol toxic (gasping syndrome). <strong>NEVER use for intrathecal or epidural</strong> injections.',
+          ],
+        },
+        stabilityData: {
+          title: 'Stability Times by Drug Class:',
+          categories: [
+            '<strong>24-48 hours (Refrigerated 2-8°C):</strong> Most diluted beta-lactam antibiotics (penicillins, cephalosporins except ampicillin), aminoglycosides (gentamicin, amikacin), fluoroquinolones (ciprofloxacin, levofloxacin), morphine in NS or D5W.',
+            '<strong>8-12 hours (Room Temperature 15-25°C):</strong> Glycopeptides (vancomycin, teicoplanin), carbapenems (meropenem, imipenem), metronidazole, fluconazole.',
+            '<strong>4-6 hours (Refrigerated):</strong> Ampicillin in any diluent (beta-lactam ring unstable), piperacillin-tazobactam after reconstitution.',
+            '<strong>Immediate Use (Use within 1 hour of preparation):</strong> Chemotherapeutics without stabilizers (cyclophosphamide, ifosfamide), photosensitive drugs (nitroprusside - cover with foil, furosemide high concentrations), rasburicase.',
+            '<strong>Light-Protected Storage Required:</strong> Nitroprusside (cover with aluminum foil - degrades to cyanide on light exposure), epoprostenol, dacarbazine, furosemide >10 mg/mL.',
+          ],
+        },
+        labeling: {
+          title: 'Mandatory Labeling Requirements (USP <797> Compliance):',
+          requirements: [
+            '<strong>Drug Name (Generic and Brand):</strong> "Morphine Sulfate" or "Morphine (MS Contin)" - avoid abbreviations (MS = morphine or magnesium sulfate? MgSO4 = magnesium sulfate).',
+            '<strong>Total Drug Amount:</strong> "100 mg" (total amount in entire syringe/bag, NOT per mL).',
+            '<strong>Final Concentration:</strong> "10 mg/mL" or "10 mg per 1 mL" (concentration).',
+            '<strong>Total Volume:</strong> "10 mL total volume" (total volume of solution).',
+            '<strong>Date and Time of Preparation:</strong> "Prepared: 2025-01-07 14:30" (24-hour format preferred).',
+            '<strong>Expiration Date and Time:</strong> "Expires: 2025-01-08 14:30" (based on stability data - 24h for morphine in NS at 2-8°C).',
+            '<strong>Preparer Identification:</strong> "Prepared by: Initials JD" (for accountability and quality control).',
+            '<strong>Route of Administration:</strong> "For IV use only" (prevent wrong-route errors, especially critical for vincristine - fatal if intrathecal).',
+            '<strong>Storage Conditions:</strong> "Store refrigerated 2-8°C" or "Store at room temperature" (based on stability data).',
+            '<strong>Auxiliary Labels if Applicable:</strong> "Protect from light" (nitroprusside), "Single dose vial - discard unused portion" (preservative-free), "Shake well" (suspensions).',
+          ],
+        },
+      },
+    },
+
+    // SECTION 9: REFERENCES (bg-teal-1)
+    references: {
+      title: 'Scientific References',
+      icon: 'science',
+      color: 'bg-teal-1',
+      textColor: 'text-teal-9',
+      content: {
+        guidelines: {
+          title: 'International Guidelines and Standards:',
+          list: [
+            '<strong>ISMP (Institute for Safe Medication Practices):</strong> High-Alert Medications List (2024). Identifies medications that bear heightened risk of causing significant patient harm when used in error. Includes concentrated electrolytes, insulin, heparin, chemotherapeutics. Recommends independent double checks for all dilutions. Website: https://www.ismp.org/',
+            '<strong>ASHP (American Society of Health-System Pharmacists):</strong> Guidelines on Compounding Sterile Preparations (2022). Establishes standards for aseptic technique, environmental quality (ISO classifications), beyond-use dating, personnel training and competency assessment. Applies to all sterile compounding including dilutions. Website: https://www.ashp.org/',
+            '<strong>USP <797>:</strong> Pharmaceutical Compounding - Sterile Preparations (United States Pharmacopeia). Legal standard in USA for sterile compounding. Defines risk levels (immediate use, low risk, medium risk, high risk), environmental controls (ISO Class 5/7/8), beyond-use dates, personnel qualifications. Updated 2023.',
+            '<strong>USP <800>:</strong> Hazardous Drugs - Handling in Healthcare Settings. Standards for safe handling of chemotherapeutics and other hazardous drugs. Requires biological safety cabinets, personal protective equipment (PPE), spill management, personnel monitoring. Updated 2023.',
+            '<strong>Micromedex Drug Information (IBM Watson Health):</strong> Comprehensive pharmacological database with standard dilution protocols, IV compatibility charts, stability data for >4500 drugs. Subscription-based, used by >7000 hospitals worldwide. Website: https://www.micromedexsolutions.com/',
+            '<strong>Lexicomp Drug Information (Wolters Kluwer):</strong> Clinical drug database with pediatric and adult dosing, dilution protocols, IV compatibility. Integrates with electronic health records (EHR). Website: https://online.lexi.com/',
+          ],
+        },
+        research: {
+          title: 'Key Research Publications:',
+          articles: [
+            '<strong>Kaushal R, et al. (2001):</strong> "Medication errors and adverse drug events in pediatric inpatients." JAMA 285(16):2114-2120. Found that dilution/calculation errors account for 28% of medication errors in pediatrics. Recommends standardized concentrations and double checks.',
+            '<strong>Poon EG, et al. (2010):</strong> "Effect of bar-code technology on the safety of medication administration." N Engl J Med 362(18):1698-1707. Demonstrated 41% reduction in medication errors and 51% reduction in potential adverse drug events with barcode scanning.',
+            '<strong>Rinke ML, et al. (2014):</strong> "Characteristics of pediatric chemotherapy medication errors in a national error reporting database." Cancer 120(18):2665-2673. Analyzed 2212 chemotherapy errors - 18% involved incorrect dose/concentration from dilution errors.',
+            '<strong>Westbrook JI, et al. (2015):</strong> "Association of interruptions with an increased risk and severity of medication administration errors." JAMA Intern Med 175(5):683-690. Each interruption during drug preparation increased error risk by 12.7%. Emphasizes need for dedicated preparation areas.',
+          ],
+        },
+        onlineTools: {
+          title: 'Online Calculation Tools and Resources:',
+          tools: [
+            '<strong>MDCalc Medical Calculator:</strong> https://www.mdcalc.com/ - Free clinical calculators including IV drug dosing, drip rate calculators, pharmacokinetic calculators. Peer-reviewed, evidence-based.',
+            '<strong>ClinCalc Drug Dilution Calculator:</strong> https://clincalc.com/DrugDilution/ - Interactive calculator for drug dilutions with common drug presets, concentration verification.',
+            '<strong>GlobalRPh Drug Dilution Calculator:</strong> https://globalrph.com/medcalcs/dilution-calculator/ - Multiple dilution calculators including serial dilution, simple dilution, alligation.',
+            '<strong>King Guide to Parenteral Admixtures:</strong> https://www.kingguide.com/ - Subscription service with >13000 IV drug monographs, compatibility data, dilution protocols. Updated quarterly.',
+            '<strong>Stability Considerations:</strong> UpToDate Drug Interactions Tool - https://www.uptodate.com/ (subscription) - Includes drug-drug, drug-disease, drug-solvent compatibility checks.',
+          ],
+        },
+      },
+    },
+  },
+};

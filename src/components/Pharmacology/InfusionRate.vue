@@ -32,7 +32,13 @@
  */
 
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSecureLogger } from 'src/composables/useSecureLogger';
+
+// ============================================================
+// I18N
+// ============================================================
+const { t } = useI18n();
 
 // ============================================================
 // LOGGING
@@ -53,9 +59,9 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  calculateButtonText: 'Calcola',
-  resetButtonText: 'Reset',
-  title: '⚡ Infusion Rate Converter',
+  calculateButtonText: '',
+  resetButtonText: '',
+  title: '',
 });
 
 interface InfusionCalculatedPayload {
@@ -117,8 +123,7 @@ interface InfusionResult {
   therapeuticWarning: {
     class: string;
     icon: string;
-    title: string;
-    message: string;
+    warningType: 'veryLow' | 'therapeutic' | 'high' | 'veryHigh';
   } | null;
 }
 
@@ -377,31 +382,25 @@ const checkTherapeuticRange = (
     return {
       class: 'bg-info text-white',
       icon: 'info',
-      title: 'Dose Bassa',
-      message:
-        'Dose inferiore al range terapeutico standard (0.01-0.5 mcg/kg/min). Verificare prescrizione.',
+      warningType: 'veryLow',
     };
   } else if (dose >= 0.01 && dose <= 0.5) {
     return {
       class: 'bg-positive text-white',
       icon: 'check_circle',
-      title: 'Range Terapeutico',
-      message: 'Dose nel range standard per vasopressori (0.01-0.5 mcg/kg/min).',
+      warningType: 'therapeutic',
     };
   } else if (dose > 0.5 && dose <= 1) {
     return {
       class: 'bg-warning text-white',
       icon: 'warning',
-      title: 'Dose Elevata',
-      message: 'Dose superiore al range standard. Monitoraggio emodinamico intensivo richiesto.',
+      warningType: 'high',
     };
   } else {
     return {
       class: 'bg-negative text-white',
       icon: 'error',
-      title: 'Dose Molto Elevata',
-      message:
-        'Dose >1 mcg/kg/min indica shock refrattario. Considerare secondo vasopressore (vasopressina/adrenalina) e corticosteroidi.',
+      warningType: 'veryHigh',
     };
   }
 };
@@ -419,9 +418,9 @@ const resetInfusionForm = () => {
 <template>
   <div class="infusion-rate">
     <!-- Title & Description -->
-    <div class="text-h5 text-primary q-mb-md">{{ title }}</div>
+    <div class="text-h5 text-primary q-mb-md">{{ title || t('infusionRate.title') }}</div>
     <p class="text-body2 text-grey-7 q-mb-lg">
-      Conversioni velocità infusione: mcg/kg/min ↔ mL/h per vasopressori e altri farmaci
+      {{ t('infusionRate.subtitle') }}
     </p>
 
     <div class="row q-gutter-lg">
@@ -431,18 +430,21 @@ const resetInfusionForm = () => {
       <div class="col-12 col-md-5">
         <q-card class="q-pa-md">
           <q-card-section>
-            <h6 class="text-h6 q-ma-none q-mb-md">📊 Parametri Infusione</h6>
+            <h6 class="text-h6 q-ma-none q-mb-md">{{ t('infusionRate.form.sectionTitle') }}</h6>
 
             <!-- Patient Weight Input -->
             <q-input
               v-model.number="infusionForm.weight"
               type="number"
               step="0.1"
-              label="Peso Corporeo"
-              suffix="kg"
+              :label="t('infusionRate.form.weight.label')"
+              :suffix="t('infusionRate.form.weight.unit')"
               outlined
               class="q-mb-md"
-              :rules="[(val: number) => (val > 0 && val <= 500) || 'Peso tra 1-500 kg']"
+              :rules="[
+                (val: number) =>
+                  (val > 0 && val <= 500) || t('infusionRate.form.weight.validation'),
+              ]"
             >
               <template v-slot:prepend>
                 <q-icon name="fitness_center" color="blue" />
@@ -454,12 +456,12 @@ const resetInfusionForm = () => {
               v-model.number="infusionForm.concentration"
               type="number"
               step="0.001"
-              label="Concentrazione Soluzione"
-              suffix="mg/mL"
+              :label="t('infusionRate.form.concentration.label')"
+              :suffix="t('infusionRate.form.concentration.unit')"
               outlined
               class="q-mb-md"
-              hint="Concentrazione farmaco nella sacca/siringa"
-              :rules="[(val: number) => val > 0 || 'Concentrazione deve essere > 0']"
+              :hint="t('infusionRate.form.concentration.hint')"
+              :rules="[(val: number) => val > 0 || t('infusionRate.form.concentration.validation')]"
             >
               <template v-slot:prepend>
                 <q-icon name="science" color="purple" />
@@ -470,14 +472,14 @@ const resetInfusionForm = () => {
 
             <!-- Direzione Conversione -->
             <div class="q-mb-md">
-              <div class="text-subtitle2 q-mb-sm">Direzione Conversione:</div>
+              <div class="text-subtitle2 q-mb-sm">{{ t('infusionRate.form.direction.label') }}</div>
               <q-btn-toggle
                 v-model="infusionForm.direction"
                 spread
                 toggle-color="primary"
                 :options="[
-                  { label: 'Dose → mL/h', value: 'dose-to-rate' },
-                  { label: 'mL/h → Dose', value: 'rate-to-dose' },
+                  { label: t('infusionRate.form.direction.doseToRate'), value: 'dose-to-rate' },
+                  { label: t('infusionRate.form.direction.rateToDose'), value: 'rate-to-dose' },
                 ]"
               />
             </div>
@@ -490,11 +492,11 @@ const resetInfusionForm = () => {
                 v-model.number="infusionForm.dose"
                 type="number"
                 step="0.01"
-                label="Dose"
+                :label="t('infusionRate.form.dose.label')"
                 :suffix="infusionForm.doseUnit"
                 outlined
                 class="q-mb-md"
-                :rules="[(val: number) => val > 0 || 'Dose deve essere > 0']"
+                :rules="[(val: number) => val > 0 || t('infusionRate.form.dose.validation')]"
               >
                 <template v-slot:prepend>
                   <q-icon name="medication" color="red" />
@@ -505,7 +507,7 @@ const resetInfusionForm = () => {
               <q-select
                 v-model="infusionForm.doseUnit"
                 :options="doseUnitOptions"
-                label="Unità Dose"
+                :label="t('infusionRate.form.doseUnit.label')"
                 outlined
                 class="q-mb-md"
                 emit-value
@@ -523,11 +525,11 @@ const resetInfusionForm = () => {
                 v-model.number="infusionForm.flowRate"
                 type="number"
                 step="0.1"
-                label="Velocità Infusione"
-                suffix="mL/h"
+                :label="t('infusionRate.form.flowRate.label')"
+                :suffix="t('infusionRate.form.flowRate.unit')"
                 outlined
                 class="q-mb-md"
-                :rules="[(val: number) => val > 0 || 'Flow rate deve essere > 0']"
+                :rules="[(val: number) => val > 0 || t('infusionRate.form.flowRate.validation')]"
               >
                 <template v-slot:prepend>
                   <q-icon name="speed" color="orange" />
@@ -538,7 +540,7 @@ const resetInfusionForm = () => {
               <q-select
                 v-model="infusionForm.doseUnit"
                 :options="doseUnitOptions"
-                label="Unità Dose Output"
+                :label="t('infusionRate.form.doseOutputUnit.label')"
                 outlined
                 class="q-mb-md"
                 emit-value
@@ -552,7 +554,7 @@ const resetInfusionForm = () => {
 
             <!-- Preset Vasopressori -->
             <div class="q-mb-md">
-              <div class="text-subtitle2 q-mb-sm">⚡ Preset Vasopressori:</div>
+              <div class="text-subtitle2 q-mb-sm">{{ t('infusionRate.form.presets.title') }}</div>
               <div class="row q-gutter-sm">
                 <q-btn
                   v-for="preset in vasopressorPresets"
@@ -565,8 +567,12 @@ const resetInfusionForm = () => {
                   class="col"
                 >
                   <q-tooltip>
-                    Concentrazione: {{ preset.concentration }} mg/mL<br />
-                    Range: {{ preset.rangeMin }}-{{ preset.rangeMax }} {{ preset.unit }}
+                    {{ t('infusionRate.form.presets.tooltipConcentration') }}:
+                    {{ preset.concentration }} mg/mL<br />
+                    {{ t('infusionRate.form.presets.tooltipRange') }}: {{ preset.rangeMin }}-{{
+                      preset.rangeMax
+                    }}
+                    {{ preset.unit }}
                   </q-tooltip>
                 </q-btn>
               </div>
@@ -581,7 +587,7 @@ const resetInfusionForm = () => {
               icon="calculate"
               :disable="!isInfusionFormValid"
             >
-              {{ calculateButtonText }}
+              {{ calculateButtonText || t('infusionRate.buttons.calculate') }}
             </q-btn>
 
             <!-- Reset Button -->
@@ -593,7 +599,7 @@ const resetInfusionForm = () => {
               icon="refresh"
               outline
             >
-              {{ resetButtonText }}
+              {{ resetButtonText || t('infusionRate.buttons.reset') }}
             </q-btn>
           </q-card-section>
         </q-card>
@@ -605,7 +611,7 @@ const resetInfusionForm = () => {
       <div class="col-12 col-md-6">
         <q-card class="q-pa-md">
           <q-card-section>
-            <h6 class="text-h6 q-ma-none q-mb-md">📊 Risultati Conversione</h6>
+            <h6 class="text-h6 q-ma-none q-mb-md">{{ t('infusionRate.resultsPanel.title') }}</h6>
 
             <!-- Results Display -->
             <div v-if="infusionResult.calculated">
@@ -628,8 +634,20 @@ const resetInfusionForm = () => {
                 <template v-slot:avatar>
                   <q-icon :name="infusionResult.therapeuticWarning.icon" />
                 </template>
-                <div class="text-weight-bold">{{ infusionResult.therapeuticWarning.title }}</div>
-                <div class="text-caption">{{ infusionResult.therapeuticWarning.message }}</div>
+                <div class="text-weight-bold">
+                  {{
+                    t(
+                      `infusionRate.therapeuticWarnings.${infusionResult.therapeuticWarning.warningType}.title`,
+                    )
+                  }}
+                </div>
+                <div class="text-caption">
+                  {{
+                    t(
+                      `infusionRate.therapeuticWarnings.${infusionResult.therapeuticWarning.warningType}.message`,
+                    )
+                  }}
+                </div>
               </q-banner>
 
               <q-separator class="q-mb-md" />
@@ -639,13 +657,17 @@ const resetInfusionForm = () => {
                 <q-list bordered separator class="rounded-borders">
                   <q-item>
                     <q-item-section>
-                      <q-item-label overline>Dose</q-item-label>
+                      <q-item-label overline>{{
+                        t('infusionRate.resultsPanel.details.dose')
+                      }}</q-item-label>
                       <q-item-label class="text-h6">{{ infusionResult.dose }}</q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-item>
                     <q-item-section>
-                      <q-item-label overline>Velocità Infusione</q-item-label>
+                      <q-item-label overline>{{
+                        t('infusionRate.resultsPanel.details.flowRate')
+                      }}</q-item-label>
                       <q-item-label class="text-h6 text-primary">
                         {{ infusionResult.flowRate }}
                       </q-item-label>
@@ -653,13 +675,17 @@ const resetInfusionForm = () => {
                   </q-item>
                   <q-item>
                     <q-item-section>
-                      <q-item-label overline>Peso Paziente</q-item-label>
+                      <q-item-label overline>{{
+                        t('infusionRate.resultsPanel.details.patientWeight')
+                      }}</q-item-label>
                       <q-item-label>{{ infusionForm.weight }} kg</q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-item>
                     <q-item-section>
-                      <q-item-label overline>Concentrazione Soluzione</q-item-label>
+                      <q-item-label overline>{{
+                        t('infusionRate.resultsPanel.details.solutionConcentration')
+                      }}</q-item-label>
                       <q-item-label>{{ infusionForm.concentration }} mg/mL</q-item-label>
                     </q-item-section>
                   </q-item>
@@ -667,30 +693,36 @@ const resetInfusionForm = () => {
               </div>
 
               <!-- Formula Used -->
-              <q-expansion-item icon="functions" label="📐 Formula Utilizzata" class="q-mt-md">
+              <q-expansion-item
+                icon="functions"
+                :label="t('infusionRate.formula.title')"
+                class="q-mt-md"
+              >
                 <q-card class="q-pa-md">
                   <div v-if="infusionForm.direction === 'dose-to-rate'">
-                    <strong>Dose → mL/h:</strong><br />
+                    <strong>{{ t('infusionRate.formula.doseToRate.title') }}</strong
+                    ><br />
                     <small v-if="infusionForm.doseUnit === 'mcg/kg/min'">
-                      mL/h = (dose × peso × 60) / (concentrazione × 1000)
+                      {{ t('infusionRate.formula.doseToRate.mcgKgMin') }}
                     </small>
                     <small v-else-if="infusionForm.doseUnit === 'mcg/min'">
-                      mL/h = (dose × 60) / (concentrazione × 1000)
+                      {{ t('infusionRate.formula.doseToRate.mcgMin') }}
                     </small>
                     <small v-else-if="infusionForm.doseUnit === 'mg/h'">
-                      mL/h = dose / concentrazione
+                      {{ t('infusionRate.formula.doseToRate.mgH') }}
                     </small>
                   </div>
                   <div v-else>
-                    <strong>mL/h → Dose:</strong><br />
+                    <strong>{{ t('infusionRate.formula.rateToDose.title') }}</strong
+                    ><br />
                     <small v-if="infusionForm.doseUnit === 'mcg/kg/min'">
-                      dose = (mL/h × concentrazione × 1000) / (peso × 60)
+                      {{ t('infusionRate.formula.rateToDose.mcgKgMin') }}
                     </small>
                     <small v-else-if="infusionForm.doseUnit === 'mcg/min'">
-                      dose = (mL/h × concentrazione × 1000) / 60
+                      {{ t('infusionRate.formula.rateToDose.mcgMin') }}
                     </small>
                     <small v-else-if="infusionForm.doseUnit === 'mg/h'">
-                      dose = mL/h × concentrazione
+                      {{ t('infusionRate.formula.rateToDose.mgH') }}
                     </small>
                   </div>
                 </q-card>
@@ -701,7 +733,7 @@ const resetInfusionForm = () => {
             <div v-else class="text-center text-grey-6 q-pa-xl">
               <q-icon name="info" size="lg" class="q-mb-md" />
               <p class="text-body2">
-                Inserisci parametri paziente e soluzione per calcolare la velocità di infusione
+                {{ t('infusionRate.emptyState') }}
               </p>
             </div>
           </q-card-section>

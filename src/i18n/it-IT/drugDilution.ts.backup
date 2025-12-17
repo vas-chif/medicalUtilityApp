@@ -1,0 +1,477 @@
+/**
+ * @file it-IT/drugDilution.ts
+ * @description Traduzioni italiane per Drug Dilution Calculator
+ * @author Vasile Chifeac
+ * @created 2025-12-16
+ *
+ * @references
+ * - ISMP (Institute for Safe Medication Practices) - High-Alert Medications
+ * - ASHP Guidelines on Compounding Sterile Preparations
+ */
+
+export default {
+  // 1. TITOLI PRINCIPALI
+  title: 'Calcolatore Diluizioni Farmaci',
+  subtitle: 'Calcolo diluizioni farmaci, concentrazioni finali e volumi da prelevare',
+
+  // 2. FORM INPUT
+  form: {
+    sectionTitle: 'Parametri Diluizione',
+    dose: {
+      label: 'Dose Farmaco',
+      unit: 'mg',
+      validation: 'Dose deve essere > 0',
+    },
+    volume: {
+      label: 'Volume Finale Soluzione',
+      unit: 'mL',
+      validation: 'Volume deve essere > 0',
+    },
+    stockConcentration: {
+      label: 'Concentrazione Stock (opzionale)',
+      unit: 'mg/mL',
+      hint: 'Per calcolare volume da prelevare',
+    },
+    targetConcentration: {
+      label: 'Concentrazione Desiderata (opzionale)',
+      unit: 'mg/mL',
+      hint: 'Per calcolare volume finale necessario',
+    },
+  },
+
+  // 3. PULSANTI
+  buttons: {
+    calculate: 'Calcola Diluizione',
+    reset: 'Reset',
+  },
+
+  // 4. PANNELLO RISULTATI
+  resultsPanel: {
+    title: 'Risultati Diluizione',
+    finalConcentration: {
+      label: 'mg/mL',
+      subtitle: 'Concentrazione Finale',
+    },
+    details: {
+      totalDose: 'Dose Totale',
+      finalVolume: 'Volume Finale',
+      volumeToWithdraw: 'Volume da Prelevare (da stock)',
+      dilutionRatio: 'Rapporto Diluizione',
+    },
+  },
+
+  // 5. FORMULA
+  formula: {
+    title: 'Formula Utilizzata',
+    finalConcentration: {
+      label: 'Concentrazione Finale:',
+      formula: 'C = Dose (mg) / Volume (mL)',
+    },
+    volumeToWithdraw: {
+      label: 'Volume da Prelevare:',
+      formula: 'V = Dose / Concentrazione Stock',
+    },
+    dilutionRatio: {
+      label: 'Rapporto Diluizione:',
+      formula: 'Ratio = Volume Finale / Volume Prelevato',
+    },
+  },
+
+  // 6. LINEE GUIDA SICUREZZA
+  safety: {
+    title: 'Linee Guida Sicurezza',
+    guidelines: [
+      'Verificare sempre il farmaco e la concentrazione prima della diluizione',
+      'Utilizzare tecnica asettica per preparazioni sterili',
+      'Controllare compatibilità farmaco-solvente',
+      'Etichettare chiaramente la soluzione finale',
+      'Rispettare tempi di stabilità della soluzione diluita',
+      'Double-check da parte di due operatori per farmaci ad alto rischio',
+    ],
+  },
+
+  // 7. EMPTY STATE
+  emptyState: 'Inserisci dose e volume per calcolare la diluizione',
+
+  // 8. SEZIONI DOCUMENTAZIONE
+  sections: {
+    // SEZIONE 1: Definizione (bg-blue-1)
+    definition: {
+      title: 'Definizione Clinica e Principi',
+      content: {
+        mainDefinition: {
+          title: 'Definizione:',
+          text: "La diluizione farmacologica è il processo di riduzione della concentrazione di un farmaco attraverso l'aggiunta di solvente (solitamente soluzione fisiologica 0.9% NaCl o acqua per preparazioni iniettabili). Calcolare correttamente la diluizione è essenziale per somministrare dosi sicure ed efficaci, specialmente per farmaci ad alto rischio ISMP (High-Alert Medications).",
+        },
+        principles: {
+          title: 'Principi Fondamentali:',
+          items: [
+            '<strong>Concentrazione = Dose / Volume:</strong> La concentrazione finale (C) dipende dalla quantità di farmaco (mg) divisa per il volume totale (mL). Formula: C<sub>finale</sub> = m<sub>farmaco</sub> / V<sub>totale</sub>',
+            '<strong>Conservazione Massa:</strong> La quantità totale di farmaco rimane costante durante la diluizione (solo il volume cambia). m<sub>iniziale</sub> = m<sub>finale</sub> → C<sub>1</sub> × V<sub>1</sub> = C<sub>2</sub> × V<sub>2</sub>',
+            '<strong>Rapporto Diluizione:</strong> Esprime quante volte il volume finale è maggiore del volume iniziale. Es: 1:10 significa diluizione 10 volte (2 mL stock + 18 mL solvente = 20 mL finale)',
+            '<strong>Stock Solution:</strong> Soluzione concentrata di partenza fornita dal produttore. Es: ampolla morfina 10 mg/mL, fiala epinefrina 1 mg/mL (1:1000)',
+            '<strong>Working Solution:</strong> Soluzione finale diluita pronta per somministrazione al paziente con concentrazione target specifica per via/età/indicazione',
+          ],
+        },
+        clinicalSignificance: {
+          title: 'Rilevanza Clinica:',
+          points: [
+            '<strong>Sicurezza Paziente:</strong> Errori di diluizione sono causa frequente di eventi avversi gravi (ISMP reports: 10-15% medication errors correlati a diluizioni errate)',
+            '<strong>Dosaggio Accurato:</strong> Farmaci ad alto rischio (insulina, eparina, KCl, oppioidi, chemioterapici) richiedono diluizioni precise per evitare sovradosaggio/sottodosaggio',
+            '<strong>Compatibilità Vascolare:</strong> Diluizioni riducono irritazione venosa/flebiti. Es: vancomicina > 5 mg/mL causa flebite 70% vs < 5 mg/mL flebite 10%',
+            '<strong>Stabilità Farmaco:</strong> Concentrazioni troppo alte/basse alterano stabilità chimica. Es: ceftriaxone stabile 24h se diluito SF 0.9%, instabile in Ringer Lactate (precipita Ca<sup>2+</sup>)',
+          ],
+        },
+      },
+    },
+
+    // SEZIONE 2: Fisiologia (bg-green-1)
+    physiology: {
+      title: 'Farmacocinetica delle Diluizioni',
+      content: {
+        pharmacokinetics: {
+          title: 'Impatto Farmacocinetico:',
+          principles: [
+            '<strong>Assorbimento IV:</strong> Via endovenosa bypassa assorbimento (biodisponibilità F = 100%). Diluizione influenza velocità infusione ma NON quantità totale assorbita',
+            '<strong>Volume Distribuzione (Vd):</strong> Farmaci idrofili (Vd piccolo 0.1-0.3 L/kg: aminoglicosidi, vancomicina) richiedono diluizioni maggiori per evitare picchi tossici. Farmaci lipofili (Vd grande > 1 L/kg: amiodarone, fentanyl) distribuiscono rapidamente',
+            '<strong>Clearance:</strong> Diluizione NON altera clearance renale/epatica totale, ma può influenzare cinetica eliminazione (infusione continua diluita vs bolo concentrato)',
+            '<strong>Cmax e Cmin:</strong> Bolo rapido farmaco concentrato → Cmax elevato (rischio tossicità acuta). Infusione lenta farmaco diluito → Cmax ridotto, concentrazione steady-state costante (preferibile per farmaci tempo-dipendenti: beta-lattamici)',
+          ],
+        },
+        concentration: {
+          title: 'Relazione Concentrazione-Effetto:',
+          relationships: [
+            '<strong>Farmaci Concentrazione-Dipendenti:</strong> Aminoglicosidi, fluorochinoloni → efficacia dipende da Cmax/MIC. Target Cmax/MIC > 8-10. Bolo rapido concentrato preferibile',
+            '<strong>Farmaci Tempo-Dipendenti:</strong> Beta-lattamici (penicilline, cefalosporine), vancomicina → efficacia dipende da T > MIC (tempo sopra MIC). Target T > MIC 40-70% intervallo. Infusione continua diluita ottimale',
+            '<strong>Farmaci AUC-Dipendenti:</strong> Carboplatino, vancomicina (nuovo standard) → efficacia dipende da AUC<sub>0-24</sub> (area sotto curva). Diluizione non influenza AUC totale, solo distribuzione temporale',
+            '<strong>Finestra Terapeutica Stretta:</strong> Digossina (0.8-2.0 ng/mL), litio (0.6-1.2 mEq/L), teofillina (5-15 mg/L) → diluizioni errate causano facilmente sotto/sovradosaggio',
+          ],
+        },
+        osmolarity: {
+          title: 'Osmolarità e Tollerabilità:',
+          considerations: [
+            '<strong>Osmolarità Fisiologica:</strong> Plasma 280-320 mOsm/L. Soluzioni iperosm (> 600 mOsm/L) causano flebite/dolore. Diluizione riduce osmolarità: KCl 2 mEq/mL = 4000 mOsm/L → diluito 40 mEq/L = 320 mOsm/L',
+            '<strong>Accesso Venoso:</strong> Periferico max 600 mOsm/L (SF 0.9% = 308 mOsm/L, G5% = 278 mOsm/L). Centrale tollerabilità illimitata (nutrizione parenterale totale fino 1800 mOsm/L)',
+            '<strong>pH Soluzione:</strong> Diluizione tampona pH estremi. Es: fenitoina pH 12 (alcalino) → precipita se diluita G5% (acido). Amiodarone pH 4 → irritante se concentrato > 2 mg/mL',
+            '<strong>Velocità Infusione:</strong> Farmaci irritanti (vancomicina, amiodarone, chemioterapici) richiedono velocità lenta + alta diluizione. Red Man Syndrome (vancomicina) se > 10 mg/min → diluire e infondere 60-90 min',
+          ],
+        },
+      },
+    },
+
+    // SEZIONE 3: Misurazione e Procedure (bg-amber-1)
+    measurement: {
+      title: 'Tecniche di Misurazione e Preparazione',
+      content: {
+        equipment: {
+          title: 'Strumenti Necessari:',
+          items: [
+            '<strong>Siringhe:</strong> 1 mL (precisione 0.01 mL, pediatria), 3-5-10 mL (uso standard), 20-50 mL (grandi volumi diluizione). Siringhe luer-lock obbligatorie per farmaci ad alto rischio',
+            '<strong>Aghi:</strong> 18-19G (prelievo fiala), 21-23G (iniezione paziente). Aghi filtro (5 micron) per fiampolette vetro (rimuove particelle vetro)',
+            '<strong>Sacche Infusione:</strong> 50-100-250-500-1000 mL (PVC o EVA). EVA per farmaci lipofili (nitroglicerina, amiodarone) che adsorbono su PVC',
+            '<strong>Sistemi Chiusi:</strong> Transfer devices per chemioterapici (riduce esposizione operatore). Connettori needleless per prevenire infezioni',
+            '<strong>Pompe Infusione:</strong> Volumetriche (precisione ±5%, >5 mL/h) vs siringa (precisione ±2%, <5 mL/h). Smart pumps con drug library riducono errori 50%',
+          ],
+        },
+        asepticTechnique: {
+          title: 'Tecnica Asettica Standard:',
+          steps: [
+            '<strong>Igiene Mani:</strong> Lavaggio antisettico 60 sec + gel alcolico. Guanti sterili non-powder (talco contamina preparazioni)',
+            '<strong>Ambiente Sterile:</strong> Cappa flusso laminare verticale (LAF) per chemioterapici. Isolatore classe ISO 5 (max 3520 particelle ≥0.5 micron/m³) per preparazioni sterili',
+            '<strong>Disinfezione:</strong> Alcool 70% (isopropilico preferito) su tappo gomma fiala 15 sec + asciugatura completa prima di inserire ago (alcool residuo denatura farmaci)',
+            '<strong>Tecnica No-Touch:</strong> Mai toccare punta ago/siringa con mani anche se guantate. Cambio ago tra prelievo (18G) e iniezione paziente (23G)',
+            '<strong>Controllo Visivo:</strong> Verificare limpidezza, colore, assenza particolato/precipitati prima e dopo diluizione. Turbidità = contaminazione batterica o incompatibilità',
+          ],
+        },
+        dilutionProcedure: {
+          title: 'Procedura Diluizione Step-by-Step:',
+          procedure: [
+            '<strong>Step 1 - Calcolo:</strong> Calcolare matematicamente dose (mg), volume prelievo (mL), volume solvente (mL), concentrazione finale (mg/mL). Double-check calcolo indipendente',
+            '<strong>Step 2 - Preparazione:</strong> Assemblare siringa/ago sterili, fiala farmaco, sacca/siringa solvente. Verificare scadenze, integrità confezioni',
+            '<strong>Step 3 - Prelievo Stock:</strong> Disinfettare tappo fiala 15 sec. Prelevare volume calcolato con tecnica no-touch. Eliminare bolle aria capovolgendo siringa + tap leggero',
+            '<strong>Step 4 - Trasferimento:</strong> Iniettare farmaco prelevato in sacca/siringa solvente. Per volumi > 50 mL usare sacca infusione (mixing più omogeneo). Per < 50 mL siringa accettabile',
+            '<strong>Step 5 - Miscelazione:</strong> Inversione dolce 10-15 volte (NON agitare vigorosamente → denatura proteine, crea schiuma). Osservare completa dissoluzione (no particolato)',
+            '<strong>Step 6 - Etichettatura:</strong> Etichetta con: nome farmaco, dose totale (mg), volume finale (mL), concentrazione (mg/mL), via somministrazione, velocità infusione, data/ora preparazione, scadenza, nome operatore',
+            '<strong>Step 7 - Controllo Finale:</strong> Doppio controllo indipendente (due operatori) per farmaci ISMP high-alert. Verificare corrispondenza etichetta-prescrizione-calcolo',
+          ],
+        },
+      },
+    },
+
+    // SEZIONE 4: Formula (bg-cyan-1)
+    formula: {
+      title: 'Formule e Calcoli',
+      content: {
+        basicFormulas: {
+          title: 'Formule Base:',
+          formulas: [
+            '<strong>Concentrazione Finale:</strong><br/>C<sub>finale</sub> = Dose (mg) / Volume<sub>finale</sub> (mL)<br/>Unità: mg/mL<br/>Esempio: 100 mg / 10 mL = 10 mg/mL',
+            '<strong>Volume da Prelevare:</strong><br/>V<sub>prelievo</sub> = Dose (mg) / C<sub>stock</sub> (mg/mL)<br/>Unità: mL<br/>Esempio: 50 mg / (10 mg/mL) = 5 mL',
+            '<strong>Volume Solvente:</strong><br/>V<sub>solvente</sub> = V<sub>finale</sub> - V<sub>prelievo</sub><br/>Unità: mL<br/>Esempio: 50 mL - 5 mL = 45 mL SF 0.9%',
+            '<strong>Rapporto Diluizione:</strong><br/>Ratio = V<sub>finale</sub> / V<sub>prelievo</sub><br/>Espresso come 1:X<br/>Esempio: 50 mL / 5 mL = 10 → "1:10"',
+          ],
+        },
+        advancedFormulas: {
+          title: 'Formule Avanzate:',
+          calculations: [
+            '<strong>Diluizione Seriale:</strong><br/>C<sub>n</sub> = C<sub>0</sub> / (Ratio<sub>1</sub> × Ratio<sub>2</sub> × ... × Ratio<sub>n</sub>)<br/>Esempio: Epinefrina 1:1000 (1 mg/mL) → 1:10000 (0.1 mg/mL) → 1:100000 (0.01 mg/mL)<br/>Applicazione: preparazioni omeopatiche, test allergologici',
+            '<strong>Conservazione Massa (C₁V₁ = C₂V₂):</strong><br/>C<sub>stock</sub> × V<sub>prelievo</sub> = C<sub>finale</sub> × V<sub>finale</sub><br/>Esempio: 10 mg/mL × 5 mL = 1 mg/mL × 50 mL<br/>Verifica: 50 mg = 50 mg ✓',
+            '<strong>Percentuale Peso/Volume (%w/v):</strong><br/>% w/v = (grammi soluto / mL soluzione) × 100<br/>Conversione: 1% = 10 mg/mL, 0.9% = 9 mg/mL<br/>Esempio: SF 0.9% = 9 mg NaCl/mL = 0.9 g/100 mL',
+            '<strong>Molarità (M):</strong><br/>M = (mg/mL) / Peso Molecolare (g/mol) × 1000<br/>Esempio: KCl 2 mEq/mL, PM = 74.5 g/mol<br/>M = (149 mg/mL) / 74.5 × 1000 = 2 M',
+          ],
+        },
+        practicalExamples: {
+          title: 'Esempi Pratici Completi:',
+          examples: [
+            '<strong>Morfina PCA:</strong><br/>' +
+              '• Obiettivo: 1 mg/mL in 50 mL (dose PCA 1 mg)<br/>' +
+              '• Stock: Ampolla 10 mg/mL<br/>' +
+              '• Calcolo: Dose totale = 1 mg/mL × 50 mL = 50 mg<br/>' +
+              '• Prelievo: 50 mg / 10 mg/mL = 5 mL<br/>' +
+              '• Solvente: 50 mL - 5 mL = 45 mL SF 0.9%<br/>' +
+              '• Verifica: 5 mL × 10 mg/mL = 50 mg in 50 mL = 1 mg/mL ✓',
+            '<strong>Epinefrina Infusione:</strong><br/>' +
+              '• Obiettivo: 4 mcg/mL in 250 mL (dose 0.05-0.5 mcg/kg/min)<br/>' +
+              '• Stock: Fiala 1 mg/mL (1:1000)<br/>' +
+              '• Calcolo: Dose totale = 4 mcg/mL × 250 mL = 1000 mcg = 1 mg<br/>' +
+              '• Prelievo: 1 mg / 1 mg/mL = 1 mL<br/>' +
+              '• Solvente: 250 mL - 1 mL ≈ 249 mL G5%<br/>' +
+              '• Verifica: 1 mg / 250 mL = 0.004 mg/mL = 4 mcg/mL ✓',
+            '<strong>KCl Infusione:</strong><br/>' +
+              '• Obiettivo: 40 mEq/L (max periferico) in 1000 mL<br/>' +
+              '• Stock: Ampolla 2 mEq/mL (20 mEq/10 mL)<br/>' +
+              '• Calcolo: Dose totale = 40 mEq/L × 1 L = 40 mEq<br/>' +
+              '• Prelievo: 40 mEq / 2 mEq/mL = 20 mL<br/>' +
+              '• Solvente: 1000 mL SF 0.9% (aggiungere 20 mL KCl)<br/>' +
+              '• ATTENZIONE: MAI bolo KCl (arresto cardiaco), sempre diluito<br/>' +
+              '• Velocità MAX: 10 mEq/h periferico, 20 mEq/h centrale',
+          ],
+        },
+      },
+    },
+
+    // SEZIONE 5: Interpretazione (bg-orange-1)
+    interpretation: {
+      title: 'Interpretazione Risultati e Verifica',
+      content: {
+        concentrationRanges: {
+          title: 'Range Concentrazioni Sicure:',
+          drugs: [
+            '<strong>Morfina:</strong> 0.1-1 mg/mL (pediatria 0.1 mg/mL, adulti PCA 1 mg/mL, infusione continua 0.5 mg/mL). Concentrazioni > 5 mg/mL instabili',
+            '<strong>Vancomicina:</strong> 2-5 mg/mL (max 5 mg/mL periferico per evitare flebite). Infusione 500 mg in 100-250 mL SF 0.9%, velocità 10 mg/min (50 mg/5 min bolo test allergia)',
+            '<strong>Epinefrina:</strong> 1:1000 (1 mg/mL IM/SC), 1:10000 (0.1 mg/mL IV), 1:100000 (0.01 mg/mL infusione 2-10 mcg/min). Diluizioni maggiori (1:1000000) per anestesia locale',
+            '<strong>Insulina:</strong> 1 UI/mL (standard infusione adulti), 0.1 UI/mL (neonati). Stock 100 UI/mL diluito 1:100 in SF 0.9%. Saturare tubing 20 mL (insulina adsorbe plastica)',
+            '<strong>Potassio:</strong> Max 40 mEq/L periferico, 60-80 mEq/L centrale (ipokaliemia severa < 2.5 mEq/L). Concentrazioni > 80 mEq/L causano aritmie se infuse rapidamente',
+            '<strong>Chemioterapici:</strong> Range specifici: Doxorubicina 2 mg/mL, Cisplatino 1 mg/mL, Carboplatino 10 mg/mL. Concentrazioni eccessive precipitano, basse causano degradazione',
+          ],
+        },
+        verificationChecks: {
+          title: 'Checklist Verifica Pre-Somministrazione:',
+          checks: [
+            '<strong>5 Giusti + 3:</strong> Paziente giusto (2 identificatori), Farmaco giusto (nome + dose), Via giusta (IV, IM, SC), Tempo giusto, Documentazione giusta, Azione giusta, Forma giusta, Risposta giusta',
+            '<strong>Calcolo Matematico:</strong> Rifare calcolo indipendentemente. Dose (mg) = C<sub>finale</sub> × V<sub>finale</sub> deve corrispondere a prescrizione. Utilizzare calcolatore terzo (app, website) come double-check',
+            '<strong>Ispezione Visiva:</strong> Soluzione limpida (no turbidità), colore corretto (morfina incolore, vancomicina marrone chiaro), assenza particolato/precipitati, assenza bolle aria in siringa',
+            '<strong>Etichetta Completa:</strong> Tutti i campi compilati leggibilmente (no abbreviazioni ambigue). Scadenza valida (24h standard antibiotici, 4-6h farmaci instabili, uso immediato chemioterapici)',
+            '<strong>Compatibilità:</strong> Verificare compatibilità farmaco-solvente (SF 0.9% vs G5%), compatibilità Y-site se co-infusione (Micromedex IV Compatibility), pH finale accettabile (4-9)',
+            '<strong>Via Somministrazione:</strong> Confermare via corretta (alcuni farmaci solo centrale: nutrizione parenterale, vasopressori ad alte dosi, soluzioni iperosm > 900 mOsm/L)',
+          ],
+        },
+        commonMistakes: {
+          title: 'Errori Comuni e Come Evitarli:',
+          mistakes: [
+            '<strong>Confusione mg/mcg:</strong> 1 mg = 1000 mcg. Errore 1000× se confusi. Digossina 0.25 mg = 250 mcg (scrittura 0.25 mg preferita, evitare "250 mcg" → rischio lettura "250 mg")',
+            '<strong>Unità % Male Interpretate:</strong> 1% = 1 g/100 mL = 10 mg/mL. Lidocaina 2% = 20 mg/mL. Epinefrina 1:1000 = 1 mg/mL (NON 1%). 1:10000 = 0.1 mg/mL',
+            '<strong>Approssimazione Eccessiva:</strong> Arrotondare solo alla fine del calcolo. Usare almeno 2 decimali. Es: 12.7 mg invece di "circa 13 mg" (errore 2.4% cumulativo su più passaggi)',
+            '<strong>Volume Finale vs Aggiunto:</strong> Se aggiungo 45 mL solvente a 5 mL farmaco → Volume FINALE = 50 mL (non 45 mL!). Errore comune in pediatria (volumi piccoli amplificano errore)',
+            '<strong>Dimenticanza Dose Carico:</strong> Farmaci come fenitoina, digossina, amiodarone richiedono loading dose (diluizione specifica) poi maintenance dose (diluizione diversa). Confondere le due = sotto/sovradosaggio',
+          ],
+        },
+      },
+    },
+
+    // SEZIONE 6: Applicazioni (bg-purple-1)
+    applications: {
+      title: 'Applicazioni Cliniche Specifiche',
+      content: {
+        pediatrics: {
+          title: 'Pediatria e Neonatologia:',
+          considerations: [
+            '<strong>Volumi Micro-Dosing:</strong> Neonati peso 1-3 kg ricevono dosi 0.1-1 mL. Diluizioni 1:10 standard (morfina 0.1 mg/mL vs adulto 1 mg/mL) per misurabilità. Siringa 1 mL (graduazione 0.01 mL) obbligatoria',
+            '<strong>Osmolarità Pediatrica:</strong> Neonati sensibili iperosm (convulsioni). Diluizioni devono mantenere 280-320 mOsm/L. Glucosio > 12.5% richiede centrale. SF 0.9% (308 mOsm/L) preferita vs Ringer (273 mOsm/L)',
+            '<strong>Caffeina Citrato Apnea:</strong> Loading 20 mg/kg PO/IV (equivale 10 mg/kg caffeina base), maintenance 5-10 mg/kg QD. Stock 20 mg/mL, diluire 1:4 in SF → 5 mg/mL per dose accurate',
+            '<strong>Surfactante Polmonare:</strong> Poractant alfa (Curosurf) 1.5-2.5 mL/kg/dose intratracheale. NON diluire (concentrazione critica funzione). Pre-riscaldare 20 min temperatura ambiente',
+            '<strong>Prostaglandina E1 (PGE1):</strong> Cardiopatie congenite dotto-dipendenti. Stock 500 mcg/mL → diluire 0.3 mg (1 fiala) in 50 mL G5% = 6 mcg/mL. Dose 0.01-0.1 mcg/kg/min. Fotosensibile (proteggere luce)',
+          ],
+        },
+        criticalCare: {
+          title: 'Terapia Intensiva:',
+          protocols: [
+            '<strong>Vasopressori:</strong> Noradrenalina stock 1 mg/mL → diluire 4 mg (4 mL) in 250 mL G5% = 16 mcg/mL. Dose 0.05-3 mcg/kg/min. Accesso centrale obbligatorio (extravasazione = necrosi tissutale)',
+            '<strong>Sedazione Continua:</strong> Propofol stock 10 mg/mL (emulsione lipidica) → NON diluire (instabile se diluito). Usare set dedicato (opaco, cambio 12h). PRIS risk se > 4 mg/kg/h > 48h',
+            '<strong>Trombolisi:</strong> Alteplase (rt-PA) stock 1 mg/mL → NO diluizione necessaria. STEMI: 15 mg bolo IV, poi 50 mg in 30 min, poi 35 mg in 60 min (peso-adjusted < 65 kg). Ictus: 0.9 mg/kg (max 90 mg), 10% bolo + 90% in 60 min',
+            '<strong>Antiaritmici:</strong> Amiodarone loading 150 mg in 100 mL G5% in 10 min (15 mg/min), poi 360 mg in 6h (1 mg/min), poi 540 mg in 18h (0.5 mg/min). Centrale preferita (flebite se periferico > 2 mg/mL)',
+            '<strong>Nutrizione Parenterale (PN):</strong> 3-in-1 (aminoacidi + lipidi + glucosio) osmolarità 1200-1800 mOsm/L → SOLO centrale. Aggiungere oligoelementi/vitamine post-diluizione. Filtro 1.2 micron obbligatorio',
+          ],
+        },
+        oncology: {
+          title: 'Oncologia (Chemioterapia):',
+          chemotherapy: [
+            '<strong>Doxorubicina:</strong> Stock 2 mg/mL → diluire in SF 0.9% o G5% (NON Ringer Lactate). Concentrazione finale 0.4 mg/mL periferico, 2 mg/mL centrale. Fotosensibile (proteggere). Vesicante (extravasazione = ulcere)',
+            '<strong>Cisplatino:</strong> Stock 1 mg/mL → diluire in SF 0.9% solo (G5% causa degradazione). Dose 50-100 mg/m² in 1-3 L SF 0.9% in 6-8h. Nefrotossico (idratazione vigorosa + mannitolo)',
+            '<strong>Carboplatino:</strong> Stock 10 mg/mL → diluire in SF 0.9% o G5%. Dose AUC-based (Calvert formula). AUC 5-7 target. Diluizione minima 0.5 mg/mL (precipita se più concentrato)',
+            '<strong>Methotrexate:</strong> Stock 25 mg/mL → diluire in SF 0.9% senza conservanti (benzil alcool neurotossico intrateche). Dose intrateche 12 mg in 6 mL SF. Alte dosi (> 1 g/m²) richiedono alcalinizzazione urine (pH > 7) + leucovorin rescue',
+            '<strong>Closed System Transfer Device (CSTD):</strong> PhaSeal, Chemoclave → riduce esposizione operatore 90%. Obbligatorio per farmaci citotossici NIOSH Group 1. Preparazione in cappa a flusso laminare classe II',
+          ],
+        },
+        anesthesia: {
+          title: 'Anestesia e Terapia del Dolore:',
+          applications: [
+            '<strong>Epidurale:</strong> Bupivacaina 0.125-0.25% + fentanyl 2-5 mcg/mL. Preparazione: bupivacaina 0.5% (5 mg/mL) 50 mL + fentanyl 50 mcg/mL 1 mL + SF 0.9% 49 mL = 100 mL finale (bupivacaina 0.25%, fentanyl 0.5 mcg/mL)',
+            '<strong>Anestesia Locale Infiltrazione:</strong> Lidocaina 1% (10 mg/mL) + epinefrina 1:100000 (10 mcg/mL). Preparazione: lidocaina 2% 5 mL + epinefrina 1:1000 0.1 mL + SF 0.9% 5 mL = 10 mL (lidocaina 1%, epinefrina 1:100000)',
+            '<strong>Blocco Nervoso Periferico:</strong> Ropivacaina 0.2-0.5%. Stock 7.5 mg/mL (0.75%) → diluire 7.5 mL in 15 mL SF = 22.5 mL finale (0.375%). Durata 6-12h. Dose max 3 mg/kg (tossicità SNC/cardiaca)',
+            '<strong>PCA Multimodale:</strong> Morfina 1 mg/mL + ketorolac 1 mg/mL. Preparazione: morfina 10 mg/mL 5 mL + ketorolac 30 mg/mL 1.5 mL + SF 0.9% 43.5 mL = 50 mL (morfina 1 mg/mL, ketorolac 0.9 mg/mL). PCA dose 1 mL (morfina 1 mg + ketorolac 0.9 mg)',
+          ],
+        },
+      },
+    },
+
+    // SEZIONE 7: Valori/Alert (bg-red-1)
+    alerts: {
+      title: 'Alert Sicurezza e Valori Critici',
+      content: {
+        highAlertMedications: {
+          title: 'Farmaci ISMP High-Alert (Doppio Controllo Obbligatorio):',
+          categories: [
+            '<strong>Categoria 1 - Anticoagulanti:</strong> Eparina sodica, eparina calcica (EBPM: enoxaparina, dalteparina), warfarin. Diluizioni errate → emorragie maggiori/trombosi. Eparina 25000 UI/mL vs 5000 UI/mL confusione frequente',
+            '<strong>Categoria 2 - Insulina:</strong> Rapida, regolare, NPH, glargine, detemir. Solo insulina regolare EV (diluita). Confusione UI/mL vs mg/mL impossibile (insulina NON ha mg). Ipoglicemia severa < 40 mg/dL = convulsioni/coma',
+            '<strong>Categoria 3 - Oppioidi:</strong> Morfina, fentanyl, idromorfone, ossicodone, remifentanil. Depressione respiratoria dose-dipendente (FR < 8/min). Antidoto naloxone 0.4 mg EV available. Fentanyl 100× morfina (1 mg fentanyl = 100 mg morfina)',
+            '<strong>Categoria 4 - Sedativi EV:</strong> Propofol, midazolam, lorazepam. Depressione respiratoria + ipotensione. Propofol PRIS (Propofol Infusion Syndrome) se > 4 mg/kg/h > 48h: acidosi, rabdomiolisi, arresto cardiaco',
+            '<strong>Categoria 5 - Elettroliti Concentrati:</strong> KCl > 2 mEq/mL, NaCl > 0.9%, CaCl₂ 10%, MgSO₄ 50%. MAI bolo diretto (arresto cardiaco). Sempre diluiti. KCl 2 mEq/mL fiala ROSSA "MUST DILUTE"',
+            '<strong>Categoria 6 - Chemioterapici:</strong> Tutti citotossici NIOSH Group 1 (doxorubicina, vincristina, methotrexate). Vesicanti (extravasazione = necrosi tissutale). Dosaggio mg/m² BSA (errore calcolo BSA → sovradosaggio)',
+            '<strong>Categoria 7 - Anestetici Locali:</strong> Bupivacaina, ropivacaina, lidocaina. Tossicità sistemica (LAST): convulsioni, aritmie ventricolari. Lipid emulsion 20% (Intralipid) rescue therapy',
+          ],
+        },
+        criticalConcentrations: {
+          title: 'Concentrazioni Critiche (MAI Superare):',
+          limits: [
+            '<strong>Potassio (K⁺):</strong> Periferico MAX 40 mEq/L (velocità 10 mEq/h). Centrale MAX 60-80 mEq/L emergenze (velocità 20 mEq/h + ECG monitoring). Concentrazioni > 80 mEq/L = arresto cardiaco asistolia',
+            '<strong>Calcio:</strong> CaCl₂ 10% (100 mg/mL = 1.4 mEq Ca<sup>2+</sup>/mL) diluire 1:10 in SF → 10 mg/mL. MAI bolo rapido (bradicardia/arresto). Extravasazione = necrosi severa',
+            '<strong>Magnesio:</strong> MgSO₄ 50% (500 mg/mL) diluire 1:10 → 50 mg/mL. Eclampsia loading 4-6 g in 100 mL SF in 15-20 min. Tossicità: iporeflexia (> 4 mEq/L), paralisi respiratoria (> 10 mEq/L)',
+            '<strong>Bicarbonato:</strong> NaHCO₃ 8.4% (84 mg/mL = 1 mEq/mL) diluire 1:2 → 0.5 mEq/mL pediatria. Iperosm (2000 mOsm/L stock), caustic (pH 8.5). Incompatibile con catecol	 (inattiva)',
+            '<strong>Glucosio:</strong> G50% (500 mg/mL) diluire 1:4 → G10% (100 mg/mL). G50% solo centrale (iperosm 2525 mOsm/L). Pediatria max G12.5% periferico. Ipoglicemia < 40 mg/dL: bolo 0.5-1 g/kg (2-4 mL/kg G25%)',
+          ],
+        },
+        incompatibilities: {
+          title: 'Incompatibilità Maggiori (Precipitazioni/Inattivazioni):',
+          combinations: [
+            '<strong>Fenitoina + G5%:</strong> Precipita immediatamente (pH fenitoina 12 alcalino, G5% pH 4 acido). Solo SF 0.9%. Flebite se > 5 mg/mL. Velocità max 50 mg/min (ipotensione/aritmie)',
+            '<strong>Ceftriaxone + Calcio:</strong> Precipitato sale calcico fatale (neonati). MAI co-somministrare entro 48h. Ceftriaxone solo SF 0.9% o API, NON Ringer Lactate (contiene Ca<sup>2+</sup> 3 mEq/L)',
+            '<strong>Diazepam + PVC:</strong> Adsorbe su plastica PVC 30-50%. Usare contenitori vetro o siringa polipropilene. NON diluire (precipita cristalli). Somministrazione diretta lenta 2 mg/min',
+            '<strong>Ampicillina + Aminoglicosidi:</strong> Inattivazione reciproca se miscelati stessa soluzione. Somministrare separatamente (flush SF 0.9% tra i due). Compatibili in paziente (infusione siti separati)',
+            '<strong>Furosemide + Acidic Drugs:</strong> Precipita pH < 7 (vitamina C, dobutamina, midazolam). Flush SF tra farmaci. Y-site incompatibile con > 50 farmaci (check Micromedex)',
+          ],
+        },
+        emergencyProtocols: {
+          title: 'Protocolli Emergenza (Errori Diluizione):',
+          procedures: [
+            '<strong>Sovradosaggio Oppioidi:</strong> Naloxone 0.4-2 mg EV Q2-3min (max 10 mg). Diluire 0.4 mg ampolla in 10 mL SF = 0.04 mg/mL, titolare 0.5 mL (0.02 mg) ogni 30 sec fino risveglio. Durata naloxone < durata oppioide → re-sedazione possibile',
+            '<strong>Extravasazione Vesicanti:</strong> STOP infusione immediatamente. Aspirare residuo con stessa cannula. Elevare arto. Antidoti: doxorubicina → dexrazoxane 1000 mg/m² IV entro 6h. Vincristina → ialuronidasi 150 UI SC iniettata localmente',
+            '<strong>Iperkaliemia Acuta:</strong> K⁺ > 6.5 mEq/L + ECG alterazioni (onda T picco, QRS allargato). Calcio gluconato 10% 10-20 mL EV lento 5-10 min (cardioprotection). Poi insulina + glucosio, salbutamol nebulizzato, rimuovere K⁺ (diuretico, dialisi)',
+            '<strong>Tossicità Anestetici Locali (LAST):</strong> Lipid emulsion 20% (Intralipid) 1.5 mL/kg bolo EV in 1 min, poi 0.25 mL/kg/min infusione. Dose max 12 mL/kg. Continuare CPR (bupivacaina tossicità può durare > 1h)',
+            '<strong>Contaminazione Batterica:</strong> Sospetto se soluzione torbida/discromia/particolato. STOP somministrazione. Emocolture + coltura soluzione. Antibiotici empirici broad-spectrum. Segnalazione farmacovigilanza (NAS report)',
+          ],
+        },
+      },
+    },
+
+    // SEZIONE 8: Docs (bg-indigo-1)
+    documentation: {
+      title: 'Documentazione e Linee Guida',
+      content: {
+        internationalGuidelines: {
+          title: 'Linee Guida Internazionali:',
+          standards: [
+            '<strong>USP <797> (United States Pharmacopeia):</strong> Standard USA preparazioni sterili. Classifica ambienti sterili ISO 5 (LAF), ISO 7 (buffer room), ISO 8 (anticamera). Beyond-Use Dating (BUD): 48h room temperature, 14 giorni refrigerato, 45 giorni congelato',
+            '<strong>ASHP Guidelines (American Society Health-System Pharmacists):</strong> Best practices compounding sterili. Qualificazioni personale (competency assessment annuale), validazione processi (media fill test), monitoraggio ambientale (finger dabs, surface sampling)',
+            '<strong>ISMP Safe Medication Practices:</strong> Lista High-Alert Medications aggiornata trimestralmente. Raccomandazioni: doppio controllo indipendente, standardizzazione concentrazioni (pre-mixed solutions), smart pumps con drug library, barcode scanning',
+            '<strong>EMA Guidelines (European Medicines Agency):</strong> Good Manufacturing Practice (GMP) Annex 1 Sterile Products. Requisiti aseptic processing, sterilizzazione, water systems, contamination control. Validazione annuale operatori (broth transfer test)',
+            '<strong>WHO Guidelines:</strong> Model List Essential Medicines. Safe injection practices. Reuse prevention devices. Post-exposure prophylaxis protocols (needlestick injuries)',
+          ],
+        },
+        nationalRegulations: {
+          title: 'Normative Nazionali Italia:',
+          regulations: [
+            '<strong>Farmacopea Ufficiale Italiana (FUI XII):</strong> Standard preparazioni galeniche. Requisiti acqua per preparazioni iniettabili, sterilizzazione, controlli microbiologici. Limiti contaminazione: max 10 CFU/100 mL',
+            '<strong>Norme UNI EN ISO 14644:</strong> Classificazione ambienti cleanroom. Classe A = LAF (max 3520 particelle ≥0.5 micron/m³). Validazione semestrale con particle counter. Ricambi aria > 20/ora',
+            '<strong>AIFA Normativa Galenici:</strong> Autorizzazione farmacia ospedaliera per preparazioni magistrali. Registro preparazioni. Tracciabilità lotti. Segnalazioni reazioni avverse. Ispezioni NAS/ASL biennali',
+            '<strong>GMP (Good Manufacturing Practice):</strong> Linee guida qualità produzione farmaci. Applicabili preparazioni ospedaliere. Requisiti: personale qualificato, locali dedicati, attrezzature validate, SOP (Standard Operating Procedures) scritte',
+          ],
+        },
+        hospitalPolicies: {
+          title: 'Procedure Ospedaliere Standard:',
+          policies: [
+            '<strong>High-Alert Medications Policy:</strong> Lista farmaci ospedale-specifica. Diluizioni standardizzate (es. morfina PCA sempre 1 mg/mL). Pre-mix commerciali preferiti vs preparazioni ex-tempore. Colori distintivi etichette (rosso ISMP)',
+            '<strong>Double-Check Policy:</strong> Due infermieri/farmacisti verificano indipendentemente calcolo + preparazione + etichettatura. Firme entrambi operatori su scheda somministrazione. Random audits mensili compliance',
+            '<strong>Compounding Area Access:</strong> Restrizione accesso sala preparazioni. Badge nominativi. Formazione aseptic technique obbligatoria. Media fill test validazione semestrale competenza. Dress code: guanti, mascherina, cuffia, camice sterile',
+            '<strong>Labeling Requirements:</strong> Etichetta con codice barre (paziente, farmaco, dose, via). Nome commerciale + principio attivo. Concentrazione finale + unità. Via somministrazione + velocità. Data/ora + scadenza. Operatore + verificatore. Disclaimer "Solo per uso singolo"',
+            '<strong>Beyond-Use Date (BUD) Policy:</strong> Ospedaliero: 24h standard (temperatura ambiente), 7 giorni refrigerato (2-8°C), eccezioni documentate (es. nutrizione parenterale 7 giorni). Chemioterapici: uso immediato (< 1h) per citotossicità residui ambientali',
+          ],
+        },
+        electronicResources: {
+          title: 'Risorse Digitali Validate:',
+          tools: [
+            '<strong>Micromedex IV Compatibility:</strong> Database compatibilità Y-site > 1000 farmaci. Diluizioni standard pediatriche/adulti. Stabilità soluzioni. Subscription: €2000/anno ospedaliero. App mobile iOS/Android',
+            '<strong>Lexicomp Drug Information:</strong> Preparazioni IV detailed monographs. Concentrazioni max/min sicure. Filtri raccomandati. Velocità infusione. Interazioni farmacologiche. Integrazione EMR (Epic, Cerner)',
+            '<strong>GlobalRPH IV Infusion Calculator:</strong> Web-based gratuito. Calcolo diluizioni step-by-step. Conversione unità (mg ↔ mcg, mL ↔ gtt, % ↔ mg/mL). Dose weight-based (mcg/kg/min → mL/h). Drug library 500+ farmaci',
+            '<strong>Medscape Drug Interaction Checker:</strong> Gratuito. Verifica compatibilità multipla (inserisci 10+ farmaci). Rating: major, moderate, minor. Meccanismi interazione. Alternative suggerite',
+            '<strong>Clinical Pharmacology:</strong> Database comprehensive. Formulazioni disponibili (concentrazioni stock commerciali). Diluenti compatibili. Temperature conservazione. Fotosensibilità warnings',
+          ],
+        },
+      },
+    },
+
+    // SEZIONE 9: Riferimenti (bg-teal-1)
+    references: {
+      title: 'Riferimenti Scientifici',
+      content: {
+        keyPublications: {
+          title: 'Pubblicazioni Scientifiche Chiave:',
+          papers: [
+            '<strong>ISMP Medication Safety Alert!</strong> (Quarterly). List of High-Alert Medications in Acute Care Settings. Case studies medication errors, root cause analyses, prevention strategies. Free subscription: www.ismp.org/newsletters',
+            '<strong>ASHP American Journal of Health-System Pharmacy.</strong> Monthly peer-reviewed. Articles on IV admixture stability, compatibilities, compounding techniques. PMID database available. Impact factor 1.9',
+            '<strong>Pharmaceutical Technology in Hospital Pharmacy.</strong> Journal European Association Hospital Pharmacists. Focus sterile compounding, quality assurance, cleanroom validation. Open access: www.degruyter.com/pthp',
+            '<strong>International Journal of Pharmaceutical Compounding (IJPC).</strong> Bimonthly. Case reports complex formulations, beyond-use date studies, novel delivery systems. Subscription: $295/year',
+          ],
+        },
+        clinicalTrials: {
+          title: 'Evidence-Based Studies:',
+          studies: [
+            '<strong>ISMP Targeted Medication Safety Best Practices for Hospitals.</strong> 2023 Update. 22 best practices including standardize concentrations, independent double-checks, smart pumps. Adoption rates tracked nationally. Free download ISMP website',
+            '<strong>Fortescue EB, et al.</strong> "Prioritizing strategies for preventing medication errors and adverse drug events in pediatric inpatients." <em>Pediatrics</em> 2003;111(4):722-729. PMID: 12671106. Study 616 errors → 79% preventable via standardized concentrations',
+            '<strong>Cousins DH, et al.</strong> "Medication errors in intravenous drug preparation and administration: a multicentre audit in the UK, Germany and France." <em>Qual Saf Health Care</em> 2005;14(3):190-195. PMID: 15933316. 3277 IV doses observed → 49% had ≥1 error (mostly wrong dilution)',
+            '<strong>Adapa RM, et al.</strong> "Errors during the preparation of drug infusions: a randomized controlled trial." <em>Br J Anaesth</em> 2012;109(5):729-734. PMID: 22850221. Calculator-assisted dilutions reduced errors 67% vs mental calculation',
+          ],
+        },
+        websites: {
+          title: 'Siti Web Autorevoli:',
+          links: [
+            '<strong>ISMP (Institute for Safe Medication Practices):</strong> www.ismp.org - High-alert medications list, error reports, toolkits, consumer education. Newsletter gratuita bisettimanale. Reporting system confidenziale',
+            '<strong>CDC Safe Injection Practices:</strong> www.cdc.gov/injectionsafety - Guidelines prevenzione infezioni. One & Only Campaign (una siringa, un paziente, una volta). Video training aseptic technique',
+            '<strong>ASHP (American Society of Health-System Pharmacists):</strong> www.ashp.org - Guidelines, toolkits, educational webinars. Membership $250/anno (accesso full-text guidelines). Practice resource center',
+            '<strong>Stabilis Database:</strong> www.stabilis.org - Francese/Inglese. Stabilità > 1800 preparazioni ospedaliere. Temperatura, luce, contenitore, tempo. Peer-reviewed. Free access. Citabile pubblicazioni',
+            '<strong>King Guide to Parenteral Admixtures:</strong> www.kingguide.com - Commercial subscription $499/anno. Compatibilità Y-site aggiornate quarterly. Diluzioni pediatriche. TPN formulations. Phone support',
+          ],
+        },
+        books: {
+          title: 'Testi di Riferimento:',
+          textbooks: [
+            '<strong>Trissel LA.</strong> "Handbook on Injectable Drugs." 21st edition, 2023. ASHP. ISBN: 978-1585286898. Bible IV compatibilità. 2500+ pagine. Monografie 360 farmaci. Diluizioni standard, stabilità, pH, osmolarità. Mandatory ospedaliero',
+            '<strong>Zenk KE.</strong> "Neonatal and Pediatric Parenteral Nutrition." 4th edition, 2020. ASHP. ISBN: 978-1585286638. Nutrizione parenterale neonatale. Micro-dosing techniques. Osmolarità calcoli. Lipid emulsions safety',
+            '<strong>Allen LV, Popovich NG, Ansel HC.</strong> "Ansel\'s Pharmaceutical Dosage Forms and Drug Delivery Systems." 11th edition, 2017. Lippincott. ISBN: 978-1496318824. Farmaceutica generale. Stabilità soluzioni. Sterilizzazione metodi. Packaging',
+            '<strong>Sweetman SC (editor).</strong> "Martindale: The Complete Drug Reference." 39th edition, 2023. Pharmaceutical Press. ISBN: 978-0857113818. 6000+ farmaci. Preparazioni IV internazionali. Incompatibilità. Stability data comprehensive',
+          ],
+        },
+      },
+    },
+  },
+};

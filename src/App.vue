@@ -61,18 +61,6 @@ onMounted(async () => {
     console.log(
       `[App.vue] ✅ Database initialized successfully: ${totalDrugs.value} drugs, ${totalCompatibilityPairs.value} compatibility pairs`,
     );
-
-    // Success notification
-    // if (totalDrugs.value > 0) {
-    //   Notify.create({
-    //     type: 'positive',
-    //     message: `✅ Database farmaci caricato: ${totalDrugs.value} farmaci, ${totalCompatibilityPairs.value} compatibilità`,
-    //     caption: "Database pronto per l'uso",
-    //     position: 'top',
-    //     timeout: 3000,
-    //     icon: 'check_circle',
-    //   });
-    // }
   } catch (error) {
     // Error notification with retry option
     console.error('[App.vue] ❌ Failed to initialize database:', error);
