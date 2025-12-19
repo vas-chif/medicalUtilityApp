@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        border-bottom: 2px solid #1976d2; /* Primary Color */
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+      }
+      .header h2 {
+        color: #1976d2;
+        margin: 0;
+      }
+      .field {
+        margin-bottom: 15px;
+      }
+      .label {
+        font-weight: bold;
+        color: #555;
+        display: block;
+        margin-bottom: 5px;
+      }
+      .value {
+        background-color: #f9f9f9;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #eee;
+      }
+      .message-box {
+        background-color: #f0f7ff;
+        border-left: 4px solid #1976d2;
+        padding: 15px;
+        margin-top: 10px;
+        white-space: pre-wrap; /* Preserves line breaks */
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #888;
+        text-align: center;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>Nuova Richiesta di Supporto</h2>
+        <p>Medical Utility Pro App</p>
+      </div>
+
+      <div class="field">
+        <span class="label">Da:</span>
+        <div class="value">{{from_name}}</div>
+      </div>
+
+      <div class="field">
+        <span class="label">Email Utente:</span>
+        <div class="value">
+          <a href="mailto:{{from_email}}">{{from_email}}</a>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="label">Messaggio:</span>
+        <div class="message-box">{{message}}</div>
+      </div>
+
+      <div class="footer">
+        <p>
+          Questa email è stata inviata automaticamente dal modulo di contatto dell'app Medical
+          Utility Pro.
+        </p>
+        <p>Rispondi direttamente a questa email per contattare l'utente.</p>
+      </div>
+    </div>
+  </body>
+</html>

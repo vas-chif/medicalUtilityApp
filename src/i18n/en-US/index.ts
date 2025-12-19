@@ -20,6 +20,8 @@ import infusionRate from './infusionRate';
 import mainLayout from './mainLayout';
 import drugCompatibilityPage from './drugCompatibilityPage';
 import drugCompatibility from './drugCompatibility';
+import aboutPage from './aboutPage';
+import helpPage from './helpPage';
 // import ibw from './ibw';
 
 export default {
@@ -104,4 +106,10 @@ export default {
 
   // Drug Compatibility Components
   drugCompatibility,
+
+  // About Page
+  aboutPage,
+
+  // Help Page
+  helpPage,
 };

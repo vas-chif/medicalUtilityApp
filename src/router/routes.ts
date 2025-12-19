@@ -28,10 +28,21 @@ const routes: RouteRecordRaw[] = [
       // Drug Compatibility - Pagina dedicata (3 tabs: Checker, Documentation, Lumen Allocator)
       { path: 'drug-compatibility', component: () => import('pages/DrugCompatibilityPage.vue') },
 
+      // About Page
+      { path: 'about', component: () => import('pages/AboutPage.vue') },
+
+      // Help Page
+      { path: 'help', component: () => import('pages/HelpPage.vue') },
+
       // Redirect vecchie route farmacologia → nuova pagina unificata
       { path: 'dosage-calculator', redirect: '/pharmacology' },
     ],
   },
+
+  // Standalone Pages (Custom Layout)
+  { path: '/terms', component: () => import('pages/TermsPage.vue') },
+  { path: '/privacy', component: () => import('pages/PrivacyPage.vue') },
+  { path: '/contacts', component: () => import('pages/ContactsPage.vue') },
 
   // Always leave this as last one,
   // but you can also remove it

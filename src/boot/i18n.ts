@@ -43,6 +43,10 @@ import drugCompatibilityIT from 'src/i18n/it-IT/drugCompatibility';
 import drugCompatibilityEN from 'src/i18n/en-US/drugCompatibility';
 import drugCompatibilityDocsIT from 'src/i18n/it-IT/drugCompatibilityDocs';
 import drugCompatibilityDocsEN from 'src/i18n/en-US/drugCompatibilityDocs';
+import aboutPageIT from 'src/i18n/it-IT/aboutPage';
+import aboutPageEN from 'src/i18n/en-US/aboutPage';
+import helpPageIT from 'src/i18n/it-IT/helpPage';
+import helpPageEN from 'src/i18n/en-US/helpPage';
 
 // Inject calculator namespaces manually into locales
 // This is REQUIRED for vue-i18n to load the translations (see I18N_SETUP_GUIDE.md)
@@ -68,6 +72,8 @@ const itITWithCalculators = {
   drugCompatibilityPage: drugCompatibilityPageIT,
   drugCompatibility: drugCompatibilityIT,
   drugCompatibilityDocs: drugCompatibilityDocsIT,
+  aboutPage: aboutPageIT,
+  helpPage: helpPageIT,
 };
 
 const enUSWithCalculators = {
@@ -92,6 +98,8 @@ const enUSWithCalculators = {
   drugCompatibilityPage: drugCompatibilityPageEN,
   drugCompatibilityDocs: drugCompatibilityDocsEN,
   drugCompatibility: drugCompatibilityEN,
+  aboutPage: aboutPageEN,
+  helpPage: helpPageEN,
 };
 
 const messages = {
