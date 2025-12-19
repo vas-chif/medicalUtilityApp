@@ -29,10 +29,12 @@ import { DrugCompatibility } from 'src/types/DrugTypes';
 // Composables
 import { useSecureLogger } from 'src/composables/useSecureLogger';
 import { useDrugCompatibilityStore } from 'src/stores/drug-compatibility-store';
+import { useI18n } from 'vue-i18n';
 
 // ============================================================
 // COMPOSABLES
 // ============================================================
+const { t } = useI18n();
 const { logger } = useSecureLogger();
 const compatibilityStore = useDrugCompatibilityStore();
 
@@ -159,13 +161,18 @@ const recommendations = computed((): string[] => {
 
   // No recommendations if sufficient lumens
   if (isSufficient.value) {
-    recs.push('✅ Lumi sufficienti per tutti i farmaci selezionati');
+    recs.push(t('drugCompatibility.lumenAllocator.recommendations.sufficient'));
     return recs;
   }
 
   // Recommendations for insufficient lumens
-  recs.push(`⚠️ Necessari ${lumenAllocation.value.length} lumi, disponibili ${lumensCount.value}`);
-  recs.push(`💉 Aggiungi CVC multi-lumen (4-5 lumi) o PICC line aggiuntiva`);
+  recs.push(
+    t('drugCompatibility.lumenAllocator.recommendations.needed', {
+      needed: lumenAllocation.value.length,
+      available: lumensCount.value,
+    }),
+  );
+  recs.push(t('drugCompatibility.lumenAllocator.recommendations.addCvc'));
 
   // Find incompatible drugs to suggest removal
   if (props.analysisResults) {
@@ -175,11 +182,15 @@ const recommendations = computed((): string[] => {
       .filter((drug, index, arr) => arr.indexOf(drug) === index); // Unique
 
     if (incompatibleDrugs.length > 0) {
-      recs.push(`🔴 Considera rimozione farmaci incompatibili: ${incompatibleDrugs.join(', ')}`);
+      recs.push(
+        t('drugCompatibility.lumenAllocator.recommendations.removeIncompatible', {
+          drugs: incompatibleDrugs.join(', '),
+        }),
+      );
     }
   }
 
-  recs.push('⏰ Valuta somministrazione sequenziale con flush tra farmaci');
+  recs.push(t('drugCompatibility.lumenAllocator.recommendations.sequential'));
 
   return recs;
 });
@@ -569,20 +580,26 @@ watch(
       <q-card-section>
         <div class="text-h6 text-indigo-9">
           <q-icon name="hub" class="q-mr-xs" />
-          💉 Lumen Allocation Optimizer
+          💉 {{ t('drugCompatibility.lumenAllocator.title') }}
         </div>
         <div class="text-caption text-grey-7">
-          Algoritmo greedy per ottimizzazione allocazione lumi CVC/PICC
+          {{ t('drugCompatibility.lumenAllocator.subtitle') }}
         </div>
 
         <!-- Legenda icone -->
         <div class="q-mt-sm q-gutter-xs row items-center">
-          <div class="text-caption"><strong>Legenda:</strong></div>
+          <div class="text-caption">
+            <strong>{{ t('drugCompatibility.lumenAllocator.legend.title') }}:</strong>
+          </div>
           <q-chip size="sm" color="orange-2" icon="light_mode">
-            <span style="color: #e65100">Fotosensibile</span>
+            <span style="color: #e65100">{{
+              t('drugCompatibility.lumenAllocator.legend.photosensitive')
+            }}</span>
           </q-chip>
           <q-chip size="sm" color="red-2" icon="place">
-            <span style="color: #c62828">CVC Richiesto</span>
+            <span style="color: #c62828">{{
+              t('drugCompatibility.lumenAllocator.legend.cvcRequired')
+            }}</span>
           </q-chip>
         </div>
       </q-card-section>
@@ -598,11 +615,11 @@ watch(
             <q-input
               v-model.number="lumensCount"
               type="number"
-              label="💉 Lumi CVC/PICC disponibili"
+              :label="t('drugCompatibility.lumenAllocator.availableLumens')"
               :min="1"
               :max="6"
               outlined
-              hint="Tipico CVC: 3-4 lumi | PICC: 1-2 lumi"
+              :hint="t('drugCompatibility.lumenAllocator.typicalConfiguration')"
             >
               <template #prepend>
                 <q-icon name="medical_services" />
@@ -618,10 +635,15 @@ watch(
               size="lg"
             >
               <strong>
-                {{ isSufficient ? '✅ Sufficienti' : '❌ Insufficienti' }}
+                {{
+                  isSufficient
+                    ? t('drugCompatibility.lumenAllocator.sufficient')
+                    : t('drugCompatibility.lumenAllocator.insufficient')
+                }}
               </strong>
               <q-tooltip>
-                Necessari: {{ lumenAllocation.length }} | Disponibili: {{ lumensCount }}
+                {{ t('drugCompatibility.lumenAllocator.needed') }}: {{ lumenAllocation.length }} |
+                {{ t('drugCompatibility.lumenAllocator.available') }}: {{ lumensCount }}
               </q-tooltip>
             </q-chip>
           </div>
@@ -637,9 +659,11 @@ watch(
       class="bg-grey-3 q-pa-lg text-center"
     >
       <q-icon name="pending_actions" size="64px" color="grey-6" class="q-mb-md" />
-      <div class="text-h6 text-grey-7 q-mb-sm">Nessun farmaco selezionato</div>
+      <div class="text-h6 text-grey-7 q-mb-sm">
+        {{ t('drugCompatibility.lumenAllocator.noDrugs') }}
+      </div>
       <div class="text-body2 text-grey-6">
-        Seleziona almeno 2 farmaci per visualizzare l'allocazione lumi
+        {{ t('drugCompatibility.lumenAllocator.selectDrugsHint') }}
       </div>
     </q-card>
 
@@ -652,26 +676,57 @@ watch(
         <template #avatar>
           <q-icon name="warning" size="32px" />
         </template>
-        <div class="text-h6 q-mb-sm">⚠️ Lumi Insufficienti - Rischio Allocazione</div>
+        <div class="text-h6 q-mb-sm">
+          {{ t('drugCompatibility.lumenAllocator.insufficientWarning.title') }}
+        </div>
         <div class="text-body1">
-          <strong
-            >Necessari {{ lumenAllocation.length }} lumi, disponibili {{ lumensCount }}</strong
-          >
+          <strong>{{
+            t('drugCompatibility.lumenAllocator.insufficientWarning.needed', {
+              needed: lumenAllocation.length,
+              available: lumensCount,
+            })
+          }}</strong>
         </div>
         <div class="text-body2 q-mt-sm">
-          Deficit: <strong>{{ deficit }} {{ deficit === 1 ? 'lume' : 'lumi' }}</strong> mancante/i
+          {{
+            t('drugCompatibility.lumenAllocator.insufficientWarning.deficit', {
+              deficit,
+              lume:
+                deficit === 1
+                  ? t('drugCompatibility.lumenAllocator.lumen')
+                  : t('drugCompatibility.lumenAllocator.lumens'),
+            })
+          }}
         </div>
         <div
           v-if="hasIncompatibleAllocations"
           class="text-body2 q-mt-sm bg-red-10 q-pa-sm rounded-borders"
         >
           <q-icon name="error" size="sm" class="q-mr-xs" />
-          <strong>ATTENZIONE:</strong> Farmaci incompatibili rilevati in
-          {{ incompatibleLumens.length === 1 ? 'lume' : 'lumi' }}
-          {{ incompatibleLumens.join(', ') }}
+          <strong
+            >{{
+              t('drugCompatibility.lumenAllocator.insufficientWarning.incompatibleWarning')
+            }}:</strong
+          >
+          {{
+            t('drugCompatibility.lumenAllocator.insufficientWarning.incompatibleDetected', {
+              lumens: incompatibleLumens.join(', '),
+              count: incompatibleLumens.length,
+            })
+          }}
           <br />
-          <strong>Raccomandazione:</strong> Aggiungere {{ deficit }}
-          {{ deficit === 1 ? 'lume' : 'lumi' }} aggiuntivo/i per evitare incompatibilità
+          <strong
+            >{{ t('drugCompatibility.lumenAllocator.insufficientWarning.recommendation') }}:</strong
+          >
+          {{
+            t('drugCompatibility.lumenAllocator.insufficientWarning.addLumens', {
+              deficit,
+              lume:
+                deficit === 1
+                  ? t('drugCompatibility.lumenAllocator.lumen')
+                  : t('drugCompatibility.lumenAllocator.lumens'),
+            })
+          }}
         </div>
       </q-banner>
 
@@ -712,7 +767,7 @@ watch(
                 size="sm"
                 class="q-ml-sm"
               >
-                NON DISPONIBILE
+                {{ t('drugCompatibility.lumenAllocator.notAvailable') }}
               </q-chip>
               <q-chip
                 v-else-if="lumen.isCompatible === false"
@@ -721,7 +776,7 @@ watch(
                 size="sm"
                 class="q-ml-sm"
               >
-                ⚠️ INCOMPATIBILITÀ
+                {{ t('drugCompatibility.lumenAllocator.incompatibility') }}
               </q-chip>
             </div>
           </q-card-section>
@@ -744,7 +799,8 @@ watch(
                   class="q-ml-xs"
                 >
                   <q-tooltip>{{
-                    getDrugMetadata(drug).photosensitiveNote || 'Fotosensibile'
+                    getDrugMetadata(drug).photosensitiveNote ||
+                    t('drugCompatibility.lumenAllocator.legend.photosensitive')
                   }}</q-tooltip>
                 </q-icon>
                 <q-icon
@@ -754,13 +810,17 @@ watch(
                   size="sm"
                   class="q-ml-xs"
                 >
-                  <q-tooltip>{{ getDrugMetadata(drug).cvcNote || 'CVC Richiesto' }}</q-tooltip>
+                  <q-tooltip>{{
+                    getDrugMetadata(drug).cvcNote ||
+                    t('drugCompatibility.lumenAllocator.legend.cvcRequired')
+                  }}</q-tooltip>
                 </q-icon>
               </q-chip>
             </div>
             <div class="text-caption text-grey-7 q-mt-sm">
-              {{ lumen.drugs.length }}
-              {{ lumen.drugs.length === 1 ? 'farmaco' : 'farmaci' }} allocato/i
+              {{
+                t('drugCompatibility.lumenAllocator.drugsAllocated', { count: lumen.drugs.length })
+              }}
             </div>
           </q-card-section>
         </q-card>
@@ -770,8 +830,7 @@ watch(
       <q-card v-if="recommendations.length > 0" class="bg-purple-1 q-mb-md">
         <q-card-section>
           <div class="text-h6 text-purple-9">
-            <q-icon name="lightbulb" class="q-mr-sm" />
-            💡 Raccomandazioni Ottimizzazione
+            💡 {{ t('drugCompatibility.lumenAllocator.optimizationRecommendations') }}
           </div>
         </q-card-section>
         <q-separator />

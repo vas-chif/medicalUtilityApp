@@ -18,47 +18,54 @@
 
 import { computed } from 'vue';
 import type { MultiDrugAnalysis } from 'src/types/DrugTypes';
+import { useI18n } from 'vue-i18n';
+
+// COMPOSABLES
+const { t } = useI18n();
 
 // Helper per metadata farmaci (fotosensibilità, CVC)
 const getDrugMetadata = (drugName: string) => {
   // Database temporaneo - TODO: integrare con drugDatabaseService
-  const metadata: Record<string, { photosensitive: boolean; cvcRequired: boolean; photosensitiveNote?: string; cvcNote?: string }> = {
-    'ADRENALINA': { 
-      photosensitive: true, 
+  const metadata: Record<
+    string,
+    { photosensitive: boolean; cvcRequired: boolean; photosensitiveNote?: string; cvcNote?: string }
+  > = {
+    ADRENALINA: {
+      photosensitive: true,
       cvcRequired: true,
       photosensitiveNote: 'Conservare al riparo dalla luce',
-      cvcNote: 'Noto rischio flebite - richiede CVC'
+      cvcNote: 'Noto rischio flebite - richiede CVC',
     },
-    'NORADRENALINA TARTRATO': { 
-      photosensitive: true, 
+    'NORADRENALINA TARTRATO': {
+      photosensitive: true,
       cvcRequired: true,
       photosensitiveNote: 'Fotosensibile - proteggere dalla luce',
-      cvcNote: 'Alto rischio flebite - CVC obbligatorio'
+      cvcNote: 'Alto rischio flebite - CVC obbligatorio',
     },
-    'FUROSEMIDE': { 
-      photosensitive: true, 
+    FUROSEMIDE: {
+      photosensitive: true,
       cvcRequired: false,
-      photosensitiveNote: 'Sensibile alla luce - conservare in siringa scura'
+      photosensitiveNote: 'Sensibile alla luce - conservare in siringa scura',
     },
-    'LINEZOLID': { 
-      photosensitive: true, 
+    LINEZOLID: {
+      photosensitive: true,
       cvcRequired: false,
-      photosensitiveNote: 'Fotosensibile - proteggere dalla luce diretta'
+      photosensitiveNote: 'Fotosensibile - proteggere dalla luce diretta',
     },
-    'IDROCORTISONE EMIS. SODICO': { 
-      photosensitive: false, 
-      cvcRequired: false
+    'IDROCORTISONE EMIS. SODICO': {
+      photosensitive: false,
+      cvcRequired: false,
     },
-    'REMIFENTANIL CLORIDRATO': { 
-      photosensitive: false, 
-      cvcRequired: false
+    'REMIFENTANIL CLORIDRATO': {
+      photosensitive: false,
+      cvcRequired: false,
     },
-    'INSULINA UMANA': { 
-      photosensitive: false, 
-      cvcRequired: false
+    'INSULINA UMANA': {
+      photosensitive: false,
+      cvcRequired: false,
     },
   };
-  
+
   return metadata[drugName] || { photosensitive: false, cvcRequired: false };
 };
 
@@ -107,9 +114,11 @@ const hasResults = computed(() => {
     <!-- ============================================================ -->
     <q-card v-if="!hasResults" class="bg-grey-3 q-pa-lg text-center">
       <q-icon name="pending" size="64px" color="grey-6" class="q-mb-md" />
-      <div class="text-h6 text-grey-7 q-mb-sm">In attesa di analisi compatibilità...</div>
+      <div class="text-h6 text-grey-7 q-mb-sm">
+        {{ t('drugCompatibility.compatibilityList.pending') }}
+      </div>
       <div class="text-body2 text-grey-6">
-        Seleziona almeno 2 farmaci e clicca "Analizza Compatibilità"
+        {{ t('drugCompatibility.compatibilityList.selectDrugsHint') }}
       </div>
     </q-card>
 
@@ -120,7 +129,7 @@ const hasResults = computed(() => {
       <q-card-section>
         <div class="text-h6 text-weight-bold q-mb-md">
           <q-icon name="medication" class="q-mr-sm" />
-          📊 Compatibilità Dettagliata Farmaci
+          📊 {{ t('drugCompatibility.compatibilityList.title') }}
         </div>
 
         <!-- Lista farmaci -->
@@ -134,7 +143,7 @@ const hasResults = computed(() => {
           <div class="compatibility-details q-pl-md">
             <!-- Compatibili (VERDE) -->
             <div v-if="drug.compatible.length > 0" class="compatibility-row q-mb-xs">
-              <span class="label">COMPATIBILE:</span>
+              <span class="label">{{ t('drugCompatibility.compatibilityList.compatible') }}:</span>
               <div class="drugs-list">
                 <q-chip
                   v-for="(compatDrug, idx) in drug.compatible"
@@ -144,23 +153,29 @@ const hasResults = computed(() => {
                   square
                 >
                   {{ compatDrug }}
-                  <q-icon 
-                    v-if="getDrugMetadata(compatDrug).photosensitive" 
-                    name="light_mode" 
-                    color="orange" 
+                  <q-icon
+                    v-if="getDrugMetadata(compatDrug).photosensitive"
+                    name="light_mode"
+                    color="orange"
                     size="14px"
                     class="q-ml-xs"
                   >
-                    <q-tooltip>{{ getDrugMetadata(compatDrug).photosensitiveNote || 'Fotosensibile' }}</q-tooltip>
+                    <q-tooltip>{{
+                      getDrugMetadata(compatDrug).photosensitiveNote ||
+                      t('drugCompatibility.lumenAllocator.legend.photosensitive')
+                    }}</q-tooltip>
                   </q-icon>
-                  <q-icon 
-                    v-if="getDrugMetadata(compatDrug).cvcRequired" 
-                    name="place" 
-                    color="red" 
+                  <q-icon
+                    v-if="getDrugMetadata(compatDrug).cvcRequired"
+                    name="place"
+                    color="red"
                     size="14px"
                     class="q-ml-xs"
                   >
-                    <q-tooltip>{{ getDrugMetadata(compatDrug).cvcNote || 'CVC Richiesto' }}</q-tooltip>
+                    <q-tooltip>{{
+                      getDrugMetadata(compatDrug).cvcNote ||
+                      t('drugCompatibility.lumenAllocator.legend.cvcRequired')
+                    }}</q-tooltip>
                   </q-icon>
                 </q-chip>
               </div>
@@ -168,7 +183,9 @@ const hasResults = computed(() => {
 
             <!-- Compatibili al rubinetto (ARANCIONE) -->
             <div v-if="drug.compatibleOnTap.length > 0" class="compatibility-row q-mb-xs">
-              <span class="label">COMPATIBILE AL RUBINETTO:</span>
+              <span class="label"
+                >{{ t('drugCompatibility.compatibilityList.compatibleYSite') }}:</span
+              >
               <div class="drugs-list">
                 <q-chip
                   v-for="(tapDrug, idx) in drug.compatibleOnTap"
@@ -178,23 +195,29 @@ const hasResults = computed(() => {
                   square
                 >
                   {{ tapDrug }}
-                  <q-icon 
-                    v-if="getDrugMetadata(tapDrug).photosensitive" 
-                    name="light_mode" 
-                    color="orange" 
+                  <q-icon
+                    v-if="getDrugMetadata(tapDrug).photosensitive"
+                    name="light_mode"
+                    color="orange"
                     size="14px"
                     class="q-ml-xs"
                   >
-                    <q-tooltip>{{ getDrugMetadata(tapDrug).photosensitiveNote || 'Fotosensibile' }}</q-tooltip>
+                    <q-tooltip>{{
+                      getDrugMetadata(tapDrug).photosensitiveNote ||
+                      t('drugCompatibility.lumenAllocator.legend.photosensitive')
+                    }}</q-tooltip>
                   </q-icon>
-                  <q-icon 
-                    v-if="getDrugMetadata(tapDrug).cvcRequired" 
-                    name="place" 
-                    color="red" 
+                  <q-icon
+                    v-if="getDrugMetadata(tapDrug).cvcRequired"
+                    name="place"
+                    color="red"
                     size="14px"
                     class="q-ml-xs"
                   >
-                    <q-tooltip>{{ getDrugMetadata(tapDrug).cvcNote || 'CVC Richiesto' }}</q-tooltip>
+                    <q-tooltip>{{
+                      getDrugMetadata(tapDrug).cvcNote ||
+                      t('drugCompatibility.lumenAllocator.legend.cvcRequired')
+                    }}</q-tooltip>
                   </q-icon>
                 </q-chip>
               </div>
@@ -212,23 +235,29 @@ const hasResults = computed(() => {
                   square
                 >
                   {{ conflictDrug }}
-                  <q-icon 
-                    v-if="getDrugMetadata(conflictDrug).photosensitive" 
-                    name="light_mode" 
-                    color="orange" 
+                  <q-icon
+                    v-if="getDrugMetadata(conflictDrug).photosensitive"
+                    name="light_mode"
+                    color="orange"
                     size="14px"
                     class="q-ml-xs"
                   >
-                    <q-tooltip>{{ getDrugMetadata(conflictDrug).photosensitiveNote || 'Fotosensibile' }}</q-tooltip>
+                    <q-tooltip>{{
+                      getDrugMetadata(conflictDrug).photosensitiveNote ||
+                      t('drugCompatibility.lumenAllocator.legend.photosensitive')
+                    }}</q-tooltip>
                   </q-icon>
-                  <q-icon 
-                    v-if="getDrugMetadata(conflictDrug).cvcRequired" 
-                    name="place" 
-                    color="red" 
+                  <q-icon
+                    v-if="getDrugMetadata(conflictDrug).cvcRequired"
+                    name="place"
+                    color="red"
                     size="14px"
                     class="q-ml-xs"
                   >
-                    <q-tooltip>{{ getDrugMetadata(conflictDrug).cvcNote || 'CVC Richiesto' }}</q-tooltip>
+                    <q-tooltip>{{
+                      getDrugMetadata(conflictDrug).cvcNote ||
+                      t('drugCompatibility.lumenAllocator.legend.cvcRequired')
+                    }}</q-tooltip>
                   </q-icon>
                 </q-chip>
               </div>
@@ -236,7 +265,9 @@ const hasResults = computed(() => {
 
             <!-- Incompatibili (ROSSO) -->
             <div v-if="drug.incompatible.length > 0" class="compatibility-row q-mb-xs">
-              <span class="label">INCOMPATIBILE:</span>
+              <span class="label"
+                >{{ t('drugCompatibility.compatibilityList.incompatible') }}:</span
+              >
               <div class="drugs-list">
                 <q-chip
                   v-for="(incompDrug, idx) in drug.incompatible"
@@ -246,23 +277,29 @@ const hasResults = computed(() => {
                   square
                 >
                   {{ incompDrug }}
-                  <q-icon 
-                    v-if="getDrugMetadata(incompDrug).photosensitive" 
-                    name="light_mode" 
-                    color="orange" 
+                  <q-icon
+                    v-if="getDrugMetadata(incompDrug).photosensitive"
+                    name="light_mode"
+                    color="orange"
                     size="14px"
                     class="q-ml-xs"
                   >
-                    <q-tooltip>{{ getDrugMetadata(incompDrug).photosensitiveNote || 'Fotosensibile' }}</q-tooltip>
+                    <q-tooltip>{{
+                      getDrugMetadata(incompDrug).photosensitiveNote ||
+                      t('drugCompatibility.lumenAllocator.legend.photosensitive')
+                    }}</q-tooltip>
                   </q-icon>
-                  <q-icon 
-                    v-if="getDrugMetadata(incompDrug).cvcRequired" 
-                    name="place" 
-                    color="red" 
+                  <q-icon
+                    v-if="getDrugMetadata(incompDrug).cvcRequired"
+                    name="place"
+                    color="red"
                     size="14px"
                     class="q-ml-xs"
                   >
-                    <q-tooltip>{{ getDrugMetadata(incompDrug).cvcNote || 'CVC Richiesto' }}</q-tooltip>
+                    <q-tooltip>{{
+                      getDrugMetadata(incompDrug).cvcNote ||
+                      t('drugCompatibility.lumenAllocator.legend.cvcRequired')
+                    }}</q-tooltip>
                   </q-icon>
                 </q-chip>
               </div>

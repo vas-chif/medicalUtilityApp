@@ -35,6 +35,14 @@ import drugDilutionIT from 'src/i18n/it-IT/drugDilution';
 import drugDilutionEN from 'src/i18n/en-US/drugDilution';
 import infusionRateIT from 'src/i18n/it-IT/infusionRate';
 import infusionRateEN from 'src/i18n/en-US/infusionRate';
+import mainLayoutIT from 'src/i18n/it-IT/mainLayout';
+import mainLayoutEN from 'src/i18n/en-US/mainLayout';
+import drugCompatibilityPageIT from 'src/i18n/it-IT/drugCompatibilityPage';
+import drugCompatibilityPageEN from 'src/i18n/en-US/drugCompatibilityPage';
+import drugCompatibilityIT from 'src/i18n/it-IT/drugCompatibility';
+import drugCompatibilityEN from 'src/i18n/en-US/drugCompatibility';
+import drugCompatibilityDocsIT from 'src/i18n/it-IT/drugCompatibilityDocs';
+import drugCompatibilityDocsEN from 'src/i18n/en-US/drugCompatibilityDocs';
 
 // Inject calculator namespaces manually into locales
 // This is REQUIRED for vue-i18n to load the translations (see I18N_SETUP_GUIDE.md)
@@ -56,6 +64,10 @@ const itITWithCalculators = {
   dosageCalculator: dosageCalculatorIT,
   drugDilution: drugDilutionIT,
   infusionRate: infusionRateIT,
+  mainLayout: mainLayoutIT,
+  drugCompatibilityPage: drugCompatibilityPageIT,
+  drugCompatibility: drugCompatibilityIT,
+  drugCompatibilityDocs: drugCompatibilityDocsIT,
 };
 
 const enUSWithCalculators = {
@@ -76,6 +88,10 @@ const enUSWithCalculators = {
   dosageCalculator: dosageCalculatorEN,
   drugDilution: drugDilutionEN,
   infusionRate: infusionRateEN,
+  mainLayout: mainLayoutEN,
+  drugCompatibilityPage: drugCompatibilityPageEN,
+  drugCompatibilityDocs: drugCompatibilityDocsEN,
+  drugCompatibility: drugCompatibilityEN,
 };
 
 const messages = {

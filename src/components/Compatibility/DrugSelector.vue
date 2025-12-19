@@ -30,6 +30,7 @@
 import { storeToRefs } from 'pinia';
 import { useDrugCompatibility } from 'src/composables/useDrugCompatibility';
 import { useDrugCompatibilityStore } from 'src/stores/drug-compatibility-store';
+import { useI18n } from 'vue-i18n';
 
 // ============================================================
 // PROPS & EMITS
@@ -68,6 +69,11 @@ const emit = defineEmits<Emits>();
 // ============================================================
 // COMPOSABLES
 // ============================================================
+
+/**
+ * Internationalization composable
+ */
+const { t } = useI18n();
 
 /**
  * Drug compatibility composable
@@ -121,7 +127,7 @@ const handleClear = (): void => {
         <!-- Search Bar -->
         <q-input
           v-model="searchQuery"
-          placeholder="Cerca farmaco..."
+          :placeholder="t('drugCompatibility.drugSelector.searchPlaceholder')"
           outlined
           dense
           clearable
@@ -156,7 +162,11 @@ const handleClear = (): void => {
                   :color="selectedDrugs.includes(drug.name) ? 'positive' : 'grey-3'"
                   :text-color="selectedDrugs.includes(drug.name) ? 'white' : 'grey-7'"
                 >
-                  {{ selectedDrugs.includes(drug.name) ? 'Selezionato' : 'Aggiungi' }}
+                  {{
+                    selectedDrugs.includes(drug.name)
+                      ? t('drugCompatibility.drugSelector.selected')
+                      : t('drugCompatibility.drugSelector.add')
+                  }}
                 </q-chip>
               </q-item-section>
             </q-item>
@@ -166,7 +176,7 @@ const handleClear = (): void => {
         <!-- Selected Drugs Chips -->
         <div v-if="selectedDrugs.length > 0" class="selected-drugs q-mb-md">
           <div class="text-subtitle2 text-primary q-mb-sm">
-            📋 Farmaci selezionati ({{ selectedDrugs.length }}):
+            📋 {{ t('drugCompatibility.drugSelector.selectedDrugs') }} ({{ selectedDrugs.length }}):
           </div>
           <div class="row q-gutter-sm">
             <q-chip

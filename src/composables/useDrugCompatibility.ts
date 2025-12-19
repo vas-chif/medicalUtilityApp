@@ -68,6 +68,7 @@
  */
 
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type {
   Drug,
   CompatibilityMatrix,
@@ -90,6 +91,7 @@ import { CompatibilityStatus } from 'src/types/drug-database';
  * @returns Object with drug data, analysis functions, and selection management
  */
 export function useDrugCompatibility() {
+  const { t } = useI18n();
   // State
   // ============================================================
   // STATE MANAGEMENT - Reactive drug data and selections
@@ -356,8 +358,11 @@ export function useDrugCompatibility() {
           warnings.push({
             type: 'warning',
             drugs: [drug, conflictDrug],
-            message: `ATTENZIONE: Dati contrastanti per ${drug} e ${conflictDrug}`,
-            action: 'Consultare farmacologo ospedaliero prima della somministrazione',
+            message: t('drugCompatibility.compatibilityResults.conflictingDataWarning', {
+              drug1: drug,
+              drug2: conflictDrug,
+            }),
+            action: t('drugCompatibility.compatibilityResults.consultPharmacologist'),
           });
         }
       }
@@ -369,8 +374,11 @@ export function useDrugCompatibility() {
           warnings.push({
             type: 'info',
             drugs: [drug, firstCompatDrug],
-            message: `${drug} compatibile con ${result.compatibleOnTap.join(', ')} solo tramite Y-site`,
-            action: 'Utilizzare connettore Y-site/rubinetto a tre vie',
+            message: t('drugCompatibility.compatibilityResults.ySiteCompatInfo', {
+              drug,
+              others: result.compatibleOnTap.join(', '),
+            }),
+            action: t('drugCompatibility.compatibilityResults.useYSiteConnector'),
           });
         }
       }
@@ -378,19 +386,17 @@ export function useDrugCompatibility() {
 
     // Genera raccomandazioni
     if (warnings.some((w) => w.type === 'critical')) {
-      recommendations.push(
-        '⚠️ ATTENZIONE: Rilevate incompatibilità critiche. Non somministrare insieme.',
-      );
-      recommendations.push('✓ Utilizzare linee venose separate per farmaci incompatibili');
+      recommendations.push(t('drugCompatibility.compatibilityResults.criticalWarning'));
+      recommendations.push(t('drugCompatibility.compatibilityResults.useSeparateLines'));
     }
 
     if (warnings.some((w) => w.type === 'warning')) {
-      recommendations.push('⚠️ Consultare il servizio di farmacia per dati contrastanti');
+      recommendations.push(t('drugCompatibility.compatibilityResults.consultPharmacy'));
     }
 
     if (warnings.length === 0 || warnings.every((w) => w.type === 'info')) {
-      recommendations.push('✓ Nessuna incompatibilità critica rilevata');
-      recommendations.push('✓ Verificare sempre le diluizioni e velocità di infusione corrette');
+      recommendations.push(t('drugCompatibility.compatibilityResults.noCriticalIncompatibilities'));
+      recommendations.push(t('drugCompatibility.compatibilityResults.checkDilution'));
     }
 
     return {

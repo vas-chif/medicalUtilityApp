@@ -31,7 +31,7 @@
       "id": "abiciximab",
       "name": {
         "it": "ABICIXIMAB",
-        "en": "ABICIXIMAB"
+        "en": "ABCIXIMAB"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -593,7 +593,7 @@
       "id": "acetilcisteina",
       "name": {
         "it": "ACETILCISTEINA",
-        "en": "ACETILCISTEINA"
+        "en": "ACETYLCYSTEINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -1155,7 +1155,7 @@
       "id": "aciclovir",
       "name": {
         "it": "ACICLOVIR",
-        "en": "ACICLOVIR"
+        "en": "ACYCLOVIR"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -1717,7 +1717,7 @@
       "id": "acido-ascorbico",
       "name": {
         "it": "ACIDO ASCORBICO",
-        "en": "ACIDO ASCORBICO"
+        "en": "ASCORBIC ACID"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -2279,7 +2279,7 @@
       "id": "acido-etacrinico",
       "name": {
         "it": "ACIDO ETACRINICO",
-        "en": "ACIDO ETACRINICO"
+        "en": "ETHACRYNIC ACID"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -2841,7 +2841,7 @@
       "id": "acido-folico",
       "name": {
         "it": "ACIDO FOLICO",
-        "en": "ACIDO FOLICO"
+        "en": "FOLIC ACID"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -3403,7 +3403,7 @@
       "id": "acido-tranexamico",
       "name": {
         "it": "ACIDO TRANEXAMICO",
-        "en": "ACIDO TRANEXAMICO"
+        "en": "TRANEXAMIC ACID"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -3965,7 +3965,7 @@
       "id": "adrenalina",
       "name": {
         "it": "ADRENALINA",
-        "en": "ADRENALINA"
+        "en": "EPINEPHRINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -4527,7 +4527,7 @@
       "id": "albumina-umana",
       "name": {
         "it": "ALBUMINA UMANA",
-        "en": "ALBUMINA UMANA"
+        "en": "HUMAN ALBUMIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -5089,7 +5089,7 @@
       "id": "aloperidolo",
       "name": {
         "it": "ALOPERIDOLO",
-        "en": "ALOPERIDOLO"
+        "en": "HALOPERIDOL"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -6213,7 +6213,7 @@
       "id": "amfotericina-b",
       "name": {
         "it": "AMFOTERICINA B",
-        "en": "AMFOTERICINA B"
+        "en": "AMPHOTERICIN B"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -6775,7 +6775,7 @@
       "id": "amikacina-solfato",
       "name": {
         "it": "AMIKACINA SOLFATO",
-        "en": "AMIKACINA SOLFATO"
+        "en": "AMIKACIN SULFATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -7337,7 +7337,7 @@
       "id": "aminofillina",
       "name": {
         "it": "AMINOFILLINA",
-        "en": "AMINOFILLINA"
+        "en": "AMINOPHYLLINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -7899,7 +7899,7 @@
       "id": "amiodarone-cloridrato",
       "name": {
         "it": "AMIODARONE CLORIDRATO",
-        "en": "AMIODARONE CLORIDRATO"
+        "en": "AMIODARONE HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -8461,7 +8461,7 @@
       "id": "amoxicillina",
       "name": {
         "it": "AMOXICILLINA",
-        "en": "AMOXICILLINA"
+        "en": "AMOXICILLIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -9023,7 +9023,7 @@
       "id": "amoxicillina/acido-clavulanico",
       "name": {
         "it": "AMOXICILLINA/ACIDO CLAVULANICO",
-        "en": "AMOXICILLINA/ACIDO CLAVULANICO"
+        "en": "AMOXICILLIN/CLAVULANIC ACID"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -9585,7 +9585,7 @@
       "id": "ampicillina",
       "name": {
         "it": "AMPICILLINA",
-        "en": "AMPICILLINA"
+        "en": "AMPICILLIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -10147,7 +10147,7 @@
       "id": "ampicillina/sulbactam",
       "name": {
         "it": "AMPICILLINA/SULBACTAM",
-        "en": "AMPICILLINA/SULBACTAM"
+        "en": "AMPICILLIN/SULBACTAM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -10709,7 +10709,7 @@
       "id": "anidulafungina",
       "name": {
         "it": "ANIDULAFUNGINA",
-        "en": "ANIDULAFUNGINA"
+        "en": "ANIDULAFUNGIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -11271,7 +11271,7 @@
       "id": "antitrombina-iii-umana",
       "name": {
         "it": "ANTITROMBINA III UMANA",
-        "en": "ANTITROMBINA III UMANA"
+        "en": "ANTITHROMBIN III HUMAN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -11833,7 +11833,7 @@
       "id": "argatroban-anidro",
       "name": {
         "it": "ARGATROBAN ANIDRO",
-        "en": "ARGATROBAN ANIDRO"
+        "en": "ARGATROBAN ANHYDROUS"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -12395,7 +12395,7 @@
       "id": "atenololo",
       "name": {
         "it": "ATENOLOLO",
-        "en": "ATENOLOLO"
+        "en": "ATENOLOL"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -13519,7 +13519,7 @@
       "id": "atropina",
       "name": {
         "it": "ATROPINA",
-        "en": "ATROPINA"
+        "en": "ATROPINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -14081,7 +14081,7 @@
       "id": "azitromicina",
       "name": {
         "it": "AZITROMICINA",
-        "en": "AZITROMICINA"
+        "en": "AZITHROMYCIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -15205,7 +15205,7 @@
       "id": "betametasone",
       "name": {
         "it": "BETAMETASONE",
-        "en": "BETAMETASONE"
+        "en": "BETAMETHASONE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -15767,7 +15767,7 @@
       "id": "calcio-clororo",
       "name": {
         "it": "CALCIO CLORORO",
-        "en": "CALCIO CLORORO"
+        "en": "CALCIUM CHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -16329,7 +16329,7 @@
       "id": "calcio-gluconato",
       "name": {
         "it": "CALCIO GLUCONATO",
-        "en": "CALCIO GLUCONATO"
+        "en": "CALCIUM GLUCONATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -17453,7 +17453,7 @@
       "id": "cefazolina-sodica",
       "name": {
         "it": "CEFAZOLINA SODICA",
-        "en": "CEFAZOLINA SODICA"
+        "en": "CEFAZOLIN SODIUM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -18015,7 +18015,7 @@
       "id": "cefepime-dicloridrato",
       "name": {
         "it": "CEFEPIME DICLORIDRATO",
-        "en": "CEFEPIME DICLORIDRATO"
+        "en": "CEFEPIME DIHYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -18577,7 +18577,7 @@
       "id": "cefoxitina-sodica",
       "name": {
         "it": "CEFOXITINA SODICA",
-        "en": "CEFOXITINA SODICA"
+        "en": "CEFOXITIN SODIUM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -19139,7 +19139,7 @@
       "id": "ceftazidima-pentaidrato",
       "name": {
         "it": "CEFTAZIDIMA PENTAIDRATO",
-        "en": "CEFTAZIDIMA PENTAIDRATO"
+        "en": "CEFTAZIDIME PENTAHYDRATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -19701,7 +19701,7 @@
       "id": "ceftizixima-sodica",
       "name": {
         "it": "CEFTIZIXIMA SODICA",
-        "en": "CEFTIZIXIMA SODICA"
+        "en": "CEFTIZOXIME SODIUM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -20263,7 +20263,7 @@
       "id": "ceftriaxone-disodico",
       "name": {
         "it": "CEFTRIAXONE DISODICO",
-        "en": "CEFTRIAXONE DISODICO"
+        "en": "CEFTRIAXONE DISODIUM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -20825,7 +20825,7 @@
       "id": "cianocobalamina",
       "name": {
         "it": "CIANOCOBALAMINA",
-        "en": "CIANOCOBALAMINA"
+        "en": "CYANOCOBALAMIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -21387,7 +21387,7 @@
       "id": "ciclofosfamide",
       "name": {
         "it": "CICLOFOSFAMIDE",
-        "en": "CICLOFOSFAMIDE"
+        "en": "CYCLOPHOSPHAMIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -21949,7 +21949,7 @@
       "id": "ciclosporina",
       "name": {
         "it": "CICLOSPORINA",
-        "en": "CICLOSPORINA"
+        "en": "CYCLOSPORINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -22511,7 +22511,7 @@
       "id": "ciprofloxacina",
       "name": {
         "it": "CIPROFLOXACINA",
-        "en": "CIPROFLOXACINA"
+        "en": "CIPROFLOXACIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -23073,7 +23073,7 @@
       "id": "cisatracurio-besilato",
       "name": {
         "it": "CISATRACURIO BESILATO",
-        "en": "CISATRACURIO BESILATO"
+        "en": "CISATRACURIUM BESYLATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -23635,7 +23635,7 @@
       "id": "claritromicina",
       "name": {
         "it": "CLARITROMICINA",
-        "en": "CLARITROMICINA"
+        "en": "CLARITHROMYCIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -24197,7 +24197,7 @@
       "id": "clindamicina-fosfato",
       "name": {
         "it": "CLINDAMICINA FOSFATO",
-        "en": "CLINDAMICINA FOSFATO"
+        "en": "CLINDAMYCIN PHOSPHATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -24759,7 +24759,7 @@
       "id": "clonidina",
       "name": {
         "it": "CLONIDINA",
-        "en": "CLONIDINA"
+        "en": "CLONIDINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -25321,7 +25321,7 @@
       "id": "clorfenamina-maleato",
       "name": {
         "it": "CLORFENAMINA MALEATO",
-        "en": "CLORFENAMINA MALEATO"
+        "en": "CHLORPHENAMINE MALEATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -25883,7 +25883,7 @@
       "id": "colistina-solfato",
       "name": {
         "it": "COLISTINA SOLFATO",
-        "en": "COLISTINA SOLFATO"
+        "en": "COLISTIN SULFATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -26445,7 +26445,7 @@
       "id": "complesso-vitaminico",
       "name": {
         "it": "COMPLESSO VITAMINICO",
-        "en": "COMPLESSO VITAMINICO"
+        "en": "VITAMIN COMPLEX"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -27007,7 +27007,7 @@
       "id": "daptomicina",
       "name": {
         "it": "DAPTOMICINA",
-        "en": "DAPTOMICINA"
+        "en": "DAPTOMYCIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -27569,7 +27569,7 @@
       "id": "desametasone-fosfato-disodico",
       "name": {
         "it": "DESAMETASONE FOSFATO DISODICO",
-        "en": "DESAMETASONE FOSFATO DISODICO"
+        "en": "DEXAMETHASONE SODIUM PHOSPHATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -28131,7 +28131,7 @@
       "id": "dexmedetomidina",
       "name": {
         "it": "DEXMEDETOMIDINA",
-        "en": "DEXMEDETOMIDINA"
+        "en": "DEXMEDETOMIDINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -29817,7 +29817,7 @@
       "id": "digossina",
       "name": {
         "it": "DIGOSSINA",
-        "en": "DIGOSSINA"
+        "en": "DIGOXIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -30379,7 +30379,7 @@
       "id": "diltiazem-cloridrato",
       "name": {
         "it": "DILTIAZEM CLORIDRATO",
-        "en": "DILTIAZEM CLORIDRATO"
+        "en": "DILTIAZEM HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -30941,7 +30941,7 @@
       "id": "dobutamina",
       "name": {
         "it": "DOBUTAMINA",
-        "en": "DOBUTAMINA"
+        "en": "DOBUTAMINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -31503,7 +31503,7 @@
       "id": "dopamina",
       "name": {
         "it": "DOPAMINA",
-        "en": "DOPAMINA"
+        "en": "DOPAMINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -32065,7 +32065,7 @@
       "id": "drotrecogin-alfa-attivato",
       "name": {
         "it": "DROTRECOGIN ALFA ATTIVATO",
-        "en": "DROTRECOGIN ALFA ATTIVATO"
+        "en": "DROTRECOGIN ALFA (ACTIVATED)"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -32627,7 +32627,7 @@
       "id": "eparina-sodica",
       "name": {
         "it": "EPARINA SODICA",
-        "en": "EPARINA SODICA"
+        "en": "HEPARIN SODIUM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -33189,7 +33189,7 @@
       "id": "epoprostenolo-sodico",
       "name": {
         "it": "EPOPROSTENOLO SODICO",
-        "en": "EPOPROSTENOLO SODICO"
+        "en": "EPOPROSTENOL SODIUM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -33751,7 +33751,7 @@
       "id": "eritromicina",
       "name": {
         "it": "ERITROMICINA",
-        "en": "ERITROMICINA"
+        "en": "ERYTHROMYCIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -34313,7 +34313,7 @@
       "id": "esmololo",
       "name": {
         "it": "ESMOLOLO",
-        "en": "ESMOLOLO"
+        "en": "ESMOLOL"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -34875,7 +34875,7 @@
       "id": "fenitoina-sodica",
       "name": {
         "it": "FENITOINA SODICA",
-        "en": "FENITOINA SODICA"
+        "en": "PHENYTOIN SODIUM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -35437,7 +35437,7 @@
       "id": "fenobarbital",
       "name": {
         "it": "FENOBARBITAL",
-        "en": "FENOBARBITAL"
+        "en": "PHENOBARBITAL"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -35999,7 +35999,7 @@
       "id": "fenoldopam-mesilato",
       "name": {
         "it": "FENOLDOPAM MESILATO",
-        "en": "FENOLDOPAM MESILATO"
+        "en": "FENOLDOPAM MESYLATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -36561,7 +36561,7 @@
       "id": "fentanil-citrato",
       "name": {
         "it": "FENTANIL CITRATO",
-        "en": "FENTANIL CITRATO"
+        "en": "FENTANYL CITRATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -37123,7 +37123,7 @@
       "id": "fisostigmina-salicilato",
       "name": {
         "it": "FISOSTIGMINA SALICILATO",
-        "en": "FISOSTIGMINA SALICILATO"
+        "en": "PHYSOSTIGMINE SALICYLATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -37685,7 +37685,7 @@
       "id": "fitomenadione-(vit.-k)",
       "name": {
         "it": "FITOMENADIONE (VIT. K)",
-        "en": "FITOMENADIONE (VIT. K)"
+        "en": "PHYTOMENADIONE (VIT. K)"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -38247,7 +38247,7 @@
       "id": "fluconazolo",
       "name": {
         "it": "FLUCONAZOLO",
-        "en": "FLUCONAZOLO"
+        "en": "FLUCONAZOLE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -39371,7 +39371,7 @@
       "id": "foscarnet-sodico",
       "name": {
         "it": "FOSCARNET SODICO",
-        "en": "FOSCARNET SODICO"
+        "en": "FOSCARNET SODIUM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -41057,7 +41057,7 @@
       "id": "gentamicina-solfato",
       "name": {
         "it": "GENTAMICINA SOLFATO",
-        "en": "GENTAMICINA SOLFATO"
+        "en": "GENTAMICIN SULFATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -41619,7 +41619,7 @@
       "id": "idrocortisone-emis.-sodico",
       "name": {
         "it": "IDROCORTISONE EMIS. SODICO",
-        "en": "IDROCORTISONE EMIS. SODICO"
+        "en": "HYDROCORTISONE SODIUM SUCCINATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -42181,7 +42181,7 @@
       "id": "idroxizina-dicloridrato",
       "name": {
         "it": "IDROXIZINA DICLORIDRATO",
-        "en": "IDROXIZINA DICLORIDRATO"
+        "en": "HYDROXYZINE DIHYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -42743,7 +42743,7 @@
       "id": "imipenem/cilastatina",
       "name": {
         "it": "IMIPENEM/CILASTATINA",
-        "en": "IMIPENEM/CILASTATINA"
+        "en": "IMIPENEM/CILASTATIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -43305,7 +43305,7 @@
       "id": "insulina-umana",
       "name": {
         "it": "INSULINA UMANA",
-        "en": "INSULINA UMANA"
+        "en": "HUMAN INSULIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -43867,7 +43867,7 @@
       "id": "isoprenalina-cloridrato",
       "name": {
         "it": "ISOPRENALINA CLORIDRATO",
-        "en": "ISOPRENALINA CLORIDRATO"
+        "en": "ISOPRENALINE HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -44429,7 +44429,7 @@
       "id": "ketamina",
       "name": {
         "it": "KETAMINA",
-        "en": "KETAMINA"
+        "en": "KETAMINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -44991,7 +44991,7 @@
       "id": "ketorolac-trometamina",
       "name": {
         "it": "KETOROLAC TROMETAMINA",
-        "en": "KETOROLAC TROMETAMINA"
+        "en": "KETOROLAC TROMETHAMINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -45553,7 +45553,7 @@
       "id": "labetalolo-cloridrato",
       "name": {
         "it": "LABETALOLO CLORIDRATO",
-        "en": "LABETALOLO CLORIDRATO"
+        "en": "LABETALOL HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -46115,7 +46115,7 @@
       "id": "levofloxacina",
       "name": {
         "it": "LEVOFLOXACINA",
-        "en": "LEVOFLOXACINA"
+        "en": "LEVOFLOXACIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -46677,7 +46677,7 @@
       "id": "lidocaina-cloridrato",
       "name": {
         "it": "LIDOCAINA CLORIDRATO",
-        "en": "LIDOCAINA CLORIDRATO"
+        "en": "LIDOCAINE HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -48363,7 +48363,7 @@
       "id": "magnesio-solfato",
       "name": {
         "it": "MAGNESIO SOLFATO",
-        "en": "MAGNESIO SOLFATO"
+        "en": "MAGNESIUM SULFATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -49487,7 +49487,7 @@
       "id": "metilprednisolone",
       "name": {
         "it": "METILPREDNISOLONE",
-        "en": "METILPREDNISOLONE"
+        "en": "METHYLPREDNISOLONE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -50049,7 +50049,7 @@
       "id": "metoclopramide-cloridrato",
       "name": {
         "it": "METOCLOPRAMIDE CLORIDRATO",
-        "en": "METOCLOPRAMIDE CLORIDRATO"
+        "en": "METOCLOPRAMIDE HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -50611,7 +50611,7 @@
       "id": "metoprololo-tartrato",
       "name": {
         "it": "METOPROLOLO TARTRATO",
-        "en": "METOPROLOLO TARTRATO"
+        "en": "METOPROLOL TARTRATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -51173,7 +51173,7 @@
       "id": "metronidazolo",
       "name": {
         "it": "METRONIDAZOLO",
-        "en": "METRONIDAZOLO"
+        "en": "METRONIDAZOLE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -52297,7 +52297,7 @@
       "id": "morfina-cloridrato",
       "name": {
         "it": "MORFINA CLORIDRATO",
-        "en": "MORFINA CLORIDRATO"
+        "en": "MORPHINE HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -52859,7 +52859,7 @@
       "id": "naloxone-cloridrato",
       "name": {
         "it": "NALOXONE CLORIDRATO",
-        "en": "NALOXONE CLORIDRATO"
+        "en": "NALOXONE HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -53421,7 +53421,7 @@
       "id": "neostigmina-metilsolfato",
       "name": {
         "it": "NEOSTIGMINA METILSOLFATO",
-        "en": "NEOSTIGMINA METILSOLFATO"
+        "en": "NEOSTIGMINE METHYLSULFATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -53983,7 +53983,7 @@
       "id": "nimodipina",
       "name": {
         "it": "NIMODIPINA",
-        "en": "NIMODIPINA"
+        "en": "NIMODIPINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -54545,7 +54545,7 @@
       "id": "nitroglicerina",
       "name": {
         "it": "NITROGLICERINA",
-        "en": "NITROGLICERINA"
+        "en": "NITROGLYCERIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -55107,7 +55107,7 @@
       "id": "noradrenalina-tartrato",
       "name": {
         "it": "NORADRENALINA TARTRATO",
-        "en": "NORADRENALINA TARTRATO"
+        "en": "NOREPINEPHRINE TARTRATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -55669,7 +55669,7 @@
       "id": "na-nitroprussiato-anidro",
       "name": {
         "it": "Na NITROPRUSSIATO ANIDRO",
-        "en": "Na NITROPRUSSIATO ANIDRO"
+        "en": "SODIUM NITROPRUSSIDE ANHYDROUS"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -56793,7 +56793,7 @@
       "id": "omeprazolo",
       "name": {
         "it": "OMEPRAZOLO",
-        "en": "OMEPRAZOLO"
+        "en": "OMEPRAZOLE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -57355,7 +57355,7 @@
       "id": "ondansetrone-cloridrato",
       "name": {
         "it": "ONDANSETRONE CLORIDRATO",
-        "en": "ONDANSETRONE CLORIDRATO"
+        "en": "ONDANSETRON HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -57917,7 +57917,7 @@
       "id": "oxacillina",
       "name": {
         "it": "OXACILLINA",
-        "en": "OXACILLINA"
+        "en": "OXACILLIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -58479,7 +58479,7 @@
       "id": "pancuronio-bromuro",
       "name": {
         "it": "PANCURONIO BROMURO",
-        "en": "PANCURONIO BROMURO"
+        "en": "PANCURONIUM BROMIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -59041,7 +59041,7 @@
       "id": "pantoprazolo-sodico",
       "name": {
         "it": "PANTOPRAZOLO SODICO",
-        "en": "PANTOPRAZOLO SODICO"
+        "en": "PANTOPRAZOLE SODIUM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -59603,7 +59603,7 @@
       "id": "penicillina-g-potassica",
       "name": {
         "it": "PENICILLINA G POTASSICA",
-        "en": "PENICILLINA G POTASSICA"
+        "en": "PENICILLIN G POTASSIUM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -60165,7 +60165,7 @@
       "id": "pentoxifillina",
       "name": {
         "it": "PENTOXIFILLINA",
-        "en": "PENTOXIFILLINA"
+        "en": "PENTOXIFYLLINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -60727,7 +60727,7 @@
       "id": "piperacillina-/tazobactam",
       "name": {
         "it": "PIPERACILLINA /TAZOBACTAM",
-        "en": "PIPERACILLINA /TAZOBACTAM"
+        "en": "PIPERACILLIN/TAZOBACTAM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -61289,7 +61289,7 @@
       "id": "piperacillina-sodica",
       "name": {
         "it": "PIPERACILLINA SODICA",
-        "en": "PIPERACILLINA SODICA"
+        "en": "PIPERACILLIN SODIUM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -61851,7 +61851,7 @@
       "id": "potassio-cloruro",
       "name": {
         "it": "POTASSIO CLORURO",
-        "en": "POTASSIO CLORURO"
+        "en": "POTASSIUM CHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -62975,7 +62975,7 @@
       "id": "protamina-cloridrato",
       "name": {
         "it": "PROTAMINA CLORIDRATO",
-        "en": "PROTAMINA CLORIDRATO"
+        "en": "PROTAMINE HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -63537,7 +63537,7 @@
       "id": "ranitidina-cloridrato",
       "name": {
         "it": "RANITIDINA CLORIDRATO",
-        "en": "RANITIDINA CLORIDRATO"
+        "en": "RANITIDINE HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -64099,7 +64099,7 @@
       "id": "remifentanil-cloridrato",
       "name": {
         "it": "REMIFENTANIL CLORIDRATO",
-        "en": "REMIFENTANIL CLORIDRATO"
+        "en": "REMIFENTANIL HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -64661,7 +64661,7 @@
       "id": "rifampicina",
       "name": {
         "it": "RIFAMPICINA",
-        "en": "RIFAMPICINA"
+        "en": "RIFAMPICIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -65223,7 +65223,7 @@
       "id": "rocuronio-bromuro",
       "name": {
         "it": "ROCURONIO BROMURO",
-        "en": "ROCURONIO BROMURO"
+        "en": "ROCURONIUM BROMIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -65785,7 +65785,7 @@
       "id": "salbutamolo",
       "name": {
         "it": "SALBUTAMOLO",
-        "en": "SALBUTAMOLO"
+        "en": "SALBUTAMOL"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -66347,7 +66347,7 @@
       "id": "sodio-bicarbonato",
       "name": {
         "it": "SODIO BICARBONATO",
-        "en": "SODIO BICARBONATO"
+        "en": "SODIUM BICARBONATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -66909,7 +66909,7 @@
       "id": "sodio-cloruro-0,9%",
       "name": {
         "it": "SODIO CLORURO 0,9%",
-        "en": "SODIO CLORURO 0,9%"
+        "en": "SODIUM CHLORIDE 0.9%"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -67471,7 +67471,7 @@
       "id": "sodio-valproato",
       "name": {
         "it": "SODIO VALPROATO",
-        "en": "SODIO VALPROATO"
+        "en": "SODIUM VALPROATE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -68033,7 +68033,7 @@
       "id": "succinilcolina",
       "name": {
         "it": "SUCCINILCOLINA",
-        "en": "SUCCINILCOLINA"
+        "en": "SUCCINYLCHOLINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -69157,7 +69157,7 @@
       "id": "ticarcillina/acido-clavulanico",
       "name": {
         "it": "TICARCILLINA/ACIDO CLAVULANICO",
-        "en": "TICARCILLINA/ACIDO CLAVULANICO"
+        "en": "TICARCILLIN/CLAVULANIC ACID"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -69719,7 +69719,7 @@
       "id": "tigeciclina",
       "name": {
         "it": "TIGECICLINA",
-        "en": "TIGECICLINA"
+        "en": "TIGECYCLINE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -70281,7 +70281,7 @@
       "id": "tiopental-sodico",
       "name": {
         "it": "TIOPENTAL SODICO",
-        "en": "TIOPENTAL SODICO"
+        "en": "THIOPENTAL SODIUM"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -70843,7 +70843,7 @@
       "id": "tobramicina",
       "name": {
         "it": "TOBRAMICINA",
-        "en": "TOBRAMICINA"
+        "en": "TOBRAMYCIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -71405,7 +71405,7 @@
       "id": "tramadolo-cloridrato",
       "name": {
         "it": "TRAMADOLO CLORIDRATO",
-        "en": "TRAMADOLO CLORIDRATO"
+        "en": "TRAMADOL HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -71967,7 +71967,7 @@
       "id": "trimetoprim/sulfametoxazolo",
       "name": {
         "it": "TRIMETOPRIM/SULFAMETOXAZOLO",
-        "en": "TRIMETOPRIM/SULFAMETOXAZOLO"
+        "en": "TRIMETHOPRIM/SULFAMETHOXAZOLE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -72529,7 +72529,7 @@
       "id": "urochinasi",
       "name": {
         "it": "UROCHINASI",
-        "en": "UROCHINASI"
+        "en": "UROKINASE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -73091,7 +73091,7 @@
       "id": "vancomicina-cloridrato",
       "name": {
         "it": "VANCOMICINA CLORIDRATO",
-        "en": "VANCOMICINA CLORIDRATO"
+        "en": "VANCOMYCIN HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -73653,7 +73653,7 @@
       "id": "vasopressina",
       "name": {
         "it": "VASOPRESSINA",
-        "en": "VASOPRESSINA"
+        "en": "VASOPRESSIN"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -74215,7 +74215,7 @@
       "id": "verapamil-cloridrato",
       "name": {
         "it": "VERAPAMIL CLORIDRATO",
-        "en": "VERAPAMIL CLORIDRATO"
+        "en": "VERAPAMIL HYDROCHLORIDE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {
@@ -74777,7 +74777,7 @@
       "id": "voriconazolo",
       "name": {
         "it": "VORICONAZOLO",
-        "en": "VORICONAZOLO"
+        "en": "VORICONAZOLE"
       },
       "isPhotosensitive": false,
       "cvcRequirement": {

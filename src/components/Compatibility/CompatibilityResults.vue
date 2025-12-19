@@ -25,6 +25,10 @@
 
 // IMPORTS
 import type { MultiDrugAnalysis } from 'src/types/DrugTypes';
+import { useI18n } from 'vue-i18n';
+
+// COMPOSABLES
+const { t } = useI18n();
 
 // PROPS INTERFACE
 interface Props {
@@ -48,9 +52,11 @@ const props = withDefaults(defineProps<Props>(), {
     <!-- ============================================================ -->
     <q-card v-if="!analysisResults" class="bg-grey-3 q-pa-lg text-center">
       <q-icon name="pending" size="64px" color="grey-6" class="q-mb-md" />
-      <div class="text-h6 text-grey-7 q-mb-sm">In attesa di analisi compatibilità...</div>
+      <div class="text-h6 text-grey-7 q-mb-sm">
+        {{ t('drugCompatibility.compatibilityResults.pending') }}
+      </div>
       <div class="text-body2 text-grey-6">
-        Seleziona almeno 2 farmaci e clicca "Analizza Compatibilità"
+        {{ t('drugCompatibility.compatibilityResults.selectDrugsHint') }}
       </div>
     </q-card>
 
@@ -58,49 +64,6 @@ const props = withDefaults(defineProps<Props>(), {
     <!-- RESULTS DISPLAY (Analysis completed)                        -->
     <!-- ============================================================ -->
     <div v-else>
-      <!--
-        SEZIONI WARNINGS RIMOSSE - Informazioni già presenti nella lista dettagliata sopra
-
-      <q-banner v-if="criticalWarnings.length > 0" class="bg-negative text-white q-mb-md" rounded>
-        <template #avatar>
-          <q-icon name="warning" size="32px" />
-        </template>
-        <div class="text-h6 q-mb-sm">⚠️ CRITICAL WARNINGS - Incompatibilità Rilevate</div>
-        <div v-for="(warning, index) in criticalWarnings" :key="index" class="q-mb-sm">
-          <strong>{{ warning.message }}</strong>
-          <div v-if="warning.drugs" class="text-caption">
-            Farmaci coinvolti: {{ formatDrugList(warning.drugs) }}
-          </div>
-        </div>
-      </q-banner>
-
-      <q-banner v-if="normalWarnings.length > 0" class="bg-warning text-grey-9 q-mb-md" rounded>
-        <template #avatar>
-          <q-icon name="info" size="32px" />
-        </template>
-        <div class="text-h6 q-mb-sm">🟡 Attenzione - Compatibilità Limitata</div>
-        <div v-for="(warning, index) in normalWarnings" :key="index" class="q-mb-sm">
-          <strong>{{ warning.message }}</strong>
-          <div v-if="warning.drugs" class="text-caption">
-            Farmaci coinvolti: {{ formatDrugList(warning.drugs) }}
-          </div>
-        </div>
-      </q-banner>
-
-      <q-banner v-if="infoWarnings.length > 0" class="bg-info text-white q-mb-md" rounded>
-        <template #avatar>
-          <q-icon name="check_circle" size="32px" />
-        </template>
-        <div class="text-h6 q-mb-sm">✅ Farmaci Compatibili</div>
-        <div v-for="(warning, index) in infoWarnings" :key="index" class="q-mb-sm">
-          <strong>{{ warning.message }}</strong>
-          <div v-if="warning.drugs" class="text-caption">
-            Farmaci: {{ formatDrugList(warning.drugs) }}
-          </div>
-        </div>
-      </q-banner>
-      -->
-
       <!-- RECOMMENDATIONS (if enabled) -->
       <q-card
         v-if="props.showRecommendations && analysisResults.recommendations?.length > 0"
@@ -108,8 +71,7 @@ const props = withDefaults(defineProps<Props>(), {
       >
         <q-card-section>
           <div class="text-h6 text-purple-9">
-            <q-icon name="lightbulb" class="q-mr-sm" />
-            💡 Raccomandazioni Cliniche
+            💡 {{ t('drugCompatibility.compatibilityResults.clinicalTitle') }}
           </div>
         </q-card-section>
         <q-separator />

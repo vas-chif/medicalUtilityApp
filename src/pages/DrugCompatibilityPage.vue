@@ -43,6 +43,7 @@
 // IMPORTS
 // ============================================================
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSecureLogger } from 'src/composables/useSecureLogger';
 
 // Componenti modulari (Page-based folder structure)
@@ -64,6 +65,7 @@ import type { MultiDrugAnalysis } from 'src/types/DrugTypes';
 // ============================================================
 // COMPOSABLES
 // ============================================================
+const { t } = useI18n();
 const { logger } = useSecureLogger();
 const { analyzeMultipleDrugs } = useDrugCompatibility();
 const compatibilityStore = useDrugCompatibilityStore();
@@ -83,17 +85,17 @@ const analysisResults = ref<MultiDrugAnalysis | null>(null);
  * Triggers multi-drug compatibility analysis using SORTED drugs from store
  */
 const handleDrugsSelected = (): void => {
-  logger.info('Drugs selected (store sorted)', { 
+  logger.info('Drugs selected (store sorted)', {
     drugCount: compatibilityStore.sortedDrugs.length,
-    drugs: compatibilityStore.sortedDrugs 
+    drugs: compatibilityStore.sortedDrugs,
   });
 
   // Trigger multi-drug analysis usando sortedDrugs (alfabetico)
   analysisResults.value = analyzeMultipleDrugs(compatibilityStore.sortedDrugs);
 
-  logger.info('Analysis completed', { 
+  logger.info('Analysis completed', {
     warnings: analysisResults.value?.warnings.length,
-    results: analysisResults.value?.results.length
+    results: analysisResults.value?.results.length,
   });
 };
 
@@ -120,17 +122,17 @@ const handleSelectionCleared = (): void => {
     <div class="q-mb-lg">
       <!-- Breadcrumbs -->
       <q-breadcrumbs class="q-mb-sm">
-        <q-breadcrumbs-el label="Home" icon="home" to="/" />
-        <q-breadcrumbs-el label="Pharmacology" />
-        <q-breadcrumbs-el label="Drug Compatibility" />
+        <q-breadcrumbs-el :label="t('drugCompatibilityPage.breadcrumbs.home')" icon="home" to="/" />
+        <q-breadcrumbs-el :label="t('drugCompatibilityPage.breadcrumbs.pharmacology')" />
+        <q-breadcrumbs-el :label="t('drugCompatibilityPage.breadcrumbs.drugCompatibility')" />
       </q-breadcrumbs>
 
       <!-- Page Title -->
-      <h1 class="text-h4 text-weight-bold q-mb-xs">💊 Drug Compatibility Checker</h1>
+      <h1 class="text-h4 text-weight-bold q-mb-xs">💊 {{ t('drugCompatibilityPage.title') }}</h1>
 
       <!-- Page Subtitle -->
       <p class="text-subtitle1 text-grey-7">
-        Analisi compatibilità IV farmaci + Ottimizzazione allocazione lumi CVC/PICC
+        {{ t('drugCompatibilityPage.subtitle') }}
       </p>
     </div>
 
@@ -143,22 +145,22 @@ const handleSelectionCleared = (): void => {
       </template>
 
       <div class="text-weight-medium">
-        <strong>Sistema Avanzato Compatibilità Farmaci IV</strong>
+        <strong>{{ t('drugCompatibilityPage.banner.title') }}</strong>
       </div>
 
       <div class="q-mt-sm">
         <ul class="q-pl-md q-my-none">
           <li>
-            <strong>Real-time Analysis:</strong> Analisi compatibilità 150+ farmaci IV da database
-            Micromedex
+            <strong>{{ t('drugCompatibilityPage.banner.realTimeAnalysis.label') }}:</strong>
+            {{ t('drugCompatibilityPage.banner.realTimeAnalysis.description') }}
           </li>
           <li>
-            <strong>Lumen Optimization:</strong> Algoritmo greedy per ottimizzazione allocazione
-            lumi CVC/PICC
+            <strong>{{ t('drugCompatibilityPage.banner.lumenOptimization.label') }}:</strong>
+            {{ t('drugCompatibilityPage.banner.lumenOptimization.description') }}
           </li>
           <li>
-            <strong>Y-site Protocols:</strong> Protocolli flush + Riferimenti scientifici
-            (Trissel's, ASHP)
+            <strong>{{ t('drugCompatibilityPage.banner.ysiteProtocols.label') }}:</strong>
+            {{ t('drugCompatibilityPage.banner.ysiteProtocols.description') }}
           </li>
         </ul>
       </div>
@@ -176,9 +178,9 @@ const handleSelectionCleared = (): void => {
         <!-- DrugSelector -->
         <div class="q-mb-md">
           <DrugSelector
-            calculate-button-text="🔍 Analizza Compatibilità"
-            reset-button-text="🔄 Reset Selezione"
-            title="Selezione Farmaci IV"
+            :calculate-button-text="t('drugCompatibilityPage.drugSelector.calculateButton')"
+            :reset-button-text="t('drugCompatibilityPage.drugSelector.resetButton')"
+            :title="t('drugCompatibilityPage.drugSelector.title')"
             @drugs-selected="handleDrugsSelected"
             @selection-cleared="handleSelectionCleared"
           />
@@ -199,13 +201,9 @@ const handleSelectionCleared = (): void => {
             :analysis-results="analysisResults"
             :available-lumens="3"
             @allocation-completed="
-              (allocation) =>
-                logger.debug('Allocation completed', { allocation })
+              (allocation) => logger.debug('Allocation completed', { allocation })
             "
-            @insufficient-lumens="
-              (deficit) =>
-                logger.warn('Insufficient lumens', { deficit })
-            "
+            @insufficient-lumens="(deficit) => logger.warn('Insufficient lumens', { deficit })"
           />
         </div>
 

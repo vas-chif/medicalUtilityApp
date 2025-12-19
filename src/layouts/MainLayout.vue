@@ -16,7 +16,7 @@ const router = useRouter();
 const route = useRoute();
 
 // i18n
-const { locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
 // State
 const leftDrawerOpen = ref(false);
@@ -75,55 +75,55 @@ const getLanguageLabel = computed(() => {
 /**
  * Menu Sections for Drawer Navigation
  */
-const menuSections: MenuSection[] = [
+const menuSections = computed<MenuSection[]>(() => [
   {
-    header: '🧮 Calcolatrici Mediche',
+    header: `🧮 ${t('mainLayout.menu.medicalCalculators')}`,
     icon: 'calculate',
     items: [
       {
         id: 'intensive-care',
-        title: 'Intensive Care Utility',
-        caption: 'Mechanical Power & Quoziente Respiratorio',
+        title: t('mainLayout.menu.intensiveCare.title'),
+        caption: t('mainLayout.menu.intensiveCare.caption'),
         icon: 'local_hospital',
         iconColor: 'red-6',
         route: '/intensive-care',
       },
       {
         id: 'clinical-assessment',
-        title: 'Clinical Assessment',
-        caption: 'APGAR, GCS, NEWS, SOFA',
+        title: t('mainLayout.menu.clinicalAssessment.title'),
+        caption: t('mainLayout.menu.clinicalAssessment.caption'),
         icon: 'assignment',
         iconColor: 'green-6',
         route: '/clinical-assessment',
       },
       {
         id: 'bmi-calculator',
-        title: 'BMI Calculator',
-        caption: 'Indice massa corporea',
+        title: t('mainLayout.menu.bmi.title'),
+        caption: t('mainLayout.menu.bmi.caption'),
         icon: 'fitness_center',
         iconColor: 'orange-6',
         route: '/bmi-calculator',
       },
       {
         id: 'gfr-calculator',
-        title: 'GFR Calculator',
-        caption: 'Filtrato glomerulare renale',
+        title: t('mainLayout.menu.gfr.title'),
+        caption: t('mainLayout.menu.gfr.caption'),
         icon: 'water_drop',
         iconColor: 'cyan-6',
         route: '/gfr-calculator',
       },
       {
         id: 'pharmacology',
-        title: 'Pharmacology',
-        caption: 'Dosage, Compatibility, Dilution, Infusion',
+        title: t('mainLayout.menu.pharmacology.title'),
+        caption: t('mainLayout.menu.pharmacology.caption'),
         icon: 'medication',
         iconColor: 'red-6',
         route: '/pharmacology',
       },
       {
         id: 'drug-compatibility',
-        title: 'Compatibilità Farmaci',
-        caption: 'Interazioni farmacologiche IV',
+        title: t('mainLayout.menu.drugCompatibility.title'),
+        caption: t('mainLayout.menu.drugCompatibility.caption'),
         icon: 'science',
         iconColor: 'purple-6',
         route: '/drug-compatibility',
@@ -132,37 +132,37 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
-    header: 'ℹ️ Informazioni',
+    header: `ℹ️ ${t('mainLayout.menu.information')}`,
     icon: 'info',
     items: [
       {
         id: 'about',
-        title: 'About',
-        caption: 'Informazioni app',
+        title: t('mainLayout.menu.about.title'),
+        caption: t('mainLayout.menu.about.caption'),
         icon: 'info',
         iconColor: 'info',
         route: '/about',
       },
       {
         id: 'help',
-        title: 'Aiuto',
-        caption: 'Documentazione',
+        title: t('mainLayout.menu.help.title'),
+        caption: t('mainLayout.menu.help.caption'),
         icon: 'help',
         iconColor: 'warning',
         route: '/help',
       },
     ],
   },
-];
+]);
 
 /**
  * Medical Tools for Homepage Search/Filter
  */
-const medicalTools: MedicalTool[] = [
+const medicalTools = computed<MedicalTool[]>(() => [
   {
     id: 'intensiveCare',
-    title: 'Intensive Care Utility',
-    description: 'Mechanical Power e Quoziente Respiratorio per monitoraggio ventilatorio completo',
+    title: t('mainLayout.tools.intensiveCare.title'),
+    description: t('mainLayout.tools.intensiveCare.description'),
     categories: ['ventilazione', 'terapia-intensiva', 'pneumologia'],
     keywords: [
       'ventilazione',
@@ -178,8 +178,8 @@ const medicalTools: MedicalTool[] = [
   },
   {
     id: 'clinicalAssessment',
-    title: 'Clinical Assessment & Scoring',
-    description: 'Sistemi di valutazione clinica: APGAR Score, Glasgow Coma Scale, NEWS, SOFA',
+    title: t('mainLayout.tools.clinicalAssessment.title'),
+    description: t('mainLayout.tools.clinicalAssessment.description'),
     categories: ['neonatologia', 'emergenza', 'terapia-intensiva', 'pediatria'],
     keywords: [
       'APGAR',
@@ -197,30 +197,29 @@ const medicalTools: MedicalTool[] = [
   },
   {
     id: 'bmi-calculator',
-    title: 'BMI Calculator',
-    description: "Calcolo dell'Indice di Massa Corporea con classificazione WHO",
+    title: t('mainLayout.tools.bmi.title'),
+    description: t('mainLayout.tools.bmi.description'),
     categories: ['nutrizione', 'medicina-generale'],
     keywords: ['BMI', 'massa', 'corporea', 'peso', 'altezza', 'obesità', 'sottopeso'],
   },
   {
     id: 'gfr-calculator',
-    title: 'GFR Calculator',
-    description: 'Calcolo del Filtrato Glomerulare Renale con formule MDRD e CKD-EPI',
+    title: t('mainLayout.tools.gfr.title'),
+    description: t('mainLayout.tools.gfr.description'),
     categories: ['nefrologia', 'funzione-renale'],
     keywords: ['GFR', 'filtrato', 'glomerulare', 'renale', 'creatinina', 'MDRD', 'CKD-EPI'],
   },
   {
     id: 'dosage-calculator',
-    title: 'Dosage Calculator',
-    description: 'Calcolo preciso delle dosi farmacologiche per peso, età e funzione renale',
+    title: t('mainLayout.tools.dosage.title'),
+    description: t('mainLayout.tools.dosage.description'),
     categories: ['farmacologia', 'posologia'],
     keywords: ['dosaggio', 'farmaci', 'dose', 'peso', 'età', 'posologia', 'medicazione'],
   },
   {
     id: 'drug-compatibility',
-    title: 'Compatibilità Farmaci',
-    description:
-      'Controllo interazioni e incompatibilità farmacologiche per somministrazione endovenosa',
+    title: t('mainLayout.tools.drugCompatibility.title'),
+    description: t('mainLayout.tools.drugCompatibility.description'),
     categories: ['farmacologia', 'terapia-intensiva'],
     keywords: [
       'compatibilità',
@@ -233,11 +232,11 @@ const medicalTools: MedicalTool[] = [
     ],
     disabled: false, // ✅ ATTIVATO - Database JSON bilingue pronto!
   },
-];
+]);
 
 // Computed per gli strumenti filtrati
 const filteredTools = computed(() => {
-  let filtered = medicalTools;
+  let filtered = medicalTools.value;
 
   // Filtro per ricerca testuale
   if (searchQuery.value) {
@@ -270,7 +269,7 @@ function toggleLeftDrawer() {
 
 const navigateTo = async (path: string) => {
   // Controlla se il tool è disabilitato
-  const tool = medicalTools.find((t) => path.includes(t.id));
+  const tool = medicalTools.value.find((t) => path.includes(t.id));
   if (tool?.disabled) {
     return; // Non navigare se disabilitato
   }
@@ -306,14 +305,14 @@ const navigateTo = async (path: string) => {
           <q-avatar size="25px" class="medical-avatar q-mb-sm" square>
             <q-img src="../assets/icon_logo.png" color="white" />
           </q-avatar>
-          Medical Utility Pro
+          {{ t('mainLayout.title') }}
         </q-toolbar-title>
 
         <!-- Barra di Ricerca Compatta -->
         <div class="search-toolbar q-ml-md" v-if="showSearch">
           <q-input
             v-model="searchQuery"
-            placeholder="🔍 Cerca strumento..."
+            :placeholder="'🔍 ' + t('mainLayout.searchPlaceholder')"
             outlined
             dense
             clearable
@@ -379,8 +378,8 @@ const navigateTo = async (path: string) => {
         <q-avatar size="60px" class="medical-avatar q-mb-sm">
           <q-img src="../assets/icon_logo.png" color="white" />
         </q-avatar>
-        <div class="text-h6 text-primary">Medical Utility</div>
-        <div class="text-caption text-grey-6">Strumenti Medici Professionali</div>
+        <div class="text-h6 text-primary">{{ t('mainLayout.title') }}</div>
+        <div class="text-caption text-grey-6">{{ t('mainLayout.subtitle') }}</div>
       </div>
 
       <q-separator />
@@ -398,8 +397,8 @@ const navigateTo = async (path: string) => {
             <q-icon name="home" color="primary" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Homepage</q-item-label>
-            <q-item-label caption>Panoramica strumenti</q-item-label>
+            <q-item-label>{{ t('mainLayout.home.title') }}</q-item-label>
+            <q-item-label caption>{{ t('mainLayout.home.caption') }}</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -445,7 +444,7 @@ const navigateTo = async (path: string) => {
 
       <!-- Footer Drawer -->
       <div class="absolute-bottom q-pa-sm text-center">
-        <div class="text-caption text-grey-6">© 2025 Medical Utility Pro</div>
+        <div class="text-caption text-grey-6">{{ t('mainLayout.footer.copyright') }}</div>
         <div class="text-caption text-grey-5">
           <a
             class="created-by text-no-wrap"
@@ -472,9 +471,9 @@ const navigateTo = async (path: string) => {
               <q-img src="../assets/icon_logo.png" color="white" />
             </q-avatar>
 
-            <h1 class="hero-title text-h3 q-mb-sm">Medical Utility Pro</h1>
+            <h1 class="hero-title text-h3 q-mb-sm">{{ t('mainLayout.title') }}</h1>
             <p class="hero-subtitle text-h6 q-mb-lg">
-              Strumenti medici professionali per calcoli clinici precisi e affidabili
+              {{ t('mainLayout.hero.subtitle') }}
             </p>
           </div>
         </div>
@@ -482,9 +481,11 @@ const navigateTo = async (path: string) => {
         <!-- Tools Grid Section -->
         <div class="tools-section q-pa-lg">
           <div class="text-center q-mb-lg">
-            <h2 class="section-title text-h4 q-mb-sm">🧮 Calcolatrici Mediche</h2>
+            <h2 class="section-title text-h4 q-mb-sm">
+              🧮 {{ t('mainLayout.menu.medicalCalculators') }}
+            </h2>
             <p class="section-subtitle text-subtitle1">
-              Seleziona lo strumento di calcolo necessario
+              {{ t('mainLayout.hero.selectTool') }}
             </p>
           </div>
 
@@ -500,14 +501,19 @@ const navigateTo = async (path: string) => {
                 <div class="tool-icon-container q-mb-md">
                   <q-icon name="local_hospital" size="3rem" class="tool-icon" color="red-6" />
                 </div>
-                <h5 class="tool-title text-h6 q-mb-sm">Intensive Care Utility</h5>
+                <h5 class="tool-title text-h6 q-mb-sm">
+                  {{ t('mainLayout.tools.intensiveCare.title') }}
+                </h5>
                 <p class="tool-description text-body2 q-mb-md">
-                  Mechanical Power e Quoziente Respiratorio per monitoraggio metabolico e
-                  ventilatorio
+                  {{ t('mainLayout.tools.intensiveCare.description') }}
                 </p>
                 <div class="tool-tags">
-                  <q-chip size="sm" color="red-1" text-color="red-8">Terapia Intensiva</q-chip>
-                  <q-chip size="sm" color="blue-1" text-color="blue-8">Ventilazione</q-chip>
+                  <q-chip size="sm" color="red-1" text-color="red-8">{{
+                    t('mainLayout.tags.intensiveCare')
+                  }}</q-chip>
+                  <q-chip size="sm" color="blue-1" text-color="blue-8">{{
+                    t('mainLayout.tags.ventilation')
+                  }}</q-chip>
                 </div>
               </q-card-section>
             </q-card>
@@ -522,14 +528,22 @@ const navigateTo = async (path: string) => {
                 <div class="tool-icon-container q-mb-md">
                   <q-icon name="assignment" size="3rem" class="tool-icon" color="green-6" />
                 </div>
-                <h5 class="tool-title text-h6 q-mb-sm">Clinical Assessment</h5>
+                <h5 class="tool-title text-h6 q-mb-sm">
+                  {{ t('mainLayout.tools.clinicalAssessment.title') }}
+                </h5>
                 <p class="tool-description text-body2 q-mb-md">
-                  Sistemi di valutazione e scoring: APGAR, GCS, NEWS, SOFA
+                  {{ t('mainLayout.tools.clinicalAssessment.description') }}
                 </p>
                 <div class="tool-tags">
-                  <q-chip size="sm" color="green-1" text-color="green-8">Neonatologia</q-chip>
-                  <q-chip size="sm" color="green-1" text-color="green-8">Emergenza</q-chip>
-                  <q-chip size="sm" color="red-1" text-color="red-8">Terapia Intensiva</q-chip>
+                  <q-chip size="sm" color="green-1" text-color="green-8">{{
+                    t('mainLayout.tags.neonatology')
+                  }}</q-chip>
+                  <q-chip size="sm" color="green-1" text-color="green-8">{{
+                    t('mainLayout.tags.emergency')
+                  }}</q-chip>
+                  <q-chip size="sm" color="red-1" text-color="red-8">{{
+                    t('mainLayout.tags.intensiveCare')
+                  }}</q-chip>
                 </div>
               </q-card-section>
             </q-card>
@@ -544,15 +558,17 @@ const navigateTo = async (path: string) => {
                 <div class="tool-icon-container q-mb-md">
                   <q-icon name="fitness_center" size="3rem" class="tool-icon" />
                 </div>
-                <h5 class="tool-title text-h6 q-mb-sm">BMI Calculator</h5>
+                <h5 class="tool-title text-h6 q-mb-sm">{{ t('mainLayout.tools.bmi.title') }}</h5>
                 <p class="tool-description text-body2 q-mb-md">
-                  Calcolo dell'Indice di Massa Corporea con classificazione WHO
+                  {{ t('mainLayout.tools.bmi.description') }}
                 </p>
                 <div class="tool-tags">
-                  <q-chip size="sm" color="orange-1" text-color="orange-8">Nutrizione</q-chip>
-                  <q-chip size="sm" color="orange-1" text-color="orange-8"
-                    >Medicina Generale</q-chip
-                  >
+                  <q-chip size="sm" color="orange-1" text-color="orange-8">{{
+                    t('mainLayout.tags.nutrition')
+                  }}</q-chip>
+                  <q-chip size="sm" color="orange-1" text-color="orange-8">{{
+                    t('mainLayout.tags.generalMedicine')
+                  }}</q-chip>
                 </div>
               </q-card-section>
             </q-card>
@@ -567,13 +583,17 @@ const navigateTo = async (path: string) => {
                 <div class="tool-icon-container q-mb-md">
                   <q-icon name="water_drop" size="3rem" class="tool-icon" />
                 </div>
-                <h5 class="tool-title text-h6 q-mb-sm">GFR Calculator</h5>
+                <h5 class="tool-title text-h6 q-mb-sm">{{ t('mainLayout.tools.gfr.title') }}</h5>
                 <p class="tool-description text-body2 q-mb-md">
-                  Calcolo del Filtrato Glomerulare Renale con formule MDRD e CKD-EPI
+                  {{ t('mainLayout.tools.gfr.description') }}
                 </p>
                 <div class="tool-tags">
-                  <q-chip size="sm" color="cyan-1" text-color="cyan-8">Nefrologia</q-chip>
-                  <q-chip size="sm" color="cyan-1" text-color="cyan-8">Funzione Renale</q-chip>
+                  <q-chip size="sm" color="cyan-1" text-color="cyan-8">{{
+                    t('mainLayout.tags.nephrology')
+                  }}</q-chip>
+                  <q-chip size="sm" color="cyan-1" text-color="cyan-8">{{
+                    t('mainLayout.tags.renalFunction')
+                  }}</q-chip>
                 </div>
               </q-card-section>
             </q-card>
@@ -588,15 +608,25 @@ const navigateTo = async (path: string) => {
                 <div class="tool-icon-container q-mb-md">
                   <q-icon name="medication" size="3rem" class="tool-icon" />
                 </div>
-                <h5 class="tool-title text-h6 q-mb-sm">Clinical Pharmacology</h5>
+                <h5 class="tool-title text-h6 q-mb-sm">
+                  {{ t('mainLayout.menu.pharmacology.title') }}
+                </h5>
                 <p class="tool-description text-body2 q-mb-md">
-                  Dosaggio, compatibilità IV, diluizioni e velocità infusione farmaci
+                  {{ t('mainLayout.menu.pharmacology.caption') }}
                 </p>
                 <div class="tool-tags">
-                  <q-chip size="sm" color="red-1" text-color="red-8">Farmacologia</q-chip>
-                  <q-chip size="sm" color="red-1" text-color="red-8">Posologia</q-chip>
-                  <q-chip size="sm" color="purple-1" text-color="purple-8">Diluizione</q-chip>
-                  <q-chip size="sm" color="purple-1" text-color="purple-8">Infusion Rate</q-chip>
+                  <q-chip size="sm" color="red-1" text-color="red-8">{{
+                    t('mainLayout.tags.pharmacology')
+                  }}</q-chip>
+                  <q-chip size="sm" color="red-1" text-color="red-8">{{
+                    t('mainLayout.tags.dosage')
+                  }}</q-chip>
+                  <q-chip size="sm" color="purple-1" text-color="purple-8">{{
+                    t('mainLayout.tags.dilution')
+                  }}</q-chip>
+                  <q-chip size="sm" color="purple-1" text-color="purple-8">{{
+                    t('mainLayout.tags.infusionRate')
+                  }}</q-chip>
                 </div>
               </q-card-section>
             </q-card>
@@ -632,15 +662,19 @@ const navigateTo = async (path: string) => {
                 <div class="tool-icon-container q-mb-md">
                   <q-icon name="science" size="3rem" class="tool-icon" color="purple-6" />
                 </div>
-                <h5 class="tool-title text-h6 q-mb-sm">🧪 Drug Compatibility Checker</h5>
+                <h5 class="tool-title text-h6 q-mb-sm">
+                  🧪 {{ t('mainLayout.tools.drugCompatibility.title') }}
+                </h5>
                 <p class="tool-description text-body2 q-mb-md">
-                  Verifica compatibilità IV tra farmaci per somministrazione Y-site sicura
+                  {{ t('mainLayout.tools.drugCompatibility.description') }}
                 </p>
                 <div class="tool-tags">
-                  <q-chip size="sm" color="purple-1" text-color="purple-8">Farmacologia</q-chip>
-                  <q-chip size="sm" color="purple-1" text-color="purple-8"
-                    >Terapia Intensiva</q-chip
-                  >
+                  <q-chip size="sm" color="purple-1" text-color="purple-8">{{
+                    t('mainLayout.tags.pharmacology')
+                  }}</q-chip>
+                  <q-chip size="sm" color="purple-1" text-color="purple-8">{{
+                    t('mainLayout.tags.intensiveCare')
+                  }}</q-chip>
                 </div>
               </q-card-section>
             </q-card>
@@ -650,8 +684,8 @@ const navigateTo = async (path: string) => {
           <div v-if="searchQuery && filteredTools.length === 0" class="no-results q-mt-lg">
             <div class="text-center">
               <q-icon name="search_off" size="3rem" color="grey-5" class="q-mb-md" />
-              <h6 class="text-h6 text-grey-7">Nessun risultato trovato</h6>
-              <p class="text-body2 text-grey-6">Prova a cercare con termini diversi</p>
+              <h6 class="text-h6 text-grey-7">{{ t('mainLayout.noResults.title') }}</h6>
+              <p class="text-body2 text-grey-6">{{ t('mainLayout.noResults.subtitle') }}</p>
             </div>
           </div>
         </div>

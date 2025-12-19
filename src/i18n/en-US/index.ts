@@ -17,6 +17,9 @@ import fluidBalance from './fluidBalance';
 import dosageCalculator from './dosageCalculator';
 import drugDilution from './drugDilution';
 import infusionRate from './infusionRate';
+import mainLayout from './mainLayout';
+import drugCompatibilityPage from './drugCompatibilityPage';
+import drugCompatibility from './drugCompatibility';
 // import ibw from './ibw';
 
 export default {
@@ -92,4 +95,13 @@ export default {
   // Drug Dilution Calculator
   drugDilution,
   infusionRate,
+
+  // Main Layout
+  mainLayout,
+
+  // Drug Compatibility Page
+  drugCompatibilityPage,
+
+  // Drug Compatibility Components
+  drugCompatibility,
 };
