@@ -137,6 +137,17 @@ const handleSelectionCleared = (): void => {
     </div>
 
     <!-- ============================================================ -->
+    <!-- DISCLAIMER ALERT                                             -->
+    <!-- ============================================================ -->
+    <q-banner class="bg-amber-1 text-amber-10 q-mb-md" rounded dense>
+      <template #avatar>
+        <q-icon name="warning" color="amber-10" />
+      </template>
+      <div class="text-weight-bold">{{ t('drugCompatibilityPage.disclaimer.title') }}</div>
+      <div>{{ t('drugCompatibilityPage.disclaimer.message') }}</div>
+    </q-banner>
+
+    <!-- ============================================================ -->
     <!-- INFO BANNER                                                  -->
     <!-- ============================================================ -->
     <q-banner class="bg-blue-1 text-blue-9 q-mb-lg" rounded>
